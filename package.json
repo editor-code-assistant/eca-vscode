@@ -1,0 +1,73 @@
+{
+  "name": "eca",
+  "displayName": "ECA (Editor Code Assisant)",
+  "description": "ECA (Editor Code Assistant) integration for VsCode",
+  "icon": "assets/logo.png",
+  "version": "0.0.1",
+  "publisher": "editor-code-assistant",
+  "author": {
+    "name": "Eric Dallo",
+    "email": "ercdll1337@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/editor-code-assistant/eca-vscode.git"
+  },
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/editor-code-assistant/eca-vscode/issues"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/ericdallo"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "eca.start",
+        "title": "ECA: Start process and open chat"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test",
+    "vsix": "vsce package"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.75.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.5.0",
+    "esbuild": "^0.25.3",
+    "eslint": "^9.25.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.8.3",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "vscode-jsonrpc": "^8.2.1"
+  }
+}
