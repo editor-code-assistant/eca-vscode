@@ -35,7 +35,25 @@
         "command": "eca.start",
         "title": "ECA: Start process and open chat"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "eca",
+          "title": "ECA Chat",
+          "icon": "assets/logo-white.svg"
+        }
+      ]
+    },
+    "views": {
+      "eca": [
+        {
+          "type": "webview",
+          "id": "eca.chat",
+          "name": "ECA Chat"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

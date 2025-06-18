@@ -6,6 +6,7 @@ import * as protocol from './protocol';
 import * as s from './session';
 
 export function activate(context: vscode.ExtensionContext) {
+
 	const disposable = vscode.commands.registerCommand('eca.start', () => {
 		const ecaChannel = vscode.window.createOutputChannel('ECA stderr', 'Clojure');
 
@@ -53,11 +54,17 @@ export function activate(context: vscode.ExtensionContext) {
 			s.session.chatWelcomeMessage = result.chatWelcomeMessage;
 			s.session.chatBehavior = result.chatBehavior;
 			s.session.status = 'started';
-			chat.openChat(context);
+			chat.focusChat();
 		});
 	});
 
+	const chatProvider = new chat.ChatProvider();
+
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(chatProvider.id, chatProvider, {
+			webviewOptions: { retainContextWhenHidden: true },
+		}));
 }
 
 export function deactivate() {}
