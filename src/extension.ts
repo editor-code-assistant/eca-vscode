@@ -4,6 +4,7 @@ import * as rpc from 'vscode-jsonrpc/node';
 import * as chat from './chat';
 import * as protocol from './protocol';
 import * as s from './session';
+import { ChatProvider } from './chat';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -30,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 			? [{ name: 'root', uri: vscode.workspace.rootPath! }]
 			: [];
 
-		s.init(ecaProcess, workspaceFolders);
+		let session = s.newSession(ecaProcess, workspaceFolders, connection);
 
 		connection.listen();
 
@@ -50,15 +51,16 @@ export function activate(context: vscode.ExtensionContext) {
 			},
 			workspaceFolders: workspaceFolders,
 		}).then((result) => {
-			s.session.models = result.models;
-			s.session.chatWelcomeMessage = result.chatWelcomeMessage;
-			s.session.chatBehavior = result.chatBehavior;
-			s.session.status = 'started';
+			session.models = result.models;
+			session.chatWelcomeMessage = result.chatWelcomeMessage;
+			session.chatBehavior = result.chatBehavior;
+			session.status = 'started';
+			context.workspaceState.update('eca.session', session);
 			chat.focusChat();
 		});
 	});
 
-	const chatProvider = new chat.ChatProvider(context);
+	const chatProvider = new ChatProvider(context);
 
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(

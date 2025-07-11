@@ -1,22 +1,27 @@
 import * as cp from 'child_process';
+import * as rpc from 'vscode-jsonrpc/node';
 import * as protocol from './protocol';
 
-class Session {
+export class Session {
     public process: cp.ChildProcess;
     public workspaceFolders: protocol.WorkspaceFolder[];
     public models: string[] = [];
     public chatBehavior?: string;
     public chatWelcomeMessage?: string;
     public status: string = 'stopped';
+    public connection: rpc.MessageConnection;
 
-    constructor(process: cp.ChildProcess, workspaceFolders: protocol.WorkspaceFolder[]) {
+    constructor(
+        process: cp.ChildProcess,
+        workspaceFolders: protocol.WorkspaceFolder[],
+        connection: rpc.MessageConnection,
+    ) {
         this.process = process;
         this.workspaceFolders = workspaceFolders;
+        this.connection = connection;
     }
 }
 
-export let session: Session;
-
-export function init(process: cp.ChildProcess, workspaceFolders: protocol.WorkspaceFolder[]) {
-    session = new Session(process, workspaceFolders);
+export function newSession(process: cp.ChildProcess, workspaceFolders: protocol.WorkspaceFolder[], connection: rpc.MessageConnection) {
+    return new Session(process, workspaceFolders, connection);
 }

@@ -1,12 +1,14 @@
 import * as vscode from 'vscode';
+import * as protocol from './protocol';
+import * as s from './session';
 import { getExtensionUri, randNonce } from './util';
-
 
 export class ChatProvider implements vscode.WebviewViewProvider {
     public id = 'eca.chat';
+    private _requestId = 0;
 
     constructor(
-        private readonly extensionContext: vscode.ExtensionContext,
+        private readonly context: vscode.ExtensionContext,
     ) {}
 
     resolveWebviewView(
@@ -25,6 +27,24 @@ export class ChatProvider implements vscode.WebviewViewProvider {
             ],
             enableCommandUris: true,
         };
+
+        webviewView.webview.onDidReceiveMessage(message => {
+            if (message.type === 'chat/userPrompt') {
+                const session = this.context.workspaceState.get<s.Session>('eca.session');
+
+                webviewView.webview.postMessage({
+                    type: 'chat/userPrompt',
+                    data: `Sent prompt: ${message.data.prompt}`
+                });
+
+                // session?.connection.sendRequest(protocol.chatPrompt, {
+                //     message: message.data.prompt,
+                //     requestId: (this._requestId++).toString(),
+                // }).then((result) => {
+                //     console.error("--------->" + result);
+                // });
+            }
+        });
     }
 
     private getWebviewContent(
@@ -35,7 +55,7 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         let scriptUri: string;
         let styleMainUri: string;
         const isDev =
-            this.extensionContext?.extensionMode === vscode.ExtensionMode.Development;
+            this.context?.extensionMode === vscode.ExtensionMode.Development;
         if (!isDev) {
             scriptUri = webview
                 .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui/assets/index.js"))
@@ -53,6 +73,7 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script>const vscode = acquireVsCodeApi();</script>
             <title>ECA</title>
             <link href="${styleMainUri}" rel="stylesheet">
         </head>

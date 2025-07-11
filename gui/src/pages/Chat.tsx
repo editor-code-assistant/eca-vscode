@@ -1,13 +1,28 @@
-import { useState } from "react"
+import { useContext, useState } from "react";
+import { IdeContext } from "../Ide";
 
 export function Chat() {
     const [messages, setMessages] = useState<string[]>([])
-    const [inputValue, setInputValue] = useState('')
+    const [promptValue, setPromptValue] = useState('')
 
-    const sendMessage = () => {
-        if (inputValue.trim()) {
-            setMessages([...messages, inputValue])
-            setInputValue('')
+    const ideContext = useContext(IdeContext);
+
+    ideContext.handleMessage('chat/userPrompt', (message: any) => {
+        setMessages(prev => [...prev, message]);
+    });
+
+    const sendPrompt = () => {
+        if (promptValue.trim()) {
+            ideContext.sendMessage('chat/userPrompt',
+                { prompt: promptValue },
+            );
+            setPromptValue('')
+        }
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            sendPrompt();
         }
     }
 
@@ -24,9 +39,9 @@ export function Chat() {
             <div className="prompt-area">
                 <input
                     type="textarea"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                    value={promptValue}
+                    onChange={(e) => setPromptValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     placeholder="Ask, plan, build..."
                     className="prompt-field"
                 />
