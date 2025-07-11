@@ -1,4 +1,4 @@
-import { Chat } from "./Chat.1";
+import { Chat } from "./Chat";
 
 export default function GUI() {
     return (
