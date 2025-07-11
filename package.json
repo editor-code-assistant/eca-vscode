@@ -90,6 +90,7 @@
     "vsce": "^2.15.0"
   },
   "dependencies": {
+    "sass": "^1.89.2",
     "vscode-jsonrpc": "^8.2.1"
   }
 }

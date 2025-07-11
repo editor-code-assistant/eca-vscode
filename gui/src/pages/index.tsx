@@ -1,11 +1,7 @@
-import { Chat } from "./Chat";
+import { Chat } from "./Chat.1";
 
 export default function GUI() {
-  return (
-    <div className="flex w-screen flex-row overflow-hidden">
-      <main className="no-scrollbar flex flex-1 flex-col overflow-y-auto">
+    return (
         <Chat />
-      </main>
-    </div>
-  );
+    );
 }

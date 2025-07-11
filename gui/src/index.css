@@ -1,35 +1,44 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --example-var: rgb(30, 30, 30);
 }
 
-* {
-  box-sizing: border-box;
+html,
+body,
+#root {
+  height: 100%;
+  line-height: 1.3;
+  background-color: var(--vscode-editor-background);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
 }
 
 body {
-  margin: 0;
   padding: 0;
-  min-height: 100vh;
-  background-color: var(--vscode-editor-background, #1e1e1e);
-  color: var(--vscode-editor-foreground, #cccccc);
-  font-family: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, sans-serif);
-  font-size: var(--vscode-font-size, 13px);
+  color: var(--vscode-editor-foreground);
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
 }
 
-#root {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+*:focus {
+  outline: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

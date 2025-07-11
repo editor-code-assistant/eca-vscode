@@ -1,5 +1,5 @@
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
-import './App.css';
+import './App.scss';
 import Chat from "./pages";
 
 export const ROUTES = {
