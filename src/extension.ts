@@ -58,7 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	});
 
-	const chatProvider = new chat.ChatProvider();
+	const chatProvider = new chat.ChatProvider(context);
 
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(
