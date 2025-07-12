@@ -30,6 +30,8 @@ export const initialize = new rpc.RequestType<InitializeParams, InitializeResult
 
 export const shutdown = new rpc.RequestType<any, void, void>('shutdown');
 
+export const exit = new rpc.NotificationType<any>('exit');
+
 export interface ChatPromptParams {
     chatId?: string;
     requestId: string;

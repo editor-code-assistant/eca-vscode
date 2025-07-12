@@ -34,7 +34,7 @@ export class ChatProvider implements vscode.WebviewViewProvider {
             if (message.type === 'chat/userPrompt') {
                 let session = s.getSession()!;
 
-                session.connection.sendRequest(protocol.chatPrompt, {
+                session.server.connection.sendRequest(protocol.chatPrompt, {
                     message: message.data.prompt,
                     requestId: (this._requestId++).toString(),
                 }).then((result) => {

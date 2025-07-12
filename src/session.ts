@@ -1,21 +1,15 @@
-import * as cp from 'child_process';
-import * as rpc from 'vscode-jsonrpc/node';
 import * as protocol from './protocol';
+import { EcaServer } from './server';
 
 export class Session {
     public models: string[] = [];
     public chatBehavior?: string;
     public chatWelcomeMessage?: string;
-    public status: string = 'stopped';
 
     constructor(
-        public process: cp.ChildProcessWithoutNullStreams,
+        public server: EcaServer,
         public workspaceFolders: protocol.WorkspaceFolder[],
-        public connection: rpc.MessageConnection,
     ) {
-        this.process = process;
-        this.workspaceFolders = workspaceFolders;
-        this.connection = connection;
     }
 }
 
@@ -24,9 +18,8 @@ let session: Session | undefined;
 export function getSession() { return session; }
 
 export function initSession(
-    process: cp.ChildProcessWithoutNullStreams,
+    server: EcaServer,
     workspaceFolders: protocol.WorkspaceFolder[],
-    connection: rpc.MessageConnection,
 ) {
-    session = new Session(process, workspaceFolders, connection);
+    session = new Session(server, workspaceFolders);
 }

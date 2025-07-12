@@ -32,13 +32,18 @@
   "contributes": {
     "commands": [
       {
-        "command": "eca.start",
-        "title": "ECA: Start process and open chat"
-      },
-      {
         "command": "eca.manage",
         "title": "Manage ECA server"
+      },
+      {
+        "command": "eca.start",
+        "title": "ECA: Start server process"
+      },
+      {
+        "command": "eca.stop",
+        "title": "ECA: Stop server process"
       }
+
     ],
     "viewsContainers": {
       "activitybar": [

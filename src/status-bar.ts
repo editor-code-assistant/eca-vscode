@@ -1,30 +1,24 @@
 import * as vscode from 'vscode';
+import { EcaServerStatus } from './server';
 
-export enum EcaStatus {
-  Stopped = 'Stopped',
-  Starting = 'Starting',
-  Running = 'Running',
-  Failed = 'Failed',
-}
-
-export const update = (item: vscode.StatusBarItem, status: EcaStatus) => {
+export const update = (item: vscode.StatusBarItem, status: EcaServerStatus) => {
     switch (status) {
-        case EcaStatus.Stopped: {
+        case EcaServerStatus.Stopped: {
             item.text = '$(circle-outline) ECA';
             item.tooltip = 'ECA is not active, click to get a menu';
             break;
         }
-        case EcaStatus.Starting: {
+        case EcaServerStatus.Starting: {
             item.text = '$(sync~spin) ECA';
             item.tooltip = 'ECA is starting';
             break;
         }
-        case EcaStatus.Running: {
+        case EcaServerStatus.Running: {
             item.text = '$(circle-filled) ECA';
             item.tooltip = 'ECA is active';
             break;
         }
-        case EcaStatus.Failed: {
+        case EcaServerStatus.Failed: {
             item.text = '$(error) ECA';
             item.tooltip = 'ECA failed to start';
             break;
