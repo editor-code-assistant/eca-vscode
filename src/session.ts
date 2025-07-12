@@ -21,7 +21,7 @@ export class Session {
 
 let session: Session | undefined;
 
-export function curSession() { return session; }
+export function getSession() { return session; }
 
 export function initSession(
     process: cp.ChildProcessWithoutNullStreams,

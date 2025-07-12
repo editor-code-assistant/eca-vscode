@@ -5,10 +5,20 @@ import * as chat from './chat';
 import { ChatProvider } from './chat';
 import * as protocol from './protocol';
 import * as s from './session';
+import * as status_bar from './status-bar';
+import { EcaStatus } from './status-bar';
 
-export function activate(context: vscode.ExtensionContext) {
+async function activate(context: vscode.ExtensionContext) {
+
+	const chatProvider = new ChatProvider(context);
+
+	const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
+	statusBar.command = 'eca.manage';
+	status_bar.update(statusBar, EcaStatus.Stopped);
+	statusBar.show();
 
 	const disposable = vscode.commands.registerCommand('eca.start', () => {
+		status_bar.update(statusBar, EcaStatus.Starting);
 		const ecaChannel = vscode.window.createOutputChannel('ECA stderr', 'Clojure');
 
 		let ecaProcess = cp.spawn('/home/greg/dev/eca/eca', ['server']);
@@ -16,7 +26,6 @@ export function activate(context: vscode.ExtensionContext) {
 		ecaProcess.stderr.on('data', (data) => {
 			ecaChannel.appendLine(data.toString());
 		});
-
 
 		let workspaceFolders = vscode.workspace.workspaceFolders?.map(f => {
 			return {
@@ -52,22 +61,38 @@ export function activate(context: vscode.ExtensionContext) {
 			},
 			workspaceFolders: workspaceFolders,
 		}).then((result) => {
-			let session = s.curSession()!;
+			let session = s.getSession()!;
 			session.models = result.models;
 			session.chatWelcomeMessage = result.chatWelcomeMessage;
 			session.chatBehavior = result.chatBehavior;
 			session.status = 'started';
+			status_bar.update(statusBar, EcaStatus.Running);
 			chat.focusChat();
 		});
-	});
 
-	const chatProvider = new ChatProvider(context);
+		connection.onNotification(protocol.chatContentReceived, (params) => {
+			chatProvider.contentReceived(params);
+		})
+	});
 
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(chatProvider.id, chatProvider, {
 			webviewOptions: { retainContextWhenHidden: true },
-		}));
+		}),
+		vscode.commands.registerCommand('eca.manage', () => {
+			// TODO
+		}),
+	);
+
+
 }
 
-export function deactivate() {}
+async function deactivate() {
+	let session = s.getSession();
+	if (session?.connection) {
+		await session.connection.sendRequest(protocol.shutdown, {});
+	}
+}
+
+export { activate, deactivate };

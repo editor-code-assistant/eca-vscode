@@ -6,6 +6,7 @@ import { getExtensionUri, randNonce } from './util';
 export class ChatProvider implements vscode.WebviewViewProvider {
     public id = 'eca.chat';
     private _requestId = 0;
+    private _webview!: vscode.Webview;
 
     constructor(
         private readonly context: vscode.ExtensionContext,
@@ -16,10 +17,11 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         _context: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken): void | Thenable<void> {
         const extensionUri = getExtensionUri();
+        this._webview = webviewView.webview;
 
-        webviewView.webview.html = this.getWebviewContent(webviewView.webview, extensionUri);
+        this._webview.html = this.getWebviewContent(this._webview, extensionUri);
 
-        webviewView.webview.options = {
+        this._webview.options = {
             enableScripts: true,
             localResourceRoots: [
                 vscode.Uri.joinPath(extensionUri, "gui"),
@@ -28,14 +30,9 @@ export class ChatProvider implements vscode.WebviewViewProvider {
             enableCommandUris: true,
         };
 
-        webviewView.webview.onDidReceiveMessage(message => {
+        this._webview.onDidReceiveMessage(message => {
             if (message.type === 'chat/userPrompt') {
-                let session = s.curSession()!;
-
-                webviewView.webview.postMessage({
-                    type: 'chat/userPrompt',
-                    data: `Sent prompt: ${message.data.prompt}`
-                });
+                let session = s.getSession()!;
 
                 session.connection.sendRequest(protocol.chatPrompt, {
                     message: message.data.prompt,
@@ -95,6 +92,15 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         </body>
         </html>`;
     }
+
+    contentReceived(params: protocol.ChatContentReceivedParams) {
+        this._webview.postMessage({
+            type: 'chat/contentReceived',
+            data: params
+        });
+
+    }
+
 };
 
 export function focusChat() {

@@ -7,8 +7,8 @@ export function Chat() {
 
     const ideContext = useContext(IdeContext);
 
-    ideContext.handleMessage('chat/userPrompt', (message: any) => {
-        setMessages(prev => [...prev, message]);
+    ideContext.handleMessage('chat/contentReceived', (params: any) => {
+        setMessages(prev => [...prev, params.content.text]);
     });
 
     const sendPrompt = () => {
