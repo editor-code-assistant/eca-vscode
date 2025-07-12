@@ -2,9 +2,9 @@ import * as cp from 'child_process';
 import * as vscode from 'vscode';
 import * as rpc from 'vscode-jsonrpc/node';
 import * as chat from './chat';
+import { ChatProvider } from './chat';
 import * as protocol from './protocol';
 import * as s from './session';
-import { ChatProvider } from './chat';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -17,9 +17,6 @@ export function activate(context: vscode.ExtensionContext) {
 			ecaChannel.appendLine(data.toString());
 		});
 
-		let connection = rpc.createMessageConnection(
-			new rpc.StreamMessageReader(ecaProcess.stdout),
-			new rpc.StreamMessageWriter(ecaProcess.stdin));
 
 		let workspaceFolders = vscode.workspace.workspaceFolders?.map(f => {
 			return {
@@ -31,7 +28,11 @@ export function activate(context: vscode.ExtensionContext) {
 			? [{ name: 'root', uri: vscode.workspace.rootPath! }]
 			: [];
 
-		let session = s.newSession(ecaProcess, workspaceFolders, connection);
+		let connection = rpc.createMessageConnection(
+			new rpc.StreamMessageReader(ecaProcess.stdout),
+			new rpc.StreamMessageWriter(ecaProcess.stdin));
+
+		s.initSession(ecaProcess, workspaceFolders, connection);
 
 		connection.listen();
 
@@ -51,11 +52,11 @@ export function activate(context: vscode.ExtensionContext) {
 			},
 			workspaceFolders: workspaceFolders,
 		}).then((result) => {
+			let session = s.curSession()!;
 			session.models = result.models;
 			session.chatWelcomeMessage = result.chatWelcomeMessage;
 			session.chatBehavior = result.chatBehavior;
 			session.status = 'started';
-			context.workspaceState.update('eca.session', session);
 			chat.focusChat();
 		});
 	});

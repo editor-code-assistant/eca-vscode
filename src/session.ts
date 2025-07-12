@@ -3,18 +3,15 @@ import * as rpc from 'vscode-jsonrpc/node';
 import * as protocol from './protocol';
 
 export class Session {
-    public process: cp.ChildProcess;
-    public workspaceFolders: protocol.WorkspaceFolder[];
     public models: string[] = [];
     public chatBehavior?: string;
     public chatWelcomeMessage?: string;
     public status: string = 'stopped';
-    public connection: rpc.MessageConnection;
 
     constructor(
-        process: cp.ChildProcess,
-        workspaceFolders: protocol.WorkspaceFolder[],
-        connection: rpc.MessageConnection,
+        public process: cp.ChildProcessWithoutNullStreams,
+        public workspaceFolders: protocol.WorkspaceFolder[],
+        public connection: rpc.MessageConnection,
     ) {
         this.process = process;
         this.workspaceFolders = workspaceFolders;
@@ -22,6 +19,14 @@ export class Session {
     }
 }
 
-export function newSession(process: cp.ChildProcess, workspaceFolders: protocol.WorkspaceFolder[], connection: rpc.MessageConnection) {
-    return new Session(process, workspaceFolders, connection);
+let session: Session | undefined;
+
+export function curSession() { return session; }
+
+export function initSession(
+    process: cp.ChildProcessWithoutNullStreams,
+    workspaceFolders: protocol.WorkspaceFolder[],
+    connection: rpc.MessageConnection,
+) {
+    session = new Session(process, workspaceFolders, connection);
 }
