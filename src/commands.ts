@@ -4,12 +4,12 @@ import { EcaServer } from './server';
 
 const manageHandler = async (
     server: EcaServer,
-    context: vscode.ExtensionContext,
+    _context: vscode.ExtensionContext,
 ) => {
     type Choice = vscode.QuickPickItem & { value?: string; };
     const choices: Choice[] = [];
 
-    if (server.status == EcaServerStatus.Running) {
+    if (server.status == EcaServerStatus.Running || server.status == EcaServerStatus.Starting) {
         choices.push({ label: 'Stop ECA server', value: '::stop' });
     } else if (server.status == EcaServerStatus.Stopped || server.status == EcaServerStatus.Failed) {
         choices.push({ label: 'Start ECA server', value: '::start' });
