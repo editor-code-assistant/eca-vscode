@@ -53,6 +53,10 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         const nonce = util.randNonce();
         let scriptUri: string;
         let styleMainUri: string;
+        const vscodeMediaUrl: string = webview
+            .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui", "public"))
+            .toString();
+
         const isDev =
             this.context?.extensionMode === vscode.ExtensionMode.Development;
         if (!isDev) {
@@ -73,6 +77,7 @@ export class ChatProvider implements vscode.WebviewViewProvider {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script>const vscode = acquireVsCodeApi();</script>
+            <script>window.vscodeMediaUrl = "${vscodeMediaUrl}"</script>
             <title>ECA</title>
             <link href="${styleMainUri}" rel="stylesheet">
         </head>
@@ -102,10 +107,21 @@ export class ChatProvider implements vscode.WebviewViewProvider {
     }
 
     handleNewStatus(status: EcaServerStatus) {
+        let enabled = status == EcaServerStatus.Running;
+
+        if (enabled) {
+            let session = s.getSession()!;
+            this._webview?.postMessage({
+                type: 'chat/setWelcomeMessage',
+                data: {
+                    message: session.chatWelcomeMessage,
+                }
+            })
+        }
         this._webview?.postMessage({
             type: 'chat/setEnable',
             data: {
-                enabled: status == EcaServerStatus.Running,
+                enabled: enabled,
             }
         });
     }

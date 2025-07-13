@@ -1,0 +1,101 @@
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+
+  .loading {
+      display: flex;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+
+      .content {
+          width: 100%;
+          text-align: center;
+          font-size: 1.1em;
+
+          img {
+              opacity: 0.3;
+          }
+      }
+  }
+
+  .messages-area {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0.2em 0.8em;
+    gap: 0.6em;
+
+    .welcome-message {
+        font-size: 0.7em;
+    }
+
+    .user-message {
+      background-color: var(--vscode-input-background, #3c3c3c);
+      border-radius: 0.4em;
+      padding: 0.5em 0.8em;
+      word-wrap: break-word;
+      line-height: 1.4;
+      color: var(--vscode-input-foreground, #cccccc);
+    }
+  }
+
+  .progress-area {
+      width: 100%;
+      background-color: var(--vscode-panel-background, #252526);
+      padding: 0.5em 1em;
+      color: var(--vscode-input-placeholderForeground, #767676);
+
+      p {
+          margin: 0;
+          display: inline-block;
+      }
+
+      .spinner {
+          display: inline-block !important;
+          margin: 0 0.2em;
+
+          @keyframes spinner-sync {
+              33% {transform: translateY(2px);}
+              66% {transform: translateY(-2px);}
+              100% {transform: translateY(0px);}
+          }
+
+          span {
+              background-color: var(--vscode-input-placeholderForeground, #767676) !important;
+              animation-name: spinner-sync !important;
+          }
+      }
+  }
+
+  .prompt-area {
+    display: flex;
+    padding: 10px;
+    gap: 8px;
+    border-top: 1px solid var(--vscode-panel-border, #3e3e3e);
+    background-color: var(--vscode-panel-background, #252526);
+
+    .prompt-field {
+      flex: 1;
+      padding: 8px 12px;
+      background-color: var(--vscode-input-background, #3c3c3c);
+      border: 1px solid var(--vscode-input-border, #3e3e3e);
+      border-radius: 4px;
+      color: var(--vscode-input-foreground, #cccccc);
+      font-family: inherit;
+
+      &:focus {
+        outline: none;
+        border-color: var(--vscode-focusBorder, #007acc);
+      }
+
+      &::placeholder {
+        color: var(--vscode-input-placeholderForeground, #767676);
+      }
+    }
+  }
+}
