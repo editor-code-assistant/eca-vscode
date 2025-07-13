@@ -61,8 +61,17 @@ class EcaServer {
     async start() {
         this.changeStatus(EcaServerStatus.Starting);
 
+        let userShellEnv = await util.getUserShellEnv();
+
         this._serverPathFinder.find().then((serverPath) => {
-            this._proc = cp.spawn(serverPath, ['server']);
+            this._proc = cp.spawn(
+                serverPath,
+                ['server'],
+                {
+                    env: { ...process.env, ...userShellEnv }
+                }
+            );
+
             this._proc.stderr.on('data', (data) => {
                 this._channel.appendLine(data.toString());
             });

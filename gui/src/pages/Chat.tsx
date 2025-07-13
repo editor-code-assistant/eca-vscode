@@ -2,38 +2,16 @@ import { useContext, useState } from "react";
 import { SyncLoader } from "react-spinners";
 import { IdeContext } from "../Ide";
 import './Chat.scss';
-
-interface TextContent {
-    type: 'text';
-    text: string;
-}
-
-interface ProgressContent {
-    type: 'progress';
-    state: 'running' | 'finished';
-    text?: string;
-}
-
-type ChatContent = TextContent | ProgressContent | any;
-
-interface ChatMessage {
-    role: 'user' | 'system' | 'assistant';
-    content: ChatContent;
-}
+import { ChatMessages } from "./ChatMessages";
 
 export function Chat() {
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [promptValue, setPromptValue] = useState('');
     const [welcomeMessage, setWelcomeMessage] = useState('');
-    const [progress, setProgress] = useState('');
+    const [progressValue, setProgressValue] = useState('');
 
     const [enabled, setEnabled] = useState(false);
 
     const ideContext = useContext(IdeContext);
-
-    ideContext.handleMessage('chat/contentReceived', (params: ChatMessage) => {
-        setMessages(prev => [...prev, params]);
-    });
 
     ideContext.handleMessage('chat/setEnable', (params: any) => {
         setEnabled(_prev => params.enabled);
@@ -41,6 +19,21 @@ export function Chat() {
 
     ideContext.handleMessage('chat/setWelcomeMessage', (params: any) => {
         setWelcomeMessage(_prev => params.message);
+    });
+
+    ideContext.handleMessage('chat/contentReceived', ({ content }: ChatContentReceived) => {
+        if (content.type === 'progress') {
+            switch (content.state) {
+                case 'running': {
+                    setProgressValue(content.text!);
+                    return;
+                }
+                case 'finished': {
+                    setProgressValue('');
+                    return;
+                }
+            }
+        }
     });
 
     const sendPrompt = () => {
@@ -58,43 +51,6 @@ export function Chat() {
         }
     }
 
-    let chatMessages: { role: string, value: string }[] = [];
-    let assistantMessages = '';
-
-    messages.forEach(({ role, content }) => {
-        switch (content.type) {
-            case 'text': {
-                switch (role) {
-                    case 'user':
-                    case 'system': {
-                        assistantMessages = '';
-                        chatMessages.push({
-                            role: role,
-                            value: content.text,
-                        });
-                        return;
-                    }
-                    case 'assistant': {
-                        assistantMessages += content.text;
-                        return;
-                    }
-                }
-            }
-            case 'progress': {
-                switch (content.state) {
-                    case 'running': {
-                        setProgress(content.text);
-                        return;
-                    }
-                    case 'finished': {
-                        setProgress('');
-                        return;
-                    }
-                }
-            }
-        }
-    });
-
     return (
         <div className="chat-container">
             {!enabled &&
@@ -105,22 +61,17 @@ export function Chat() {
                     </div>
                 </div>
             }
-            <div className="messages-area">
-                {enabled && (
-                    <div className="welcome-message">
-                        <h2>{welcomeMessage}</h2>
-                    </div>)
-                }
-                {chatMessages.map(({ role, value }, index) => (
-                    <div key={index} className={`${role}-message`}>
-                        {value}
-                    </div>
-                ))}
-            </div>
+            {enabled && (
+                <div className="welcome-message">
+                    <h2>{welcomeMessage}</h2>
+                </div>)
+            }
 
-            {progress != '' && (
+            <ChatMessages />
+
+            {progressValue != '' && (
                 <div className="progress-area">
-                    <p>{progress}</p>
+                    <p>{progressValue}</p>
                     <SyncLoader className="spinner" size={2} />
                 </div>)
             }

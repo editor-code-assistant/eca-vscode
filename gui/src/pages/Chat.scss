@@ -22,26 +22,9 @@
       }
   }
 
-  .messages-area {
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    padding: 0.2em 0.8em;
-    gap: 0.6em;
-
-    .welcome-message {
-        font-size: 0.7em;
-    }
-
-    .user-message {
-      background-color: var(--vscode-input-background, #3c3c3c);
-      border-radius: 0.4em;
-      padding: 0.5em 0.8em;
-      word-wrap: break-word;
-      line-height: 1.4;
-      color: var(--vscode-input-foreground, #cccccc);
-    }
+  .welcome-message {
+      font-size: 0.7em;
+      padding: 0.2em 0.8em;
   }
 
   .progress-area {

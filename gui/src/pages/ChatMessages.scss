@@ -1,0 +1,24 @@
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0.2em 0.8em;
+    gap: 0.6em;
+
+    .message {
+      word-wrap: break-word;
+    }
+
+    .user-message {
+      line-height: 1.4;
+      padding: 0.5em 0.8em;
+      background-color: var(--vscode-input-background, #3c3c3c);
+      border-radius: 0.4em;
+    }
+
+    .system-message {
+      line-height: 1.4;
+      color: var(--vscode-activityWarningBadge-background, #cca700);
+    }
+  }
