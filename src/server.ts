@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as rpc from 'vscode-jsonrpc/node';
 import * as protocol from './protocol';
 import * as s from './session';
-import * as status_bar from './status-bar';
 import * as util from './util';
 
 export enum EcaServerStatus {
@@ -22,17 +21,29 @@ function isClosable(status?: EcaServerStatus) {
         status == EcaServerStatus.Running;
 }
 
+interface EcaServerArgs {
+    serverPathFinder: EcaServerPathFinder,
+    channel: vscode.OutputChannel,
+    onStarted: (rpcConnection: rpc.MessageConnection) => void,
+    onStatusChanged: (status: EcaServerStatus) => void;
+}
+
 class EcaServer {
     private _proc?: cp.ChildProcessWithoutNullStreams;
     private _connection?: rpc.MessageConnection;
-    private _status = EcaServerStatus.Stopped;
 
-    constructor(
-        private _serverPathFinder: EcaServerPathFinder,
-        private _statusBar: vscode.StatusBarItem,
-        private _channel: vscode.OutputChannel,
-        private _onStart: (connection: rpc.MessageConnection) => void,
-    ) {}
+    private _serverPathFinder: EcaServerPathFinder;
+    private _channel: vscode.OutputChannel;
+    private _status = EcaServerStatus.Stopped;
+    private _onStarted: (rpcConnection: rpc.MessageConnection) => void;
+    private _onStatusChanged: (status: EcaServerStatus) => void;
+
+    constructor({ serverPathFinder, channel, onStarted, onStatusChanged }: EcaServerArgs) {
+        this._serverPathFinder = serverPathFinder;
+        this._channel = channel;
+        this._onStarted = onStarted;
+        this._onStatusChanged = onStatusChanged;
+    }
 
     get connection() {
         return this._connection!;
@@ -42,9 +53,13 @@ class EcaServer {
         return this._status;
     }
 
+    private changeStatus(newStatus: EcaServerStatus) {
+        this._status = newStatus;
+        this._onStatusChanged(newStatus);
+    }
+
     async start() {
-        this._status = EcaServerStatus.Starting;
-        status_bar.update(this._statusBar, this._status);
+        this.changeStatus(EcaServerStatus.Starting);
 
         this._serverPathFinder.find().then((serverPath) => {
             this._proc = cp.spawn(serverPath, ['server']);
@@ -78,9 +93,8 @@ class EcaServer {
                 session.models = result.models;
                 session.chatWelcomeMessage = result.chatWelcomeMessage;
                 session.chatBehavior = result.chatBehavior;
-                this._status = EcaServerStatus.Running;
-                status_bar.update(this._statusBar, this._status);
-                this._onStart(this.connection);
+                this.changeStatus(EcaServerStatus.Running);
+                this._onStarted(this.connection);
             });
         }).catch((err) => console.error('Fail to find eca server path.', err));
     }
@@ -91,8 +105,7 @@ class EcaServer {
             this.connection.sendNotification(protocol.exit, {});
             this.connection.dispose();
         }
-        this._status = EcaServerStatus.Stopped;
-        status_bar.update(this._statusBar, this._status);
+        this.changeStatus(EcaServerStatus.Stopped);
     }
 }
 

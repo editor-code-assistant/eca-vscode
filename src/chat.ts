@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
 import * as protocol from './protocol';
+import { EcaServerStatus } from './server';
 import * as s from './session';
 import * as util from './util';
 
 export class ChatProvider implements vscode.WebviewViewProvider {
     public id = 'eca.chat';
     private _requestId = 0;
-    private _webview!: vscode.Webview;
+    private _webview?: vscode.Webview;
 
     constructor(
         private readonly context: vscode.ExtensionContext,
@@ -94,11 +95,19 @@ export class ChatProvider implements vscode.WebviewViewProvider {
     }
 
     contentReceived(params: protocol.ChatContentReceivedParams) {
-        this._webview.postMessage({
+        this._webview?.postMessage({
             type: 'chat/contentReceived',
             data: params
         });
+    }
 
+    handleNewStatus(status: EcaServerStatus) {
+        this._webview?.postMessage({
+            type: 'chat/setEnable',
+            data: {
+                enabled: status == EcaServerStatus.Running,
+            }
+        });
     }
 
 };

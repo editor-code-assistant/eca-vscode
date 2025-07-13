@@ -5,6 +5,7 @@ import * as commands from './commands';
 import * as protocol from './protocol';
 import { EcaServer, EcaServerPathFinder } from './server';
 import * as s from './session';
+import * as status_bar from './status-bar';
 
 async function activate(context: vscode.ExtensionContext) {
 
@@ -17,12 +18,20 @@ async function activate(context: vscode.ExtensionContext) {
 	const chatProvider = new ChatProvider(context);
 	const serverPathFinder = new EcaServerPathFinder(context);
 
-	const server = new EcaServer(serverPathFinder, statusBar, ecaChannel, (connection) => {
-		connection.onNotification(protocol.chatContentReceived, (params: protocol.ChatContentReceivedParams) => {
-			chatProvider.contentReceived(params);
-		});
+	const server = new EcaServer({
+		serverPathFinder: serverPathFinder,
+		channel: ecaChannel,
+		onStarted: (connection) => {
+			connection.onNotification(protocol.chatContentReceived, (params: protocol.ChatContentReceivedParams) => {
+				chatProvider.contentReceived(params);
+			});
 
-		chat.focusChat();
+			chat.focusChat();
+		},
+		onStatusChanged: (status) => {
+			status_bar.update(statusBar, status);
+			chatProvider.handleNewStatus(status);
+		}
 	});
 
 	let workspaceFolders = vscode.workspace.workspaceFolders?.map(f => {
