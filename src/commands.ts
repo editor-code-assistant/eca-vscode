@@ -57,10 +57,10 @@ export const registerVSCodeCommands = (params: RegisterCommandsParams) => {
                 .catch((err) => console.error('Failed to run manage command', err));
         }),
         vscode.commands.registerCommand('eca.start', () => {
-            // TODO
+            params.server.start();
         }),
         vscode.commands.registerCommand('eca.stop', () => {
-            // TODO
+            params.server.stop();
         }),
     ];
 };

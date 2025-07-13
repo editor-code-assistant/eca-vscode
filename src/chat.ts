@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as protocol from './protocol';
 import * as s from './session';
-import { getExtensionUri, randNonce } from './util';
+import * as util from './util';
 
 export class ChatProvider implements vscode.WebviewViewProvider {
     public id = 'eca.chat';
@@ -16,7 +16,7 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         webviewView: vscode.WebviewView,
         _context: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken): void | Thenable<void> {
-        const extensionUri = getExtensionUri();
+        const extensionUri = util.getExtensionUri();
         this._webview = webviewView.webview;
 
         this._webview.html = this.getWebviewContent(this._webview, extensionUri);
@@ -49,7 +49,7 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         webview: vscode.Webview,
         extensionUri: vscode.Uri,
     ): string {
-        const nonce = randNonce();
+        const nonce = util.randNonce();
         let scriptUri: string;
         let styleMainUri: string;
         const isDev =

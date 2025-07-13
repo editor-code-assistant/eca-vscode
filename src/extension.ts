@@ -3,7 +3,7 @@ import * as chat from './chat';
 import { ChatProvider } from './chat';
 import * as commands from './commands';
 import * as protocol from './protocol';
-import { EcaServer } from './server';
+import { EcaServer, EcaServerPathFinder } from './server';
 import * as s from './session';
 
 async function activate(context: vscode.ExtensionContext) {
@@ -14,14 +14,16 @@ async function activate(context: vscode.ExtensionContext) {
 
 	const ecaChannel = vscode.window.createOutputChannel('ECA stderr', 'Clojure');
 
-	const server = new EcaServer(statusBar, ecaChannel, (connection) => {
+	const chatProvider = new ChatProvider(context);
+	const serverPathFinder = new EcaServerPathFinder(context);
+
+	const server = new EcaServer(serverPathFinder, statusBar, ecaChannel, (connection) => {
 		connection.onNotification(protocol.chatContentReceived, (params: protocol.ChatContentReceivedParams) => {
 			chatProvider.contentReceived(params);
 		});
 
 		chat.focusChat();
 	});
-	const chatProvider = new ChatProvider(context);
 
 	let workspaceFolders = vscode.workspace.workspaceFolders?.map(f => {
 		return {
@@ -36,6 +38,7 @@ async function activate(context: vscode.ExtensionContext) {
 	s.initSession(server, workspaceFolders);
 
 	server.start();
+
 
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(chatProvider.id, chatProvider, {
