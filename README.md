@@ -9,6 +9,10 @@ It connects to an external `eca` server process to provide interactive chat, cod
 
 For more details about ECA, check [ECA server](https://github.com/editor-code-assistant/eca).
 
+## Settings
+
+- `eca.serverPath`: Custom server path, if not set it will download latest server from https://github.com/editor-code-assistant/eca
+
 ## Development
 
 ```bash
