@@ -50,7 +50,7 @@ async function activate(context: vscode.ExtensionContext) {
 
 
 	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider(chatProvider.id, chatProvider, {
+		vscode.window.registerWebviewViewProvider(chatProvider.providerId, chatProvider, {
 			webviewOptions: { retainContextWhenHidden: true },
 		}),
 		...commands.registerVSCodeCommands({

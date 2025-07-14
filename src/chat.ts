@@ -5,12 +5,13 @@ import * as s from './session';
 import * as util from './util';
 
 export class ChatProvider implements vscode.WebviewViewProvider {
-    public id = 'eca.chat';
+    public providerId = 'eca.chat';
     private _requestId = 0;
     private _webview?: vscode.Webview;
 
     constructor(
         private readonly context: vscode.ExtensionContext,
+        private _id?: string,
     ) {}
 
     resolveWebviewView(
@@ -36,11 +37,13 @@ export class ChatProvider implements vscode.WebviewViewProvider {
                 let session = s.getSession()!;
 
                 session.server.connection.sendRequest(protocol.chatPrompt, {
+                    chatId: this._id,
                     message: message.data.prompt,
+                    // TODO check user custom model
+                    model: "o4-mini",
                     requestId: (this._requestId++).toString(),
                 }).then((result) => {
-                    // TODO
-                    console.log(result);
+                    this._id = result.chatId;
                 });
             }
         });
@@ -50,7 +53,7 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         webview: vscode.Webview,
         extensionUri: vscode.Uri,
     ): string {
-        const nonce = util.randNonce();
+        const nonce = util.randUuid();
         let scriptUri: string;
         let styleMainUri: string;
         const vscodeMediaUrl: string = webview

@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as url from 'url';
 import * as vscode from "vscode";
 
-export function randNonce() {
+export function randUuid() {
     const crypto = require("crypto");
     return crypto.randomUUID()
 }
