@@ -61,13 +61,14 @@ export function Chat() {
                     </div>
                 </div>
             }
-            {enabled && (
-                <div className="welcome-message">
-                    <h2>{welcomeMessage}</h2>
-                </div>)
-            }
 
-            <ChatMessages />
+            <ChatMessages>
+                {enabled && (
+                    <div className="welcome-message">
+                        <h2>{welcomeMessage}</h2>
+                    </div>)
+                }
+            </ChatMessages>
 
             {progressValue != '' && (
                 <div className="progress-area">

@@ -12,9 +12,10 @@ interface ChatMessage {
 }
 
 interface ChatMessagesProps {
+    children: React.ReactNode,
 }
 
-export function ChatMessages({}: ChatMessagesProps) {
+export function ChatMessages({ children }: ChatMessagesProps) {
     const [contentReceiveds, setContentReceiveds] = useState<ChatContentReceived[]>([]);
 
     const ideContext = useContext(IdeContext);
@@ -56,6 +57,7 @@ export function ChatMessages({}: ChatMessagesProps) {
 
     return (
         <div className="messages-container">
+            {children}
             {chatMessages.map(({ role, value }, index) => (
 
                 <div key={index} className={`${role}-message message`}>
