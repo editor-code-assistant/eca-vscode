@@ -41,10 +41,7 @@ async function activate(context: vscode.ExtensionContext) {
 			name: f.name,
 			uri: f.uri.path
 		};
-	}) ||
-		vscode.workspace.rootPath
-		? [{ name: 'root', uri: vscode.workspace.rootPath! }]
-		: [];
+	}) || [];
 
 	s.initSession(server, workspaceFolders);
 

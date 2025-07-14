@@ -38,6 +38,11 @@
             "type": "string",
             "default": "",
             "markdownDescription": "The absolute path to the `eca` server binary. Will take effect after a restart of eca."
+          },
+          "eca.serverArgs": {
+             "type": "string",
+            "default": "",
+            "markdownDescription": "Extra args for the eca start command, example: \"--log-level debug\"."
           }
         }
       }

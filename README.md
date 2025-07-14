@@ -12,6 +12,7 @@ For more details about ECA, check [ECA server](https://github.com/editor-code-as
 ## Settings
 
 - `eca.serverPath`: Custom server path, if not set it will download latest server from https://github.com/editor-code-assistant/eca
+- `eca.serverArgs`: Extra server args used when starting eca server.
 
 ## Development
 

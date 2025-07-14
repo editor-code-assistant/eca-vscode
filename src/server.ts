@@ -61,12 +61,20 @@ class EcaServer {
     async start() {
         this.changeStatus(EcaServerStatus.Starting);
 
-        let userShellEnv = await util.getUserShellEnv();
+        const userShellEnv = await util.getUserShellEnv();
+
+        const config = vscode.workspace.getConfiguration('eca');
+        const customServerArgs = config.get<string>('serverArgs');
+
+        let args = ['server'];
+        if (customServerArgs) {
+            args.push(customServerArgs);
+        }
 
         this._serverPathFinder.find().then((serverPath) => {
             this._proc = cp.spawn(
                 serverPath,
-                ['server'],
+                args,
                 {
                     env: { ...process.env, ...userShellEnv }
                 }
