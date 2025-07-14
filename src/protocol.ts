@@ -21,9 +21,11 @@ export interface WorkspaceFolder {
 }
 
 export interface InitializeResult {
-    chatWelcomeMessage: string;
-    chatBehavior: string;
     models: string[];
+    chatDefaultModel: string;
+    chatBehaviors: string[];
+    chatDefaultBehavior: ChatBehavior;
+    chatWelcomeMessage: string;
 }
 
 export const initialize = new rpc.RequestType<InitializeParams, InitializeResult, void>('initialize');
@@ -57,7 +59,7 @@ interface WebContext {
 }
 
 type ChatContext = FileContext | DirectoryContext | WebContext;
-type ChatBehavior = 'agent' | 'ask';
+export type ChatBehavior = 'agent' | 'ask';
 
 export interface ChatPromptResult {
     chatId: string;

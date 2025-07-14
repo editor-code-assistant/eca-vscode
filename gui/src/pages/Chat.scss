@@ -27,7 +27,7 @@
   }
 
   .progress-area {
-      width: 100%;
+      width: calc(100% - 2em);
       background-color: var(--vscode-panel-background, #252526);
       padding: 0.5em 1em;
       color: var(--vscode-input-placeholderForeground, #767676);
@@ -52,32 +52,5 @@
               animation-name: spinner-sync !important;
           }
       }
-  }
-
-  .prompt-area {
-    display: flex;
-    padding: 10px;
-    gap: 8px;
-    border-top: 1px solid var(--vscode-panel-border, #3e3e3e);
-    background-color: var(--vscode-panel-background, #252526);
-
-    .prompt-field {
-      flex: 1;
-      padding: 8px 12px;
-      background-color: var(--vscode-input-background, #3c3c3c);
-      border: 1px solid var(--vscode-input-border, #3e3e3e);
-      border-radius: 4px;
-      color: var(--vscode-input-foreground, #cccccc);
-      font-family: inherit;
-
-      &:focus {
-        outline: none;
-        border-color: var(--vscode-focusBorder, #007acc);
-      }
-
-      &::placeholder {
-        color: var(--vscode-input-placeholderForeground, #767676);
-      }
-    }
   }
 }

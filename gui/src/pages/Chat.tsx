@@ -3,9 +3,9 @@ import { SyncLoader } from "react-spinners";
 import { IdeContext } from "../Ide";
 import './Chat.scss';
 import { ChatMessages } from "./ChatMessages";
+import { ChatPrompt } from "./ChatPrompt";
 
 export function Chat() {
-    const [promptValue, setPromptValue] = useState('');
     const [welcomeMessage, setWelcomeMessage] = useState('');
     const [progressValue, setProgressValue] = useState('');
 
@@ -36,21 +36,6 @@ export function Chat() {
         }
     });
 
-    const sendPrompt = () => {
-        if (promptValue.trim()) {
-            ideContext.sendMessage('chat/userPrompt',
-                { prompt: promptValue },
-            );
-            setPromptValue('')
-        }
-    }
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === "Enter" && enabled) {
-            sendPrompt();
-        }
-    }
-
     return (
         <div className="chat-container">
             {!enabled &&
@@ -77,16 +62,7 @@ export function Chat() {
                 </div>)
             }
 
-            <div className="prompt-area">
-                <input
-                    type="textarea"
-                    value={promptValue}
-                    onChange={(e) => setPromptValue(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Ask, plan, build..."
-                    className="prompt-field"
-                />
-            </div>
+            <ChatPrompt enabled={enabled}/>
         </div>
     );
 }

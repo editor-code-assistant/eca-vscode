@@ -18,8 +18,9 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         webviewView: vscode.WebviewView,
         _context: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken): void | Thenable<void> {
-        const extensionUri = util.getExtensionUri();
         this._webview = webviewView.webview;
+
+        const extensionUri = util.getExtensionUri();
 
         this._webview.html = this.getWebviewContent(this._webview, extensionUri);
 
@@ -33,18 +34,29 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         };
 
         this._webview.onDidReceiveMessage(message => {
-            if (message.type === 'chat/userPrompt') {
-                let session = s.getSession()!;
+            let session = s.getSession()!;
+            switch (message.type) {
+                case 'chat/userPrompt': {
+                    session.server.connection.sendRequest(protocol.chatPrompt, {
+                        chatId: this._id,
+                        message: message.data.prompt,
+                        model: session.chatSelectedModel,
+                        behavior: session.chatSelectedBehavior,
+                        requestId: (this._requestId++).toString(),
+                    }).then((result) => {
+                        this._id = result.chatId;
+                    });
 
-                session.server.connection.sendRequest(protocol.chatPrompt, {
-                    chatId: this._id,
-                    message: message.data.prompt,
-                    // TODO check user custom model
-                    model: "o4-mini",
-                    requestId: (this._requestId++).toString(),
-                }).then((result) => {
-                    this._id = result.chatId;
-                });
+                    return;
+                }
+                case 'chat/selectedModelChanged': {
+                    session.chatSelectedModel = message.data.value;
+                    return;
+                }
+                case 'chat/selectedBehaviorChanged': {
+                    session.chatSelectedBehavior = message.data.value;
+                    return;
+                }
             }
         });
     }
@@ -109,8 +121,25 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         });
     }
 
+    sessionChanged(session: s.Session) {
+        this._webview?.postMessage({
+            type: 'chat/setBehaviors',
+            data: {
+                behaviors: session.chatBehaviors,
+                selectedBehavior: session.chatSelectedBehavior,
+            },
+        });
+        this._webview?.postMessage({
+            type: 'chat/setModels',
+            data: {
+                models: session.models,
+                selectedModel: session.chatSelectedModel
+            },
+        });
+    }
+
     handleNewStatus(status: EcaServerStatus) {
-        let enabled = status == EcaServerStatus.Running;
+        let enabled = status === EcaServerStatus.Running;
 
         if (enabled) {
             let session = s.getSession()!;
@@ -119,7 +148,7 @@ export class ChatProvider implements vscode.WebviewViewProvider {
                 data: {
                     message: session.chatWelcomeMessage,
                 }
-            })
+            });
         }
         this._webview?.postMessage({
             type: 'chat/setEnable',

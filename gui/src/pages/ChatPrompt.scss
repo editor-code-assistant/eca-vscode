@@ -1,0 +1,74 @@
+.prompt-area {
+    display: flex;
+    padding: 0.6em;
+    flex-wrap: wrap;
+    gap: 0.4em;
+    border-top: 1px solid var(--vscode-panel-border, #3e3e3e);
+    background-color: var(--vscode-input-background, #3c3c3c);
+
+    .contexts {
+        width: 100%;
+    }
+
+    .field {
+        width: 100%;
+        margin: 0.2em;
+        background-color: var(--vscode-input-background, #3c3c3c);
+        border: none;
+        color: var(--vscode-input-foreground, #cccccc);
+        font-family: inherit;
+        overflow: hidden;
+        resize: none;
+        field-sizing: content;
+
+        &:focus {
+            outline: none;
+            border-color: var(--vscode-focusBorder, #007acc);
+        }
+
+        &::placeholder {
+            color: var(--vscode-input-placeholderForeground, #767676);
+        }
+    }
+
+    .selectable {
+        padding: 0.3em;
+        border-radius: 0.5em;
+        border: none;
+        color: var(--vscode-editorWidget-foreground, #767676);
+        background-color: var(--vscode-input-background, #3c3c3c);
+        transition: background-color 100ms, color 100ms;
+        font-size: 0.9em;
+        cursor: pointer;
+
+        &:active, &:focus {
+            outline: none;
+            border:none;
+        }
+
+        &:hover {
+            color: var(--vscode-input-foreground, #cccccc);
+            background-color: var(--vscode-toolbar-hoverBackground, #3c3c3c);
+        }
+
+        option {
+            cursor: pointer;
+            color: var(--vscode-editorWidget-foreground, #767676);
+            background-color: var(--vscode-input-background, #3c3c3c);
+            border: none;
+
+            &:hover {
+                color: var(--vscode-input-foreground, #cccccc);
+                background-color: var(--vscode-toolbar-hoverBackground, #3c3c3c);
+            }
+        }
+    }
+
+    .behaviors {
+        @extend .selectable;
+    }
+
+    .models {
+        @extend .selectable;
+    }
+}

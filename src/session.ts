@@ -3,7 +3,9 @@ import { EcaServer } from './server';
 
 export class Session {
     public models: string[] = [];
-    public chatBehavior?: string;
+    public chatSelectedModel?: string;
+    public chatBehaviors?: string[] = [];
+    public chatSelectedBehavior?: protocol.ChatBehavior;
     public chatWelcomeMessage?: string;
 
     constructor(

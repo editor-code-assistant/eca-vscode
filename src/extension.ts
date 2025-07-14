@@ -5,7 +5,7 @@ import * as commands from './commands';
 import * as protocol from './protocol';
 import { EcaServer, EcaServerPathFinder } from './server';
 import * as s from './session';
-import * as status_bar from './status-bar';
+import * as statusbar from './status-bar';
 
 async function activate(context: vscode.ExtensionContext) {
 
@@ -22,14 +22,16 @@ async function activate(context: vscode.ExtensionContext) {
 		serverPathFinder: serverPathFinder,
 		channel: ecaChannel,
 		onStarted: (connection) => {
+			const session = s.getSession()!;
 			connection.onNotification(protocol.chatContentReceived, (params: protocol.ChatContentReceivedParams) => {
 				chatProvider.contentReceived(params);
 			});
 
+			chatProvider.sessionChanged(session);
 			chat.focusChat();
 		},
 		onStatusChanged: (status) => {
-			status_bar.update(statusBar, status);
+			statusbar.update(statusBar, status);
 			chatProvider.handleNewStatus(status);
 		}
 	});

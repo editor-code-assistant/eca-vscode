@@ -101,7 +101,9 @@ class EcaServer {
             }).then((result: protocol.InitializeResult) => {
                 session.models = result.models;
                 session.chatWelcomeMessage = result.chatWelcomeMessage;
-                session.chatBehavior = result.chatBehavior;
+                session.chatSelectedModel = result.chatDefaultModel;
+                session.chatBehaviors = result.chatBehaviors;
+                session.chatSelectedBehavior = result.chatDefaultBehavior;
                 this.changeStatus(EcaServerStatus.Running);
                 this._onStarted(this.connection);
             });
