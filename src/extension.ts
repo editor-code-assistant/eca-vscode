@@ -39,7 +39,7 @@ async function activate(context: vscode.ExtensionContext) {
 	let workspaceFolders = vscode.workspace.workspaceFolders?.map(f => {
 		return {
 			name: f.name,
-			uri: f.uri.path
+			uri: f.uri.toString()
 		};
 	}) || [];
 
