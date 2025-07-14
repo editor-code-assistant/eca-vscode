@@ -1,13 +1,24 @@
-import Markdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import remarkGfm from 'remark-gfm';
 import './ChatMessages.scss';
+import { MarkdownContent } from './MarkdownContent';
 
-interface ChatMessage {
+interface ChatMessageText {
+    type: 'text',
     role: string,
     value: string,
 }
+
+interface ChatMessageToolCall {
+    type: 'toolCall',
+    status: 'preparing' | 'run' | 'completed',
+    role: ChatContentRole,
+    id: string,
+    name: string,
+    argumentsText?: string,
+    origin: ToolCallOrigin,
+    manualApproval: boolean,
+}
+
+type ChatMessage = ChatMessageText | ChatMessageToolCall;
 
 interface ChatMessagesProps {
     children: React.ReactNode,
@@ -25,6 +36,7 @@ export function ChatMessages({ children, contentReceiveds }: ChatMessagesProps) 
                     case 'user':
                     case 'system': {
                         chatMessages.push({
+                            type: 'text',
                             role: role,
                             value: content.text,
                         });
@@ -32,10 +44,11 @@ export function ChatMessages({ children, contentReceiveds }: ChatMessagesProps) 
                     }
                     case 'assistant': {
                         const lastMessage = chatMessages[chatMessages.length - 1];
-                        if (lastMessage && lastMessage.role === 'assistant') {
+                        if (lastMessage && lastMessage.type === 'text' && lastMessage.role === 'assistant') {
                             lastMessage.value += content.text;
                         } else {
                             chatMessages.push({
+                                type: 'text',
                                 role: role,
                                 value: content.text,
                             });
@@ -44,43 +57,80 @@ export function ChatMessages({ children, contentReceiveds }: ChatMessagesProps) 
                     }
                 }
             }
+            case 'toolCallPrepare': {
+                const tool: ChatMessageToolCall = {
+                    type: 'toolCall',
+                    status: 'preparing',
+                    role: role,
+                    id: content.id,
+                    name: content.name,
+                    origin: content.origin,
+                    argumentsText: content.argumentsText,
+                    manualApproval: content.manualApproval,
+                };
+
+                const existingIndex = chatMessages.findIndex(msg => msg.type === 'toolCall' && msg.id === content.id);
+                if (existingIndex === -1) {
+                    chatMessages.push(tool);
+                } else {
+                    chatMessages[existingIndex] = tool;
+                }
+                return;
+            }
+            case 'toolCallRun': {
+                const existingIndex = chatMessages.findIndex(msg => msg.type === 'toolCall' && msg.id === content.id);
+                let tool = chatMessages[existingIndex] as ChatMessageToolCall;
+                tool.status = 'run';
+                tool.argumentsText = JSON.stringify(content.arguments);
+                chatMessages[existingIndex] = tool;
+                return;
+            }
+            case 'toolCalled': {
+                const existingIndex = chatMessages.findIndex(msg => msg.type === 'toolCall' && msg.id === content.id);
+                let tool = chatMessages[existingIndex] as ChatMessageToolCall;
+                tool.status = 'completed';
+                chatMessages[existingIndex] = tool;
+                return;
+            }
         }
     });
+
+    const toolCallMessageDescription = (message: ChatMessageToolCall): string => {
+        const verb = message.status === 'preparing' || message.status === 'run' ? 'Calling' : 'Called';
+        const origin = message.origin === 'mcp' ? 'MCP' : 'ECA';
+        return `${verb} ${origin} tool`;
+    }
 
     return (
         <div className="messages-container">
             {children}
-            {chatMessages.map(({ role, value }, index) => (
-                <div key={index} className={`${role}-message message`}>
-                    {role === 'assistant' && (
-                        <Markdown
-                            remarkPlugins={[remarkGfm]}
-                            children={value}
-                            components={{
-                                code(props) {
-                                    const { children, className, node, ...rest } = props
-                                    const match = /language-(\w+)/.exec(className || '')
-                                    return match ? (
-                                        <SyntaxHighlighter
-                                            PreTag="div"
-                                            children={String(children).replace(/\n$/, '')}
-                                            language={match[1]}
-                                            style={dracula}
-                                        />
-                                    ) : (
-                                        <code {...rest} className={className}>
-                                            {children}
-                                        </code>
-                                    )
-                                }
-                            }}
-                        />
-                    )}
-                    {role != 'assistant' && (
-                        <span>{value}</span>
-                    )}
-                </div>
-            ))}
+            {chatMessages.map((message, index) => {
+                if (message.type === 'text') {
+                    return (<div key={index} className={`${message.role}-message message`}>
+                        {message.role === 'assistant' && (
+                            <MarkdownContent content={message.value} />
+                        )}
+                        {message.role != 'assistant' && (
+                            <span>{message.value}</span>
+                        )}
+                    </div>)
+                }
+
+                if (message.type == 'toolCall') {
+                    return (
+                        <div key={index} className="tool">
+                            <div className="header">
+                                <span className="description">{toolCallMessageDescription(message)}</span>
+                                <span className="tool-name">{message.name}</span>
+                            </div>
+                            <div className="content">
+                                <MarkdownContent language='javascript' content={message.argumentsText} />
+                            </div>
+                        </div>
+                    );
+                }
+
+            })}
         </div>
     );
 }

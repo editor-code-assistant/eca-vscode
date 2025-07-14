@@ -106,7 +106,7 @@ interface ToolCallPrepareContent {
     origin: ToolCallOrigin;
     id: string;
     name: string;
-    argumentText: string;
+    argumentsText: string;
     manualApproval: boolean;
 }
 
