@@ -3,7 +3,7 @@ import Chat from "./pages";
 
 export const ROUTES = {
     CHAT: "/",
-    MCP_SETTINGS: "/mcp",
+    MCP_DETAILS: "/mcp-details",
 };
 
 const router = createMemoryRouter([
@@ -22,8 +22,8 @@ const router = createMemoryRouter([
             },
             // TODO
             /* {
-             *     path: ROUTES.MCP_SETTINGS,
-             *     element: <McpSettingsPage />,
+             *     path: ROUTES.MCP_DETAILS,
+             *     element: <McpDetailsPage />,
              * }, */
         ],
     },

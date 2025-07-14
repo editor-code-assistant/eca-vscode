@@ -1,0 +1,22 @@
+.chat-header {
+    .actions {
+        display: flex;
+        justify-content: end;
+
+        .action {
+            display: inline-block;
+
+            i {
+                cursor:pointer;
+                padding: 0.2em;
+                margin: 0.3em 0.1em;
+                border-radius: 0.3em;
+
+                &:hover {
+                    background-color: var(--vscode-toolbar-hoverBackground, #3c3c3c);
+                }
+            }
+        }
+
+    }
+}

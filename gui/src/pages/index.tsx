@@ -1,4 +1,4 @@
-import { Chat } from "./Chat";
+import { Chat } from "./chat/Chat";
 
 declare global {
   interface Window {

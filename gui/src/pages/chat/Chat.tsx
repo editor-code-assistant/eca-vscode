@@ -1,7 +1,8 @@
 import { useContext, useState } from "react";
 import { SyncLoader } from "react-spinners";
-import { IdeContext } from "../Ide";
+import { IdeContext } from "../../Ide";
 import './Chat.scss';
+import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from "./ChatMessages";
 import { ChatPrompt } from "./ChatPrompt";
 
@@ -38,6 +39,7 @@ export function Chat() {
 
     return (
         <div className="chat-container">
+            <ChatHeader />
             {!enabled &&
                 <div className="loading">
                     <div className="content">
@@ -62,7 +64,7 @@ export function Chat() {
                 </div>)
             }
 
-            <ChatPrompt enabled={enabled}/>
+            <ChatPrompt enabled={enabled} />
         </div>
     );
 }

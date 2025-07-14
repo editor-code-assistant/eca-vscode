@@ -59,7 +59,7 @@ interface WebContext {
 }
 
 type ChatContext = FileContext | DirectoryContext | WebContext;
-export type ChatBehavior = 'agent' | 'ask';
+export type ChatBehavior = 'agent' | 'chat';
 
 export interface ChatPromptResult {
     chatId: string;

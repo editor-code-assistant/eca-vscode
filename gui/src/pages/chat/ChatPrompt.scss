@@ -5,6 +5,8 @@
     gap: 0.4em;
     border-top: 1px solid var(--vscode-panel-border, #3e3e3e);
     background-color: var(--vscode-input-background, #3c3c3c);
+    border-top-right-radius: 0.6em;
+    border-top-left-radius: 0.6em;
 
     .contexts {
         width: 100%;
@@ -12,8 +14,8 @@
 
     .field {
         width: 100%;
-        margin: 0.2em;
         background-color: var(--vscode-input-background, #3c3c3c);
+        margin: 0.3em 0;
         border: none;
         color: var(--vscode-input-foreground, #cccccc);
         font-family: inherit;
@@ -40,6 +42,7 @@
         transition: background-color 100ms, color 100ms;
         font-size: 0.9em;
         cursor: pointer;
+        height: 2em;
 
         &:active, &:focus {
             outline: none;
@@ -70,5 +73,22 @@
 
     .models {
         @extend .selectable;
+    }
+
+    .spacing {
+        margin-left: auto;
+    }
+
+    .send {
+        i {
+            cursor:pointer;
+            padding: 0.3em;
+            margin: 0 0.1em;
+            border-radius: 0.3em;
+
+            &:hover {
+                background-color: var(--vscode-toolbar-hoverBackground, #3c3c3c);
+            }
+        }
     }
 }

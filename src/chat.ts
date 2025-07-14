@@ -72,6 +72,10 @@ export class ChatProvider implements vscode.WebviewViewProvider {
             .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui", "public"))
             .toString();
 
+        const codiconsUri = webview
+            .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui", 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'))
+            .toString();
+
         const isDev =
             this.context?.extensionMode === vscode.ExtensionMode.Development;
         if (!isDev) {
@@ -95,6 +99,7 @@ export class ChatProvider implements vscode.WebviewViewProvider {
             <script>window.vscodeMediaUrl = "${vscodeMediaUrl}"</script>
             <title>ECA</title>
             <link href="${styleMainUri}" rel="stylesheet">
+            <link href="${codiconsUri}" rel="stylesheet" />
         </head>
         <body>
             <div id="root"></div>

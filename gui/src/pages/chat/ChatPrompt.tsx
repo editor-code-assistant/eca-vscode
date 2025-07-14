@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { IdeContext } from "../Ide";
+import { IdeContext } from "../../Ide";
 import './ChatPrompt.scss';
 
 interface ChatPromptProps {
@@ -25,7 +25,6 @@ export function ChatPrompt({ enabled }: ChatPromptProps) {
         setModels(models);
         setSelectedModel(selectedModel);
     });
-
 
     const sendPrompt = () => {
         if (promptValue.trim()) {
@@ -69,22 +68,22 @@ export function ChatPrompt({ enabled }: ChatPromptProps) {
                 className="field"
             />
             <select value={selectedBehavior}
-                defaultValue={selectedBehavior}
                 className="behaviors"
                 onChange={handleBehaviorChanged}
             >
                 {behaviors.map((behavior) => (
-                    <option value={behavior}>{behavior}</option>
+                    <option key={behavior} value={behavior}>{behavior}</option>
                 ))}
             </select>
             <select onChange={handleModelChanged}
                 value={selectedModel}
-                defaultValue={selectedModel}
                 className="models">
                 {models.map((model) => (
-                    <option value={model}>{model}</option>
+                    <option key={model} value={model}>{model}</option>
                 ))}
             </select>
+            <div className="spacing"></div>
+            <div className="send"><i onClick={sendPrompt} className="codicon codicon-send"></i></div>
         </div>
     );
 }
