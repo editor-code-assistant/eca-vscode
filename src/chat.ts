@@ -34,9 +34,9 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         };
 
         this._webview.onDidReceiveMessage(message => {
-            let session = s.getSession()!;
             switch (message.type) {
                 case 'chat/userPrompt': {
+                    let session = s.getSession()!;
                     session.server.connection.sendRequest(protocol.chatPrompt, {
                         chatId: this._id,
                         message: message.data.prompt,
@@ -50,10 +50,12 @@ export class ChatProvider implements vscode.WebviewViewProvider {
                     return;
                 }
                 case 'chat/selectedModelChanged': {
+                    let session = s.getSession()!;
                     session.chatSelectedModel = message.data.value;
                     return;
                 }
                 case 'chat/selectedBehaviorChanged': {
+                    let session = s.getSession()!;
                     session.chatSelectedBehavior = message.data.value;
                     return;
                 }

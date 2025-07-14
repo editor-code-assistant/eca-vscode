@@ -1,9 +1,7 @@
-import { useContext, useState } from "react";
 import Markdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
-import { IdeContext } from "../../Ide";
 import './ChatMessages.scss';
 
 interface ChatMessage {
@@ -13,16 +11,10 @@ interface ChatMessage {
 
 interface ChatMessagesProps {
     children: React.ReactNode,
+    contentReceiveds: ChatContentReceived[],
 }
 
-export function ChatMessages({ children }: ChatMessagesProps) {
-    const [contentReceiveds, setContentReceiveds] = useState<ChatContentReceived[]>([]);
-
-    const ideContext = useContext(IdeContext);
-
-    ideContext.handleMessage('chat/contentReceived', (params: ChatContentReceived) => {
-        setContentReceiveds(prev => [...prev, params]);
-    });
+export function ChatMessages({ children, contentReceiveds }: ChatMessagesProps) {
 
     let chatMessages: ChatMessage[] = [];
 
@@ -59,7 +51,6 @@ export function ChatMessages({ children }: ChatMessagesProps) {
         <div className="messages-container">
             {children}
             {chatMessages.map(({ role, value }, index) => (
-
                 <div key={index} className={`${role}-message message`}>
                     {role === 'assistant' && (
                         <Markdown

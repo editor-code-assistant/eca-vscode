@@ -8,6 +8,7 @@ import { ChatPrompt } from "./ChatPrompt";
 
 export function Chat() {
     const [welcomeMessage, setWelcomeMessage] = useState('');
+    const [contentReceiveds, setContentReceiveds] = useState<ChatContentReceived[]>([]);
     const [progressValue, setProgressValue] = useState('');
 
     const [enabled, setEnabled] = useState(false);
@@ -22,11 +23,16 @@ export function Chat() {
         setWelcomeMessage(_prev => params.message);
     });
 
-    ideContext.handleMessage('chat/contentReceived', ({ content }: ChatContentReceived) => {
-        if (content.type === 'progress') {
-            switch (content.state) {
+    const onClear = () => {
+        setContentReceiveds([]);
+    };
+
+    ideContext.handleMessage('chat/contentReceived', (params: ChatContentReceived) => {
+        setContentReceiveds(prev => [...prev, params]);
+        if (params.content.type === 'progress') {
+            switch (params.content.state) {
                 case 'running': {
-                    setProgressValue(content.text!);
+                    setProgressValue(params.content.text!);
                     return;
                 }
                 case 'finished': {
@@ -39,7 +45,7 @@ export function Chat() {
 
     return (
         <div className="chat-container">
-            <ChatHeader />
+            <ChatHeader onClear={onClear} />
             {!enabled &&
                 <div className="loading">
                     <div className="content">
@@ -49,7 +55,8 @@ export function Chat() {
                 </div>
             }
 
-            <ChatMessages>
+            <ChatMessages
+                contentReceiveds={contentReceiveds}>
                 {enabled && (
                     <div className="welcome-message">
                         <h2>{welcomeMessage}</h2>
