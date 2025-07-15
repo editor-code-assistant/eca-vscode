@@ -6,7 +6,7 @@
     padding: 0.2em 0.8em;
     gap: 0.6em;
 
-    .message {
+    .text-message {
       word-wrap: break-word;
     }
 
@@ -21,4 +21,4 @@
       line-height: 1.4;
       color: var(--vscode-activityWarningBadge-background, #cca700);
     }
-  }
+}

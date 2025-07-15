@@ -1,0 +1,58 @@
+.tool-call {
+    padding: 0.5em 0.8em;
+    border: 0.1em solid var(--vscode-input-background, #3c3c3c);
+    border-radius: 0.4em;
+
+    &.open {
+        .header {
+            .chrevron {
+                transform: rotate(90deg);
+            }
+        }
+        .content {
+            max-height: 100%;
+        }
+    }
+
+    .header {
+        opacity: 0.8;
+        transition: opacity 100ms;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        .chrevron {
+            margin-right: 0.5em;
+            vertical-align: middle;
+            transition: transform 0.1s;
+        }
+
+        .name {
+            margin: 0 0.5em;
+            font-style: italic;
+            border-radius: 0.2em;
+            padding: 0.2em 0.4em;
+            color: var(--vscode-input-foreground, #cccccc);
+            background-color: var(--vscode-input-background, #3c3c3c);
+        }
+
+        .status {
+            vertical-align: middle;
+
+            &.succeeded {
+                color: var(--vscode-testing-iconPassed, #73c991);
+            }
+            &.failed {
+                color: var(--vscode-testing-iconFailed, #f14c4c);
+            }
+        }
+    }
+
+    .content {
+        overflow: hidden;
+        transition: max-height 0.1s, overflow 0.1s;
+        max-height: 0;
+    }
+}

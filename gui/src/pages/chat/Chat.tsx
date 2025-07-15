@@ -3,7 +3,7 @@ import { SyncLoader } from "react-spinners";
 import { IdeContext } from "../../Ide";
 import './Chat.scss';
 import { ChatHeader } from './ChatHeader';
-import { ChatMessages } from "./ChatMessages";
+import { ChatMessages } from './ChatMessages';
 import { ChatPrompt } from "./ChatPrompt";
 
 export function Chat() {

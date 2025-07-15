@@ -1,4 +1,5 @@
 import './ChatMessages.scss';
+import { ChatToolCall } from './ChatToolCall';
 import { MarkdownContent } from './MarkdownContent';
 
 interface ChatMessageText {
@@ -9,11 +10,12 @@ interface ChatMessageText {
 
 interface ChatMessageToolCall {
     type: 'toolCall',
-    status: 'preparing' | 'run' | 'completed',
+    status: 'preparing' | 'run' | 'succeeded' | 'failed',
     role: ChatContentRole,
     id: string,
     name: string,
     argumentsText?: string,
+    output?: string,
     origin: ToolCallOrigin,
     manualApproval: boolean,
 }
@@ -26,7 +28,6 @@ interface ChatMessagesProps {
 }
 
 export function ChatMessages({ children, contentReceiveds }: ChatMessagesProps) {
-
     let chatMessages: ChatMessage[] = [];
 
     contentReceiveds.forEach(({ role, content }) => {
@@ -88,25 +89,22 @@ export function ChatMessages({ children, contentReceiveds }: ChatMessagesProps) 
             case 'toolCalled': {
                 const existingIndex = chatMessages.findIndex(msg => msg.type === 'toolCall' && msg.id === content.id);
                 let tool = chatMessages[existingIndex] as ChatMessageToolCall;
-                tool.status = 'completed';
+                // TODO handle multiple outputs
+                const output = content.outputs[0];
+                tool.output = output?.content
+                tool.status = output?.error ? 'failed' : 'succeeded';
                 chatMessages[existingIndex] = tool;
                 return;
             }
         }
     });
 
-    const toolCallMessageDescription = (message: ChatMessageToolCall): string => {
-        const verb = message.status === 'preparing' || message.status === 'run' ? 'Calling' : 'Called';
-        const origin = message.origin === 'mcp' ? 'MCP' : 'ECA';
-        return `${verb} ${origin} tool`;
-    }
-
     return (
         <div className="messages-container">
             {children}
             {chatMessages.map((message, index) => {
                 if (message.type === 'text') {
-                    return (<div key={index} className={`${message.role}-message message`}>
+                    return (<div key={index} className={`${message.role}-message text-message`}>
                         {message.role === 'assistant' && (
                             <MarkdownContent content={message.value} />
                         )}
@@ -118,14 +116,14 @@ export function ChatMessages({ children, contentReceiveds }: ChatMessagesProps) 
 
                 if (message.type == 'toolCall') {
                     return (
-                        <div key={index} className="tool">
-                            <div className="header">
-                                <span className="description">{toolCallMessageDescription(message)}</span>
-                                <span className="tool-name">{message.name}</span>
-                            </div>
-                            <div className="content">
-                                <MarkdownContent language='javascript' content={message.argumentsText} />
-                            </div>
+                        <div key={index}>
+                            <ChatToolCall
+                                name={message.name}
+                                origin={message.origin}
+                                status={message.status}
+                                output={message.output}
+                                argumentsText={message.argumentsText}
+                            />
                         </div>
                     );
                 }
