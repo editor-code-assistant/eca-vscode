@@ -1,6 +1,6 @@
 {
   "name": "eca",
-  "displayName": "ECA (Editor Code Assisant)",
+  "displayName": "ECA (Editor Code Assistant)",
   "description": "ECA (Editor Code Assistant) integration for VsCode",
   "icon": "assets/logo.png",
   "version": "0.0.2",
