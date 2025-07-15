@@ -3,7 +3,7 @@
   "displayName": "ECA (Editor Code Assistant)",
   "description": "ECA (Editor Code Assistant) integration for VsCode",
   "icon": "assets/logo.png",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "editor-code-assistant",
   "author": {
     "name": "Eric Dallo",
@@ -40,7 +40,7 @@
             "markdownDescription": "The absolute path to the `eca` server binary. Will take effect after a restart of eca."
           },
           "eca.serverArgs": {
-             "type": "string",
+            "type": "string",
             "default": "",
             "markdownDescription": "Extra args for the eca start command, example: \"--log-level debug\"."
           }
