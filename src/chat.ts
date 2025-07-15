@@ -82,10 +82,10 @@ export class ChatProvider implements vscode.WebviewViewProvider {
             this.context?.extensionMode === vscode.ExtensionMode.Development;
         if (!isDev) {
             scriptUri = webview
-                .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui/assets/index.js"))
+                .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui/dist/assets/index.js"))
                 .toString();
             styleMainUri = webview
-                .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui/assets/index.css"))
+                .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui/dist/assets/index.css"))
                 .toString();
         } else {
             scriptUri = "http://localhost:5173/src/main.tsx";
