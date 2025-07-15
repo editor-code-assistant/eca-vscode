@@ -7,13 +7,11 @@ interface Props {
     status: string,
     origin: string,
     argumentsText?: string,
-    output?: string,
+    outputs?: ToolCallOutput[],
 }
 
-export function ChatToolCall({ name, status, origin, argumentsText, output }: Props) {
-    status = 'succeeded';
+export function ChatToolCall({ name, status, origin, argumentsText, outputs }: Props) {
     const argsTxt = '```javascript\n' + argumentsText + '\n```';
-    const outputTxt = '```javascript\n' + output + '\n```';
 
     const [open, setOpen] = useState(false);
 
@@ -59,7 +57,10 @@ export function ChatToolCall({ name, status, origin, argumentsText, output }: Pr
                 {showOutput &&
                     <div>
                         <p>Result:</p>
-                        <MarkdownContent content={outputTxt} />
+                        {outputs!.map((output, index) => {
+                            const outputTxt = '```javascript\n' + output.content + '\n```';
+                            return (<MarkdownContent key={index} content={outputTxt} />)
+                        })}
                     </div>}
             </div>
         </div>

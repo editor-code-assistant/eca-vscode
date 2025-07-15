@@ -29,7 +29,7 @@ interface ToolCallRunContent {
     origin: ToolCallOrigin;
     id: string;
     name: string;
-    arguments: {[key: string]: string};
+    arguments: { [key: string]: string };
     manualApproval: boolean;
 }
 
@@ -38,21 +38,23 @@ interface ToolCalledContent {
     origin: ToolCallOrigin;
     id: string;
     name: string;
-    arguments: {[key: string]: string};
-    outputs: [{
-        type: 'text';
-        content: string;
-        error: boolean;
-    }];
+    arguments: { [key: string]: string };
+    outputs: ToolCallOutput[];
+}
+
+interface ToolCallOutput {
+    type: 'text';
+    content: string;
+    error: boolean;
 }
 
 type ToolCallOrigin = 'mcp' | 'native';
 
-type ChatContent = {type: string} & (TextContent | URLContent
+type ChatContent = { type: string } & (TextContent | URLContent
     | ProgressContent
     | ToolCallPrepareContent
     | ToolCallRunContent
-    | ToolCalledContent );
+    | ToolCalledContent);
 
 type ChatContentRole = 'user' | 'system' | 'assistant';
 

@@ -18,6 +18,7 @@ export function MarkdownContent({ content }: Props) {
                     const match = /language-(\w+)/.exec(className || '')
                     return match ? (
                         <SyntaxHighlighter
+                            customStyle={{scrollbarWidth: 'thin'}}
                             PreTag="div"
                             children={String(children).replace(/\n$/, '')}
                             language={match[1]}

@@ -15,7 +15,7 @@ interface ChatMessageToolCall {
     id: string,
     name: string,
     argumentsText?: string,
-    output?: string,
+    outputs?: ToolCallOutput[],
     origin: ToolCallOrigin,
     manualApproval: boolean,
 }
@@ -91,7 +91,7 @@ export function ChatMessages({ children, contentReceiveds }: ChatMessagesProps) 
                 let tool = chatMessages[existingIndex] as ChatMessageToolCall;
                 // TODO handle multiple outputs
                 const output = content.outputs[0];
-                tool.output = output?.content
+                tool.outputs = content.outputs
                 tool.status = output?.error ? 'failed' : 'succeeded';
                 chatMessages[existingIndex] = tool;
                 return;
@@ -100,11 +100,11 @@ export function ChatMessages({ children, contentReceiveds }: ChatMessagesProps) 
     });
 
     return (
-        <div className="messages-container">
+        <div className="messages-container scrollable">
             {children}
             {chatMessages.map((message, index) => {
                 if (message.type === 'text') {
-                    return (<div key={index} className={`${message.role}-message text-message`}>
+                    return (<div key={index} className={`${message.role}-message text-message `}>
                         {message.role === 'assistant' && (
                             <MarkdownContent content={message.value} />
                         )}
@@ -121,7 +121,7 @@ export function ChatMessages({ children, contentReceiveds }: ChatMessagesProps) 
                                 name={message.name}
                                 origin={message.origin}
                                 status={message.status}
-                                output={message.output}
+                                outputs={message.outputs}
                                 argumentsText={message.argumentsText}
                             />
                         </div>
