@@ -1,4 +1,4 @@
-# ECA VsCode
+# ECA vscode
 
 :warning: The project is still alpha and experimental, with bugs and missing features, but being consistenly improved.
 
@@ -9,7 +9,9 @@
 ECA (Editor Code Assistant) Vscode is an AI-powered pair-programming client for VsCode.
 It connects to an external `eca` server process to provide interactive chat, code suggestions, context management and more.
 
-For more details about ECA, check [ECA server](https://github.com/editor-code-assistant/eca).
+For more details about ECA, features and configuration, check [ECA server](https://github.com/editor-code-assistant/eca).
+
+This extension will auto download `eca` and manage the process.
 
 ## Settings
 
