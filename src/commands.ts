@@ -9,9 +9,9 @@ const manageHandler = async (
     type Choice = vscode.QuickPickItem & { value?: string; };
     const choices: Choice[] = [];
 
-    if (server.status == EcaServerStatus.Running || server.status == EcaServerStatus.Starting) {
+    if (server.status === EcaServerStatus.Running || server.status === EcaServerStatus.Starting) {
         choices.push({ label: 'Stop ECA server', value: '::stop' });
-    } else if (server.status == EcaServerStatus.Stopped || server.status == EcaServerStatus.Failed) {
+    } else if (server.status === EcaServerStatus.Stopped || server.status === EcaServerStatus.Failed) {
         choices.push({ label: 'Start ECA server', value: '::start' });
     }
 

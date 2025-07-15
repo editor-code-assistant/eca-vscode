@@ -1,5 +1,5 @@
 import * as cp from 'child_process';
-import * as extract_zip from 'extract-zip';
+import * as extractZip from 'extract-zip';
 import { https } from 'follow-redirects';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -17,8 +17,8 @@ export enum EcaServerStatus {
 }
 
 function isClosable(status?: EcaServerStatus) {
-    return status == EcaServerStatus.Starting ||
-        status == EcaServerStatus.Running;
+    return status === EcaServerStatus.Starting ||
+        status === EcaServerStatus.Running;
 }
 
 interface EcaServerArgs {
@@ -199,7 +199,7 @@ class EcaServerPathFinder {
                     .on('error', reject);
             });
             if (path.extname(downloadPath) === '.zip') {
-                await extract_zip.default(downloadPath, { dir: extensionPath });
+                await extractZip.default(downloadPath, { dir: extensionPath });
             }
             if (path.extname(serverPath) === '') {
                 await fs.promises.chmod(serverPath, 0o775);
@@ -250,7 +250,7 @@ class EcaServerPathFinder {
     async find() {
         const config = vscode.workspace.getConfiguration('eca');
         const customServerPath = config.get<string>('serverPath');
-        if (customServerPath?.trim() != "") {
+        if (customServerPath?.trim() !== "") {
             return customServerPath!;
         }
 
@@ -269,7 +269,7 @@ class EcaServerPathFinder {
             });
 
         if (latestVersion === '' && !exists) {
-            throw 'Could not fetch latest version of eca. Please check your internet connection and try again. You can also download eca manually and set the path in the vscode settings.';
+            throw new Error('Could not fetch latest version of eca. Please check your internet connection and try again. You can also download eca manually and set the path in the vscode settings.');
         }
 
         if (!exists || (currentVersion !== latestVersion)) {

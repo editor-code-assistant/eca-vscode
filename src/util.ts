@@ -6,7 +6,7 @@ import * as vscode from "vscode";
 
 export function randUuid() {
     const crypto = require("crypto");
-    return crypto.randomUUID()
+    return crypto.randomUUID();
 }
 
 export function getExtensionUri(): vscode.Uri {
@@ -21,7 +21,7 @@ export async function getUserShellEnv(): Promise<{ [key: string]: string }> {
 
     return new Promise((resolve, reject) => {
         cp.execFile(shell, shellArgs, { encoding: 'utf8' }, (err, stdout) => {
-            if (err) return reject(err);
+            if (err) { return reject(err); };
             const env: { [key: string]: string } = {};
             stdout.split('\n').forEach((line) => {
                 const i = line.indexOf('=');
