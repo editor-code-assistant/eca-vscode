@@ -97,7 +97,8 @@
     "test": "vscode-test",
     "vsix": "vsce package",
     "dev:gui": "cd gui && npm run dev",
-    "build:gui": "cd gui && npm run build"
+    "build:gui": "cd gui && npm run build",
+    "publish": "vsce publish"
   },
   "dependencies": {
     "extract-zip": "^2.0.1",
