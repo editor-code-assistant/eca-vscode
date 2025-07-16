@@ -50,7 +50,7 @@
     "commands": [
       {
         "command": "eca.manage",
-        "title": "Manage ECA server"
+        "title": "ECA: Manage server"
       },
       {
         "command": "eca.start",
@@ -59,13 +59,17 @@
       {
         "command": "eca.stop",
         "title": "ECA: Stop server process"
+      },
+      {
+        "command": "eca.mcp-details.open",
+        "title": "ECA: Open MCP Details page"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "eca",
-          "title": "ECA Chat",
+          "title": "ECA",
           "icon": "assets/logo-white.svg"
         }
       ]
@@ -74,8 +78,8 @@
       "eca": [
         {
           "type": "webview",
-          "id": "eca.chat",
-          "name": "ECA Chat",
+          "id": "eca.webview",
+          "name": "ECA",
           "icon": "assets/logo.png",
           "visibility": "visible"
         }

@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import * as chat from './chat';
-import { ChatProvider } from './chat';
 import * as commands from './commands';
 import * as protocol from './protocol';
 import { EcaServer, EcaServerPathFinder } from './server';
 import * as s from './session';
 import * as statusbar from './status-bar';
+import * as webview from './webview';
+import { EcaWebviewProvider } from './webview';
 
 async function activate(context: vscode.ExtensionContext) {
 
@@ -15,7 +15,7 @@ async function activate(context: vscode.ExtensionContext) {
 
 	const ecaChannel = vscode.window.createOutputChannel('ECA stderr', 'Clojure');
 
-	const chatProvider = new ChatProvider(context);
+	const webviewProvider = new EcaWebviewProvider(context);
 	const serverPathFinder = new EcaServerPathFinder(context);
 
 	const server = new EcaServer({
@@ -24,19 +24,19 @@ async function activate(context: vscode.ExtensionContext) {
 		onStarted: (connection) => {
 			const session = s.getSession()!;
 			connection.onNotification(protocol.chatContentReceived, (params: protocol.ChatContentReceivedParams) => {
-				chatProvider.contentReceived(params);
+				webviewProvider.contentReceived(params);
 			});
 
 			connection.onNotification(protocol.mcpServerUpdated, (params: protocol.MCPServerUpdatedParams) => {
-				chatProvider.mcpServerUpdated(params);
+				webviewProvider.mcpServerUpdated(params);
 			});
 
-			chatProvider.sessionChanged(session);
-			chat.focusChat();
+			webviewProvider.sessionChanged(session);
+			webview.focus();
 		},
 		onStatusChanged: (status) => {
 			statusbar.update(statusBar, status);
-			chatProvider.handleNewStatus(status);
+			webviewProvider.handleNewStatus(status);
 		}
 	});
 
@@ -53,11 +53,12 @@ async function activate(context: vscode.ExtensionContext) {
 
 
 	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider(chatProvider.providerId, chatProvider, {
+		vscode.window.registerWebviewViewProvider(webviewProvider.providerId, webviewProvider, {
 			webviewOptions: { retainContextWhenHidden: true },
 		}),
 		...commands.registerVSCodeCommands({
 			server: server,
+			webviewProvider: webviewProvider,
 			context: context,
 		}),
 	);

@@ -4,8 +4,8 @@ import { EcaServerStatus } from './server';
 import * as s from './session';
 import * as util from './util';
 
-export class ChatProvider implements vscode.WebviewViewProvider {
-    public providerId = 'eca.chat';
+export class EcaWebviewProvider implements vscode.WebviewViewProvider {
+    public providerId = 'eca.webview';
     private _requestId = 0;
     private _webview?: vscode.Webview;
 
@@ -13,6 +13,10 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         private readonly context: vscode.ExtensionContext,
         private _id?: string,
     ) {}
+
+    get webview() {
+        return this._webview;
+    }
 
     resolveWebviewView(
         webviewView: vscode.WebviewView,
@@ -63,7 +67,7 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         });
     }
 
-    private getWebviewContent(
+    getWebviewContent(
         webview: vscode.Webview,
         extensionUri: vscode.Uri,
     ): string {
@@ -178,8 +182,19 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         });
     }
 
+    openMCPDetails() {
+        focus();
+        this._webview?.postMessage({
+            type: 'navigateTo',
+            data: {
+                path: '/mcp-details',
+            }
+        });
+    }
+
+
 };
 
-export function focusChat() {
-    vscode.commands.executeCommand('eca.chat.focus');
+export function focus() {
+    vscode.commands.executeCommand('eca.webview.focus');
 }

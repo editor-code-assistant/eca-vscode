@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { EcaServerStatus } from './server';
-import { EcaServer } from './server';
+import { EcaServer, EcaServerStatus } from './server';
+import { EcaWebviewProvider } from './webview';
 
 const manageHandler = async (
     server: EcaServer,
@@ -47,6 +47,7 @@ const manageHandler = async (
 
 type RegisterCommandsParams = {
     server: EcaServer,
+    webviewProvider: EcaWebviewProvider,
     context: vscode.ExtensionContext;
 };
 
@@ -61,6 +62,9 @@ export const registerVSCodeCommands = (params: RegisterCommandsParams) => {
         }),
         vscode.commands.registerCommand('eca.stop', () => {
             params.server.stop();
+        }),
+        vscode.commands.registerCommand('eca.mcp-details.open', () => {
+            params.webviewProvider.openMCPDetails();
         }),
     ];
 };

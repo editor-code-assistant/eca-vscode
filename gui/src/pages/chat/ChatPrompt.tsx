@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import { IdeContext } from "../../Ide";
+import { useState } from "react";
+import { useWebviewListener, useWebviewSender } from "../../hooks";
 import './ChatPrompt.scss';
 
 interface ChatPromptProps {
@@ -14,21 +14,19 @@ export function ChatPrompt({ enabled }: ChatPromptProps) {
     const [behaviors, setBehaviors] = useState<string[]>([]);
     const [selectedBehavior, setSelectedBehavior] = useState('');
 
-    const ideContext = useContext(IdeContext);
-
-    ideContext.handleMessage('chat/setBehaviors', ({ behaviors, selectedBehavior }: { behaviors: string[], selectedBehavior: string }) => {
+   useWebviewListener('chat/setBehaviors', ({ behaviors, selectedBehavior }: { behaviors: string[], selectedBehavior: string }) => {
         setBehaviors(behaviors);
         setSelectedBehavior(selectedBehavior);
     });
 
-    ideContext.handleMessage('chat/setModels', ({ models, selectedModel }: { models: string[], selectedModel: string }) => {
+    useWebviewListener('chat/setModels', ({ models, selectedModel }: { models: string[], selectedModel: string }) => {
         setModels(models);
         setSelectedModel(selectedModel);
     });
 
     const sendPrompt = () => {
         if (promptValue.trim()) {
-            ideContext.sendMessage('chat/userPrompt',
+            useWebviewSender('chat/userPrompt',
                 { prompt: promptValue },
             );
             setPromptValue('')
@@ -38,14 +36,14 @@ export function ChatPrompt({ enabled }: ChatPromptProps) {
     const handleModelChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newModel = e.target.value;
 
-        ideContext.sendMessage('chat/selectedModelChanged', { value: newModel });
+        useWebviewSender('chat/selectedModelChanged', { value: newModel });
         setSelectedModel(newModel);
     }
 
     const handleBehaviorChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newBehavior = e.target.value;
 
-        ideContext.sendMessage('chat/selectedBehaviorChanged', { value: newBehavior });
+        useWebviewSender('chat/selectedBehaviorChanged', { value: newBehavior });
         setSelectedBehavior(newBehavior);
     }
 

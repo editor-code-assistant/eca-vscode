@@ -1,5 +1,7 @@
-import { useContext, useState } from 'react';
-import { IdeContext } from '../../Ide';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../App';
+import { useWebviewListener } from '../../hooks';
 import './ChatHeader.scss';
 
 interface Props {
@@ -10,14 +12,13 @@ export function ChatHeader({ onClear }: Props) {
     const [failed, setFailed] = useState(0);
     const [starting, setStarting] = useState(0);
     const [running, setRunning] = useState(0);
+    const navigate = useNavigate();
 
     const clearChat = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         onClear();
     }
 
-    const ideContext = useContext(IdeContext);
-
-    ideContext.handleMessage('chat/mcpServersUpdated', (mcps: any) => {
+    useWebviewListener('chat/mcpServersUpdated', (mcps: any) => {
         let failedCount = 0;
         let startingCount = 0;
         let runningCount = 0;
@@ -44,7 +45,7 @@ export function ChatHeader({ onClear }: Props) {
     return (
         <div className="chat-header">
             <div className="details">
-                <div className="mcps">
+                <div onClick={() => navigate(ROUTES.MCP_DETAILS)} className="mcps">
                     <span>MCPs </span>
                     {failed > 0 &&
                         <span className="failed">{failed}</span>}

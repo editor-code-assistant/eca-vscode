@@ -1,6 +1,6 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { SyncLoader } from "react-spinners";
-import { IdeContext } from "../../Ide";
+import { useWebviewListener } from "../../hooks";
 import './Chat.scss';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from './ChatMessages';
@@ -13,13 +13,15 @@ export function Chat() {
 
     const [enabled, setEnabled] = useState(false);
 
-    const ideContext = useContext(IdeContext);
-
-    ideContext.handleMessage('chat/setEnable', (params: any) => {
+    useWebviewListener('chat/setEnable', (params: any) => {
         setEnabled(_prev => params.enabled);
     });
 
-    ideContext.handleMessage('chat/setWelcomeMessage', (params: any) => {
+    useWebviewListener('chat/setEnable', (params: any) => {
+        setEnabled(_prev => params.enabled);
+    });
+
+    useWebviewListener('chat/setWelcomeMessage', (params: any) => {
         setWelcomeMessage(_prev => params.message);
     });
 
@@ -27,7 +29,7 @@ export function Chat() {
         setContentReceiveds([]);
     };
 
-    ideContext.handleMessage('chat/contentReceived', (params: ChatContentReceived) => {
+    useWebviewListener('chat/contentReceived', (params: ChatContentReceived) => {
         setContentReceiveds(prev => [...prev, params]);
         if (params.content.type === 'progress') {
             switch (params.content.state) {

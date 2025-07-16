@@ -1,5 +1,7 @@
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import Chat from "./pages";
+import { MCPDetails } from "./pages/settings/MCPDetails";
+import RootWrapper from "./pages/RootWrapper";
 
 export const ROUTES = {
     CHAT: "/",
@@ -9,8 +11,8 @@ export const ROUTES = {
 const router = createMemoryRouter([
     {
         path: ROUTES.CHAT,
-        /* element: <Layout />, */
-        /* errorElement: <ErrorPage />, */
+        element: <RootWrapper />,
+        /* errorElement: <Error />, */
         children: [
             {
                 path: "/index.html",
@@ -20,11 +22,10 @@ const router = createMemoryRouter([
                 path: ROUTES.CHAT,
                 element: <Chat />,
             },
-            // TODO
-            /* {
-             *     path: ROUTES.MCP_DETAILS,
-             *     element: <McpDetailsPage />,
-             * }, */
+            {
+                path: ROUTES.MCP_DETAILS,
+                element: <MCPDetails />,
+            },
         ],
     },
 ]);
