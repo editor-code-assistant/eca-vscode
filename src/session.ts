@@ -7,6 +7,7 @@ export class Session {
     public chatBehaviors?: string[] = [];
     public chatSelectedBehavior?: protocol.ChatBehavior;
     public chatWelcomeMessage?: string;
+    public mcpServers: { [name: string]: protocol.MCPServerUpdatedParams } = {};
 
     constructor(
         public server: EcaServer,

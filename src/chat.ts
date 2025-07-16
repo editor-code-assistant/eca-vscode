@@ -128,6 +128,19 @@ export class ChatProvider implements vscode.WebviewViewProvider {
         });
     }
 
+    mcpServerUpdated(params: protocol.MCPServerUpdatedParams) {
+        let session = s.getSession();
+
+        if (session) {
+            session.mcpServers[params.name] = params;
+
+            this._webview?.postMessage({
+                type: 'chat/mcpServersUpdated',
+                data: Object.values(session.mcpServers),
+            });
+        }
+    }
+
     sessionChanged(session: s.Session) {
         this._webview?.postMessage({
             type: 'chat/setBehaviors',

@@ -135,3 +135,21 @@ interface ToolCalledContent {
 type ToolCallOrigin = 'mcp' | 'native';
 
 export const chatContentReceived = new rpc.NotificationType<ChatContentReceivedParams>('chat/contentReceived');
+
+type MCPStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
+
+export interface MCPServerUpdatedParams {
+    name: string;
+    command: string;
+    args: string[];
+    status: MCPStatus;
+    tools?: MCPServerTool[];
+}
+
+export interface MCPServerTool {
+    name: string;
+    description: string;
+    parameters: any;
+}
+
+export const mcpServerUpdated = new rpc.NotificationType<MCPServerUpdatedParams>('mcp/serverUpdated');

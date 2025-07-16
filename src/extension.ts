@@ -27,6 +27,10 @@ async function activate(context: vscode.ExtensionContext) {
 				chatProvider.contentReceived(params);
 			});
 
+			connection.onNotification(protocol.mcpServerUpdated, (params: protocol.MCPServerUpdatedParams) => {
+				chatProvider.mcpServerUpdated(params);
+			});
+
 			chatProvider.sessionChanged(session);
 			chat.focusChat();
 		},
