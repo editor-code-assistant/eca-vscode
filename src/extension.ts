@@ -4,7 +4,6 @@ import * as protocol from './protocol';
 import { EcaServer, EcaServerPathFinder } from './server';
 import * as s from './session';
 import * as statusbar from './status-bar';
-import * as webview from './webview';
 import { EcaWebviewProvider } from './webview';
 
 async function activate(context: vscode.ExtensionContext) {
@@ -32,7 +31,7 @@ async function activate(context: vscode.ExtensionContext) {
 			});
 
 			webviewProvider.sessionChanged(session);
-			webview.focus();
+			webviewProvider.focus();
 		},
 		onStatusChanged: (status) => {
 			statusbar.update(statusBar, status);
@@ -50,7 +49,6 @@ async function activate(context: vscode.ExtensionContext) {
 	s.initSession(server, workspaceFolders);
 
 	server.start();
-
 
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(webviewProvider.providerId, webviewProvider, {

@@ -61,8 +61,12 @@
         "title": "ECA: Stop server process"
       },
       {
-        "command": "eca.mcp-details.open",
-        "title": "ECA: Open MCP Details page"
+        "command": "eca.chat.focus",
+        "title": "ECA: Open chat"
+      },
+      {
+        "command": "eca.mcp-details.focus",
+        "title": "ECA: Open MCP Details"
       }
     ],
     "viewsContainers": {

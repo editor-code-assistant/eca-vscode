@@ -28,13 +28,7 @@ declare const vscode: any;
 
 export function useWebviewSender<T>(
     type: string, data: T,
-    dependencies: any[] = [],
 ) {
-    useEffect(
-        () => {
-            const msg = { type, data }
-            vscode.postMessage(msg);
-        },
-        dependencies,
-    );
+    const msg = { type, data }
+    vscode.postMessage(msg);
 }

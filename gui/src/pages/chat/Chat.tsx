@@ -1,54 +1,25 @@
-import { useState } from "react";
 import { SyncLoader } from "react-spinners";
-import { useWebviewListener } from "../../hooks";
+import { useChatProvider } from "../../provider/ChatProvider";
+import { ServerStatus, useServerProvider } from "../../provider/ServerProvider";
 import './Chat.scss';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from './ChatMessages';
 import { ChatPrompt } from "./ChatPrompt";
 
 export function Chat() {
-    const [welcomeMessage, setWelcomeMessage] = useState('');
-    const [contentReceiveds, setContentReceiveds] = useState<ChatContentReceived[]>([]);
-    const [progressValue, setProgressValue] = useState('');
+    const server = useServerProvider();
+    const running = server.status === ServerStatus.Running;
 
-    const [enabled, setEnabled] = useState(false);
-
-    useWebviewListener('chat/setEnable', (params: any) => {
-        setEnabled(_prev => params.enabled);
-    });
-
-    useWebviewListener('chat/setEnable', (params: any) => {
-        setEnabled(_prev => params.enabled);
-    });
-
-    useWebviewListener('chat/setWelcomeMessage', (params: any) => {
-        setWelcomeMessage(_prev => params.message);
-    });
+    const chat = useChatProvider();
 
     const onClear = () => {
-        setContentReceiveds([]);
+        chat.clearHistory();
     };
-
-    useWebviewListener('chat/contentReceived', (params: ChatContentReceived) => {
-        setContentReceiveds(prev => [...prev, params]);
-        if (params.content.type === 'progress') {
-            switch (params.content.state) {
-                case 'running': {
-                    setProgressValue(params.content.text!);
-                    return;
-                }
-                case 'finished': {
-                    setProgressValue('');
-                    return;
-                }
-            }
-        }
-    });
 
     return (
         <div className="chat-container">
             <ChatHeader onClear={onClear} />
-            {!enabled &&
+            {!running &&
                 <div className="loading">
                     <div className="content">
                         <p>Waiting for server to start... </p>
@@ -57,23 +28,22 @@ export function Chat() {
                 </div>
             }
 
-            <ChatMessages
-                contentReceiveds={contentReceiveds}>
-                {enabled && (
+            <ChatMessages>
+                {running && (
                     <div className="welcome-message">
-                        <h2>{welcomeMessage}</h2>
+                        <h2>{chat.welcomeMessage}</h2>
                     </div>)
                 }
             </ChatMessages>
 
-            {progressValue != '' && (
+            {chat.progress && (
                 <div className="progress-area">
-                    <p>{progressValue}</p>
+                    <p>{chat.progress}</p>
                     <SyncLoader className="spinner" size={2} />
                 </div>)
             }
 
-            <ChatPrompt enabled={enabled} />
+            <ChatPrompt enabled={running} />
         </div>
     );
 }

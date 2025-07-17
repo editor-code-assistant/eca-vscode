@@ -175,26 +175,21 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             });
         }
         this._webview?.postMessage({
-            type: 'chat/setEnable',
-            data: {
-                enabled: enabled,
-            }
+            type: 'server/statusChanged',
+            data: status,
         });
     }
 
-    openMCPDetails() {
-        focus();
-        this._webview?.postMessage({
-            type: 'navigateTo',
-            data: {
-                path: '/mcp-details',
-            }
-        });
+    focus(focus?: string) {
+        vscode.commands.executeCommand('eca.webview.focus');
+        if (focus) {
+            this._webview?.postMessage({
+                type: 'navigateTo',
+                data: {
+                    path: focus,
+                }
+            })
+        };
     }
-
 
 };
-
-export function focus() {
-    vscode.commands.executeCommand('eca.webview.focus');
-}

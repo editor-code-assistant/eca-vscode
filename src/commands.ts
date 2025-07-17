@@ -63,8 +63,11 @@ export const registerVSCodeCommands = (params: RegisterCommandsParams) => {
         vscode.commands.registerCommand('eca.stop', () => {
             params.server.stop();
         }),
-        vscode.commands.registerCommand('eca.mcp-details.open', () => {
-            params.webviewProvider.openMCPDetails();
+        vscode.commands.registerCommand('eca.chat.focus', () => {
+            params.webviewProvider.focus('/');
+        }),
+        vscode.commands.registerCommand('eca.mcp-details.focus', () => {
+            params.webviewProvider.focus('/mcp-details');
         }),
     ];
 };

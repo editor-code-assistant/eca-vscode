@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useWebviewListener, useWebviewSender } from "../../hooks";
+import { useWebviewSender } from "../../hooks";
+import { useChatProvider } from "../../provider/ChatProvider";
 import './ChatPrompt.scss';
 
 interface ChatPromptProps {
@@ -9,20 +10,7 @@ interface ChatPromptProps {
 export function ChatPrompt({ enabled }: ChatPromptProps) {
     const [promptValue, setPromptValue] = useState('');
 
-    const [models, setModels] = useState<string[]>([]);
-    const [selectedModel, setSelectedModel] = useState('');
-    const [behaviors, setBehaviors] = useState<string[]>([]);
-    const [selectedBehavior, setSelectedBehavior] = useState('');
-
-   useWebviewListener('chat/setBehaviors', ({ behaviors, selectedBehavior }: { behaviors: string[], selectedBehavior: string }) => {
-        setBehaviors(behaviors);
-        setSelectedBehavior(selectedBehavior);
-    });
-
-    useWebviewListener('chat/setModels', ({ models, selectedModel }: { models: string[], selectedModel: string }) => {
-        setModels(models);
-        setSelectedModel(selectedModel);
-    });
+    const chat = useChatProvider();
 
     const sendPrompt = () => {
         if (promptValue.trim()) {
@@ -37,14 +25,14 @@ export function ChatPrompt({ enabled }: ChatPromptProps) {
         const newModel = e.target.value;
 
         useWebviewSender('chat/selectedModelChanged', { value: newModel });
-        setSelectedModel(newModel);
+        chat.setSelectedModel(newModel);
     }
 
     const handleBehaviorChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newBehavior = e.target.value;
 
         useWebviewSender('chat/selectedBehaviorChanged', { value: newBehavior });
-        setSelectedBehavior(newBehavior);
+        chat.setSelectedBehavior(newBehavior);
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -65,18 +53,18 @@ export function ChatPrompt({ enabled }: ChatPromptProps) {
                 placeholder="Ask, plan, build..."
                 className="field"
             />
-            <select value={selectedBehavior}
+            <select value={chat.selectedBehavior}
                 className="behaviors"
                 onChange={handleBehaviorChanged}
             >
-                {behaviors.map((behavior) => (
+                {chat.behaviors.map((behavior) => (
                     <option key={behavior} value={behavior}>{behavior}</option>
                 ))}
             </select>
             <select onChange={handleModelChanged}
-                value={selectedModel}
+                value={chat.selectedModel}
                 className="models">
-                {models.map((model) => (
+                {chat.models.map((model) => (
                     <option key={model} value={model}>{model}</option>
                 ))}
             </select>
