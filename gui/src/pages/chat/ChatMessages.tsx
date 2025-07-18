@@ -3,6 +3,7 @@ import { State } from '../../redux/store';
 import './ChatMessages.scss';
 import { ChatToolCall } from './ChatToolCall';
 import { MarkdownContent } from './MarkdownContent';
+import { useEffect, useRef } from 'react';
 
 interface ChatMessagesProps {
     children: React.ReactNode,
@@ -12,8 +13,21 @@ interface ChatMessagesProps {
 export function ChatMessages({ chatId, children }: ChatMessagesProps) {
     const messages = useSelector((state: State) => chatId && state.chat.chats[chatId].messages);
 
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (scrollRef.current) {
+          const { scrollHeight, clientHeight, scrollTop } = scrollRef.current;
+          const isAtBottom = scrollHeight - scrollTop <= clientHeight + 30;
+
+          if (isAtBottom) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+          }
+        }
+      }, [messages]);
+
     return (
-        <div className="messages-container scrollable">
+        <div className="messages-container scrollable" ref={scrollRef} >
             {children}
             {messages && messages.map((message, index) => {
                 if (message.type === 'text') {
