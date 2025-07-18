@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ToolCallOutput } from '../../protocol';
 import './ChatToolCall.scss';
 import { MarkdownContent } from './MarkdownContent';
 

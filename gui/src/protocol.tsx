@@ -42,13 +42,13 @@ interface ToolCalledContent {
     outputs: ToolCallOutput[];
 }
 
-interface ToolCallOutput {
+export interface ToolCallOutput {
     type: 'text';
     content: string;
     error: boolean;
 }
 
-type ToolCallOrigin = 'mcp' | 'native';
+export type ToolCallOrigin = 'mcp' | 'native';
 
 type ChatContent = { type: string } & (TextContent | URLContent
     | ProgressContent
@@ -56,10 +56,26 @@ type ChatContent = { type: string } & (TextContent | URLContent
     | ToolCallRunContent
     | ToolCalledContent);
 
-type ChatContentRole = 'user' | 'system' | 'assistant';
+export type ChatContentRole = 'user' | 'system' | 'assistant';
 
-interface ChatContentReceived {
+export interface ChatContentReceived {
     chatId: string,
     role: ChatContentRole,
     content: ChatContent,
+}
+
+type MCPStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
+
+export interface MCPServerUpdatedParams {
+    name: string;
+    command: string;
+    args: string[];
+    status: MCPStatus;
+    tools?: MCPServerTool[];
+}
+
+export interface MCPServerTool {
+    name: string;
+    description: string;
+    parameters: any;
 }

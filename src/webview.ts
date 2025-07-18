@@ -147,7 +147,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             session.mcpServers[params.name] = params;
 
             this._webview?.postMessage({
-                type: 'chat/mcpServersUpdated',
+                type: 'mcp/serversUpdated',
                 data: Object.values(session.mcpServers),
             });
         }

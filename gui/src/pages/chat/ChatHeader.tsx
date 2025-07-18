@@ -21,30 +21,6 @@ export function ChatHeader({ chatId }: Props) {
         dispatch(clearHistory(chatId!));
     }
 
-    useWebviewListener('chat/mcpServersUpdated', (mcps: any) => {
-        let failedCount = 0;
-        let startingCount = 0;
-        let runningCount = 0;
-
-        mcps.forEach((mcp: any) => {
-            switch (mcp.status) {
-                case 'failed':
-                    failedCount++;
-                    break;
-                case 'starting':
-                    startingCount++;
-                    break;
-                case 'running':
-                    runningCount++;
-                    break;
-            }
-        });
-
-        setFailed(failedCount);
-        setStarting(startingCount);
-        setRunning(runningCount);
-    });
-
     return (
         <div className="chat-header">
             <div className="details">

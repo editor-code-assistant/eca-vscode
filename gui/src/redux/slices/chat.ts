@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { useWebviewSender } from "../../hooks";
+import { ChatContentReceived, ChatContentRole, ToolCallOrigin, ToolCallOutput } from "../../protocol";
 
 interface ChatMessageText {
     type: 'text',
@@ -29,7 +30,7 @@ interface Chat {
 }
 
 export const chatSlice = createSlice({
-    name: 'server',
+    name: 'chat',
     initialState: {
         behaviors: [],
         models: [],
