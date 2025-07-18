@@ -196,7 +196,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 data: {
                     path: focus,
                 }
-            })
+            });
         };
     }
 
