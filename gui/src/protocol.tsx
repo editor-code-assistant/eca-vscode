@@ -59,6 +59,7 @@ type ChatContent = { type: string } & (TextContent | URLContent
 type ChatContentRole = 'user' | 'system' | 'assistant';
 
 interface ChatContentReceived {
-    role: ChatContentRole;
-    content: ChatContent;
+    chatId: string,
+    role: ChatContentRole,
+    content: ChatContent,
 }

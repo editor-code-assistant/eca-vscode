@@ -2,20 +2,23 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../App';
 import { useWebviewListener } from '../../hooks';
+import { clearHistory } from '../../redux/slices/chat';
+import { useEcaDispatch } from '../../redux/store';
 import './ChatHeader.scss';
 
 interface Props {
-    onClear: () => any;
+    chatId?: string,
 }
 
-export function ChatHeader({ onClear }: Props) {
+export function ChatHeader({ chatId }: Props) {
     const [failed, setFailed] = useState(0);
     const [starting, setStarting] = useState(0);
     const [running, setRunning] = useState(0);
+    const dispatch = useEcaDispatch();
     const navigate = useNavigate();
 
     const clearChat = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        onClear();
+        dispatch(clearHistory(chatId!));
     }
 
     useWebviewListener('chat/mcpServersUpdated', (mcps: any) => {
@@ -60,7 +63,8 @@ export function ChatHeader({ onClear }: Props) {
                 </div>
             </div>
             <div className="actions">
-                <div className="action"><i onClick={clearChat} className="codicon codicon-trash"></i></div>
+                {chatId && (
+                    <div className="action"><i onClick={clearChat} className="codicon codicon-trash"></i></div>)}
             </div>
         </div>
     );

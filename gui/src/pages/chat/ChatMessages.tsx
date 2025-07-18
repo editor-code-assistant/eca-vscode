@@ -1,19 +1,21 @@
-import { useChatProvider } from '../../provider/ChatProvider';
+import { useSelector } from 'react-redux';
+import { State } from '../../redux/store';
 import './ChatMessages.scss';
 import { ChatToolCall } from './ChatToolCall';
 import { MarkdownContent } from './MarkdownContent';
 
 interface ChatMessagesProps {
     children: React.ReactNode,
+    chatId?: string,
 }
 
-export function ChatMessages({ children }: ChatMessagesProps) {
-    const chat = useChatProvider();
+export function ChatMessages({ chatId, children }: ChatMessagesProps) {
+    const messages = useSelector((state: State) => chatId && state.chat.chats[chatId].messages);
 
     return (
         <div className="messages-container scrollable">
             {children}
-            {chat.messages.map((message, index) => {
+            {messages && messages.map((message, index) => {
                 if (message.type === 'text') {
                     return (<div key={index} className={`${message.role}-message text-message `}>
                         {message.role === 'assistant' && (

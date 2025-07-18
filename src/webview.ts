@@ -6,12 +6,10 @@ import * as util from './util';
 
 export class EcaWebviewProvider implements vscode.WebviewViewProvider {
     public providerId = 'eca.webview';
-    private _requestId = 0;
     private _webview?: vscode.Webview;
 
     constructor(
         private readonly context: vscode.ExtensionContext,
-        private _id?: string,
     ) {}
 
     get webview() {
@@ -42,13 +40,16 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 case 'chat/userPrompt': {
                     let session = s.getSession()!;
                     session.server.connection.sendRequest(protocol.chatPrompt, {
-                        chatId: this._id,
+                        chatId: message.data.chatId,
                         message: message.data.prompt,
                         model: session.chatSelectedModel,
                         behavior: session.chatSelectedBehavior,
-                        requestId: (this._requestId++).toString(),
+                        requestId: message.data.requestId.toString(),
                     }).then((result) => {
-                        this._id = result.chatId;
+                        this._webview?.postMessage({
+                            type: 'chat/newChat',
+                            data: { id: result.chatId }
+                        });
                     });
 
                     return;

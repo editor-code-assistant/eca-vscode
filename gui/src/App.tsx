@@ -1,9 +1,9 @@
+import { Provider } from "react-redux";
 import { RouterProvider, createMemoryRouter } from "react-router-dom";
 import Chat from "./pages";
 import RootWrapper from "./pages/RootWrapper";
 import { MCPDetails } from "./pages/settings/MCPDetails";
-import { ChatProvider } from "./provider/ChatProvider";
-import { ServerProvider } from "./provider/ServerProvider";
+import { store } from "./redux/store";
 
 export const ROUTES = {
     CHAT: "/",
@@ -34,11 +34,9 @@ const router = createMemoryRouter([
 
 function App() {
     return (
-        <ServerProvider>
-            <ChatProvider>
-                <RouterProvider router={router} />
-            </ChatProvider>
-        </ServerProvider>
+        <Provider store={store}>
+            <RouterProvider router={router} />
+        </Provider>
     );
 }
 

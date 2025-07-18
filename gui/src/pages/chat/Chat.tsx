@@ -1,24 +1,28 @@
+import { useSelector } from "react-redux";
 import { SyncLoader } from "react-spinners";
-import { useChatProvider } from "../../provider/ChatProvider";
-import { ServerStatus, useServerProvider } from "../../provider/ServerProvider";
+import { ServerStatus } from "../../redux/slices/server";
+import { State } from "../../redux/store";
 import './Chat.scss';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from './ChatMessages';
 import { ChatPrompt } from "./ChatPrompt";
 
 export function Chat() {
-    const server = useServerProvider();
-    const running = server.status === ServerStatus.Running;
+    const status = useSelector((state: State) => state.server.status);
+    const running = status === ServerStatus.Running;
 
-    const chat = useChatProvider();
+    const allChats = useSelector((state: State) => state.chat.chats);
 
-    const onClear = () => {
-        chat.clearHistory();
-    };
+    //TODO Support multiple chats
+    const chatId = Object.values(allChats)[0]?.id;
+
+    const chat = chatId ? allChats[chatId] : undefined;
+
+    const welcomeMessage = useSelector((state: State) => state.chat.welcomeMessage);
 
     return (
         <div className="chat-container">
-            <ChatHeader onClear={onClear} />
+            <ChatHeader chatId={chatId} />
             {!running &&
                 <div className="loading">
                     <div className="content">
@@ -28,22 +32,22 @@ export function Chat() {
                 </div>
             }
 
-            <ChatMessages>
+            <ChatMessages chatId={chatId}>
                 {running && (
                     <div className="welcome-message">
-                        <h2>{chat.welcomeMessage}</h2>
+                        <h2>{welcomeMessage}</h2>
                     </div>)
                 }
             </ChatMessages>
 
-            {chat.progress && (
+            {chat && chat.progress && (
                 <div className="progress-area">
                     <p>{chat.progress}</p>
                     <SyncLoader className="spinner" size={2} />
                 </div>)
             }
 
-            <ChatPrompt enabled={running} />
+            <ChatPrompt chatId={chatId} enabled={running} />
         </div>
     );
 }

@@ -1,22 +1,24 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useWebviewSender } from "../../hooks";
-import { useChatProvider } from "../../provider/ChatProvider";
+import { sendPrompt, setSelectedBehavior, setSelectedModel } from "../../redux/slices/chat";
+import { State, useEcaDispatch } from "../../redux/store";
 import './ChatPrompt.scss';
 
 interface ChatPromptProps {
     enabled: boolean,
+    chatId?: string,
 }
 
-export function ChatPrompt({ enabled }: ChatPromptProps) {
+export function ChatPrompt({ chatId, enabled }: ChatPromptProps) {
     const [promptValue, setPromptValue] = useState('');
+    const dispatch = useEcaDispatch();
 
-    const chat = useChatProvider();
+    const chat = useSelector((state: State) => state.chat);
 
-    const sendPrompt = () => {
+    const sendPromptValue = () => {
         if (promptValue.trim()) {
-            useWebviewSender('chat/userPrompt',
-                { prompt: promptValue },
-            );
+            dispatch(sendPrompt({ prompt: promptValue, chatId }));
             setPromptValue('')
         }
     }
@@ -25,19 +27,19 @@ export function ChatPrompt({ enabled }: ChatPromptProps) {
         const newModel = e.target.value;
 
         useWebviewSender('chat/selectedModelChanged', { value: newModel });
-        chat.setSelectedModel(newModel);
+        dispatch(setSelectedModel(newModel));
     }
 
     const handleBehaviorChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newBehavior = e.target.value;
 
         useWebviewSender('chat/selectedBehaviorChanged', { value: newBehavior });
-        chat.setSelectedBehavior(newBehavior);
+        dispatch(setSelectedBehavior(newBehavior));
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Enter" && !e.shiftKey && enabled) {
-            sendPrompt();
+            sendPromptValue();
             e.preventDefault();
         }
     }
@@ -69,7 +71,7 @@ export function ChatPrompt({ enabled }: ChatPromptProps) {
                 ))}
             </select>
             <div className="spacing"></div>
-            <div className="send"><i onClick={sendPrompt} className="codicon codicon-send"></i></div>
+            <div className="send"><i onClick={sendPromptValue} className="codicon codicon-send"></i></div>
         </div>
     );
 }
