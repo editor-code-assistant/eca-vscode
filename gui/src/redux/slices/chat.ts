@@ -156,7 +156,12 @@ export const chatSlice = createSlice({
                 }
             }
             state.chats[chatId] = chat;
-        }
+        },
+        stopPrompt: (_state, action) => {
+            const chatId = action.payload;
+
+            useWebviewSender('chat/promptStop', { chatId });
+        },
     },
 });
 
@@ -169,4 +174,5 @@ export const {
     sendPrompt,
     addContentReceived,
     clearHistory,
+    stopPrompt,
 } = chatSlice.actions

@@ -1,13 +1,15 @@
 import { useSelector } from "react-redux";
 import { SyncLoader } from "react-spinners";
+import { stopPrompt } from "../../redux/slices/chat";
 import { ServerStatus } from "../../redux/slices/server";
-import { State } from "../../redux/store";
+import { State, useEcaDispatch } from "../../redux/store";
 import './Chat.scss';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from './ChatMessages';
 import { ChatPrompt } from "./ChatPrompt";
 
 export function Chat() {
+    const dispatch = useEcaDispatch();
     const status = useSelector((state: State) => state.server.status);
     const running = status === ServerStatus.Running;
 
@@ -19,6 +21,10 @@ export function Chat() {
     const chat = chatId ? allChats[chatId] : undefined;
 
     const welcomeMessage = useSelector((state: State) => state.chat.welcomeMessage);
+
+    const onStop = (_e: any) => {
+        dispatch(stopPrompt(chatId!));
+    };
 
     return (
         <div className="chat-container">
@@ -44,8 +50,12 @@ export function Chat() {
                 <div className="progress-area">
                     <p>{chat.progress}</p>
                     <SyncLoader className="spinner" size={2} />
-                </div>)
-            }
+                    <div className="divider"></div>
+                    {chatId && (
+                        <span onClick={onStop} className="stop">Stop</span>
+                    )}
+                </div>
+            )}
 
             <ChatPrompt chatId={chatId} enabled={running} />
         </div>

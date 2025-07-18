@@ -68,6 +68,12 @@ export interface ChatPromptResult {
 
 export const chatPrompt = new rpc.RequestType<ChatPromptParams, ChatPromptResult, void>('chat/prompt');
 
+export interface ChatPromptStopParams {
+    chatId: string;
+}
+
+export const chatPromptStop = new rpc.NotificationType<ChatPromptStopParams>('chat/promptStop');
+
 export interface ChatContentReceivedParams {
     chatId: string;
     role: ChatContentRole;

@@ -27,9 +27,11 @@
 
   .progress-area {
       width: calc(100% - 2em);
+      margin: 0 auto;
       background-color: var(--vscode-panel-background, #252526);
       padding: 0.5em 1em;
       color: var(--vscode-input-placeholderForeground, #767676);
+      display: flex;
 
       p {
           margin: 0;
@@ -50,6 +52,21 @@
               background-color: var(--vscode-input-placeholderForeground, #767676) !important;
               animation-name: spinner-sync !important;
           }
+      }
+
+      .divider {
+          flex: 1;
+      }
+
+
+      .stop {
+        opacity: 0.8;
+        cursor: pointer;
+        transition: opacity 0.1s;
+
+        &:hover {
+          opacity: 1;
+        }
       }
   }
 }
