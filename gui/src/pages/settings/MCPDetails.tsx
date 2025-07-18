@@ -11,7 +11,8 @@ export function MCPDetails() {
                 <h2 className="title">MCP Servers</h2>
                 <p className="description">MCPs are extra tools that can offer more power to ECA, for more details check <a href="https://modelcontextprotocol.io">MCP</a></p>
                 {mcpServers.map((server, index) => {
-                    const commandTxt = server.command + " " + server.args?.join(" ");
+                    const commandTxt = server.command + " " + (server.args?.join(" ") || "");
+
                     return (
                         <div key={index} className="server">
                             <span className="name">{server.name}</span>

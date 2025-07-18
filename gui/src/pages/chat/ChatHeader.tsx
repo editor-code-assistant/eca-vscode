@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../App';
-import { useWebviewListener } from '../../hooks';
 import { clearHistory } from '../../redux/slices/chat';
-import { useEcaDispatch } from '../../redux/store';
+import { State, useEcaDispatch } from '../../redux/store';
 import './ChatHeader.scss';
 
 interface Props {
@@ -11,15 +10,32 @@ interface Props {
 }
 
 export function ChatHeader({ chatId }: Props) {
-    const [failed, setFailed] = useState(0);
-    const [starting, setStarting] = useState(0);
-    const [running, setRunning] = useState(0);
     const dispatch = useEcaDispatch();
     const navigate = useNavigate();
 
     const clearChat = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         dispatch(clearHistory(chatId!));
     }
+
+    const mcpServers = useSelector((state: State) => state.mcp.servers);
+
+    let failed = 0;
+    let starting = 0;
+    let running = 0;
+
+    mcpServers.forEach((mcp: any) => {
+        switch (mcp.status) {
+            case 'failed':
+                failed++;
+                break;
+            case 'starting':
+                starting++;
+                break;
+            case 'running':
+                running++;
+                break;
+        }
+    });
 
     return (
         <div className="chat-header">
