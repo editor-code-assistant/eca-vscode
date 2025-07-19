@@ -19,7 +19,7 @@ interface ChatMessageToolCall {
     manualApproval: boolean,
 }
 
-type ChatMessage = ChatMessageText | ChatMessageToolCall;
+export type ChatMessage = ChatMessageText | ChatMessageToolCall;
 
 interface Chat {
     id: string,
@@ -97,7 +97,6 @@ export const chatSlice = createSlice({
                         case 'assistant': {
                             const lastMessage = chat.messages[chat.messages.length - 1];
                             if (lastMessage && lastMessage.type === 'text' && lastMessage.role === 'assistant') {
-                                lastMessage.value += content.text;
                                 const newMsg = { ...lastMessage } as ChatMessageText;
                                 newMsg.value += content.text;
                                 chat.messages[chat.messages.length - 1] = newMsg;
