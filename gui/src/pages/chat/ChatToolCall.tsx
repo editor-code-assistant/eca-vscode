@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { ToolCallOutput } from '../../protocol';
 import './ChatToolCall.scss';
 import { MarkdownContent } from './MarkdownContent';
@@ -11,7 +11,7 @@ interface Props {
     outputs?: ToolCallOutput[],
 }
 
-export function ChatToolCall({ name, status, origin, argumentsText, outputs }: Props) {
+export const ChatToolCall = memo(({ name, status, origin, argumentsText, outputs }: Props) => {
     const argsTxt = '```javascript\n' + argumentsText + '\n```';
 
     const [open, setOpen] = useState(false);
@@ -67,4 +67,4 @@ export function ChatToolCall({ name, status, origin, argumentsText, outputs }: P
         </div>
 
     );
-}
+});
