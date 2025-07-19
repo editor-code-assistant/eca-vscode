@@ -20,6 +20,10 @@ export const store = setupStore();
 
 export type State = ReturnType<typeof reducers>;
 
+export type ThunkApiType = {
+  state: State;
+};
+
 export type EcaDispatch = typeof store.dispatch;
 
 export const useEcaDispatch: () => EcaDispatch = useDispatch;

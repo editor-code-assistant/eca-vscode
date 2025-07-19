@@ -26,7 +26,7 @@ interface vscode {
 
 declare const vscode: any;
 
-export function useWebviewSender<T>(
+export function webviewSend<T>(
     type: string, data: T,
 ) {
     const msg = { type, data }

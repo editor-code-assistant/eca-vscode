@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import { SyncLoader } from "react-spinners";
-import { stopPrompt } from "../../redux/slices/chat";
 import { ServerStatus } from "../../redux/slices/server";
 import { State, useEcaDispatch } from "../../redux/store";
+import { stopPrompt } from "../../redux/thunks/chat";
 import './Chat.scss';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from './ChatMessages';
@@ -16,14 +16,14 @@ export function Chat() {
     const allChats = useSelector((state: State) => state.chat.chats);
 
     //TODO Support multiple chats
-    const chatId = Object.values(allChats)[0]?.id;
+    let chatId = Object.values(allChats)[0]?.id;
 
     const chat = chatId ? allChats[chatId] : undefined;
 
     const welcomeMessage = useSelector((state: State) => state.chat.welcomeMessage);
 
     const onStop = (_e: any) => {
-        dispatch(stopPrompt(chatId!));
+        dispatch(stopPrompt({ chatId }));
     };
 
     return (

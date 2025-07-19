@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { useWebviewSender } from "../../hooks";
 import { ChatContentReceived, ChatContentRole, ToolCallOrigin, ToolCallOutput } from "../../protocol";
 
 interface ChatMessageText {
@@ -55,18 +54,12 @@ export const chatSlice = createSlice({
         setWelcomeMessage: (state, action) => {
             state.welcomeMessage = action.payload;
         },
-        sendPrompt: (state, action) => {
-            let chatId = action.payload.chatId;
-            let requestId = chatId ? state.chats[chatId].lastRequestId++ : 0;
-            const prompt = action.payload.prompt;
-
-            useWebviewSender('chat/userPrompt',
-                {
-                    chatId,
-                    requestId,
-                    prompt,
-                },
-            );
+        incRequestId: (state, action) => {
+            const chatId = action.payload.chatId;
+            state.chats[chatId] = {
+                ...state.chats[chatId],
+                lastRequestId: (state.chats[chatId]?.lastRequestId || 0) + 1,
+            };
         },
         clearHistory: (state, action) => {
             const chatId = action.payload;
@@ -94,23 +87,26 @@ export const chatSlice = createSlice({
                     switch (role) {
                         case 'user':
                         case 'system': {
-                            chat.messages.push({
+                            chat.messages = [...chat.messages, {
                                 type: 'text',
                                 role: role,
                                 value: content.text,
-                            })
+                            }];
                             break;
                         }
                         case 'assistant': {
                             const lastMessage = chat.messages[chat.messages.length - 1];
                             if (lastMessage && lastMessage.type === 'text' && lastMessage.role === 'assistant') {
                                 lastMessage.value += content.text;
+                                const newMsg = { ...lastMessage } as ChatMessageText;
+                                newMsg.value += content.text;
+                                chat.messages[chat.messages.length - 1] = newMsg;
                             } else {
-                                chat.messages.push({
+                                chat.messages = [...chat.messages, {
                                     type: 'text',
                                     role: role,
                                     value: content.text,
-                                });
+                                }];
                             }
                             break;
                         }
@@ -158,11 +154,6 @@ export const chatSlice = createSlice({
             }
             state.chats[chatId] = chat;
         },
-        stopPrompt: (_state, action) => {
-            const chatId = action.payload;
-
-            useWebviewSender('chat/promptStop', { chatId });
-        },
     },
 });
 
@@ -172,8 +163,7 @@ export const {
     setSelectedBehavior,
     setSelectedModel,
     setWelcomeMessage,
-    sendPrompt,
+    incRequestId,
     addContentReceived,
     clearHistory,
-    stopPrompt,
 } = chatSlice.actions

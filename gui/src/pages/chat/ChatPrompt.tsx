@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useWebviewSender } from "../../hooks";
-import { sendPrompt, setSelectedBehavior, setSelectedModel } from "../../redux/slices/chat";
+import { webviewSend } from "../../hooks";
+import { setSelectedBehavior, setSelectedModel } from "../../redux/slices/chat";
 import { State, useEcaDispatch } from "../../redux/store";
+import { sendPrompt } from "../../redux/thunks/chat";
 import './ChatPrompt.scss';
 
 interface ChatPromptProps {
@@ -26,14 +27,14 @@ export function ChatPrompt({ chatId, enabled }: ChatPromptProps) {
     const handleModelChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newModel = e.target.value;
 
-        useWebviewSender('chat/selectedModelChanged', { value: newModel });
+        webviewSend('chat/selectedModelChanged', { value: newModel });
         dispatch(setSelectedModel(newModel));
     }
 
     const handleBehaviorChanged = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newBehavior = e.target.value;
 
-        useWebviewSender('chat/selectedBehaviorChanged', { value: newBehavior });
+        webviewSend('chat/selectedBehaviorChanged', { value: newBehavior });
         dispatch(setSelectedBehavior(newBehavior));
     }
 
