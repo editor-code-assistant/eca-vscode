@@ -28,7 +28,10 @@ export function Chat() {
 
     return (
         <div className="chat-container">
-            <ChatHeader chatId={chatId} />
+            {running && (
+                <ChatHeader chatId={chatId} />
+            )}
+
             {!running &&
                 <div className="loading">
                     <div className="content">

@@ -56,21 +56,25 @@ export function ChatPrompt({ chatId, enabled }: ChatPromptProps) {
                 placeholder="Ask, plan, build..."
                 className="field"
             />
-            <select value={chat.selectedBehavior}
-                className="behaviors"
-                onChange={handleBehaviorChanged}
-            >
-                {chat.behaviors.map((behavior) => (
-                    <option key={behavior} value={behavior}>{behavior}</option>
-                ))}
-            </select>
-            <select onChange={handleModelChanged}
-                value={chat.selectedModel}
-                className="models">
-                {chat.models.map((model) => (
-                    <option key={model} value={model}>{model}</option>
-                ))}
-            </select>
+            {enabled && (
+                <div>
+                    <select value={chat.selectedBehavior}
+                        className="behaviors"
+                        onChange={handleBehaviorChanged}
+                    >
+                        {chat.behaviors.map((behavior) => (
+                            <option key={behavior} value={behavior}>{behavior}</option>
+                        ))}
+                    </select>
+                    <select onChange={handleModelChanged}
+                        value={chat.selectedModel}
+                        className="models">
+                        {chat.models.map((model) => (
+                            <option key={model} value={model}>{model}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
             <div className="spacing"></div>
             <div className="send"><i onClick={sendPromptValue} className="codicon codicon-send"></i></div>
         </div>
