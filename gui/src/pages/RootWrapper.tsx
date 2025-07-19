@@ -1,5 +1,6 @@
+import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useWebviewListener } from "../hooks";
+import { useWebviewListener, webviewSend } from "../hooks";
 import { ChatContentReceived, MCPServerUpdatedParams } from "../protocol";
 import { addContentReceived, setBehaviors, setModels, setSelectedBehavior, setSelectedModel, setWelcomeMessage } from "../redux/slices/chat";
 import { setMcpServers } from "../redux/slices/mcp";
@@ -52,6 +53,10 @@ const RootWrapper = () => {
     useWebviewListener('mcp/serversUpdated', (mcps: MCPServerUpdatedParams) => {
         dispatch(setMcpServers(mcps));
     });
+
+    useEffect(() => {
+        webviewSend('webview/ready', {});
+    }, []);
 
     return (
         <Outlet />

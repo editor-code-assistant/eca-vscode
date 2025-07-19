@@ -37,6 +37,12 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
 
         this._webview.onDidReceiveMessage(message => {
             switch (message.type) {
+                case 'webview/ready': {
+                    let session = s.getSession()!;
+                    this.sessionChanged(session);
+                    this.handleNewStatus(session.server.status);
+                    return;
+                }
                 case 'chat/userPrompt': {
                     let session = s.getSession()!;
                     session.server.connection.sendRequest(protocol.chatPrompt, {
