@@ -74,8 +74,13 @@ export interface MCPServerUpdatedParams {
     tools?: MCPServerTool[];
 }
 
+export interface MCPServerToolParameters {
+    properties: { [key: string]: { type: string, description?: string } },
+    required: string[],
+}
+
 export interface MCPServerTool {
     name: string;
     description: string;
-    parameters: any;
+    parameters: MCPServerToolParameters;
 }

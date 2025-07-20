@@ -1,0 +1,9 @@
+.eca-tooltip {
+    background-color: var(--vscode-sideBar-background, #1e1e1e);
+    outline: 0.5px solid var(--vscode-panel-border, #e6e6e6);
+    color: var(--vscode-sideBar-foreground, #e6e6e6);
+    padding: 4px 8px;
+    z-index: 1000;
+    max-width: 80vw;
+    white-space: pre-line;
+}

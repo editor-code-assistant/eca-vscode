@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import { State } from '../../redux/store';
 import './MCPDetails.scss';
+import { ToolTip } from '../components/ToolTip';
 
 export function MCPDetails() {
     const mcpServers = useSelector((state: State) => state.mcp.servers);
@@ -21,7 +22,26 @@ export function MCPDetails() {
                                 <dt>Tools: </dt>
                                 <dd className="tools">
                                     {server.tools?.map((tool) => {
-                                        return (<span className="tool">{tool.name}</span>);
+                                        let parametersTxt = '';
+                                        if (tool.parameters && tool.parameters.properties) {
+                                            parametersTxt = Object.entries(tool.parameters.properties)
+                                                .map(([key, value]) => `${key}: ${value.description || 'No description'}`)
+                                                .join(', ');
+                                        }
+
+                                        return (
+                                            <div style={{display: "inline-block"}}>
+                                                <span className="tool" data-tooltip-id={`tool-description-${tool.name}`}>{tool.name}</span>
+                                                <ToolTip id={`tool-description-${tool.name}`}>
+                                                    <p>{tool.description}</p>
+                                                    {parametersTxt &&
+                                                        <div>
+                                                            <span>Parameters:</span>
+                                                            <p>{parametersTxt}</p>
+                                                        </div>}
+                                                </ToolTip>
+                                            </div>
+                                        );
                                     })}
                                 </dd>
                                 <dt>Command: </dt>
