@@ -28,7 +28,8 @@ export function ChatMessages({ chatId, children }: ChatMessagesProps) {
                             <ChatTextMessage
                                 text={message.value}
                                 role={message.role} />
-                        </div>);
+                        </div>
+                    );
                 }
 
                 if (message.type == 'toolCall') {

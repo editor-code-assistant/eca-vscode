@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { useSelector } from "react-redux";
 import { webviewSend } from "../../hooks";
 import { setSelectedBehavior, setSelectedModel } from "../../redux/slices/chat";
@@ -11,7 +11,7 @@ interface ChatPromptProps {
     chatId?: string,
 }
 
-export function ChatPrompt({ chatId, enabled }: ChatPromptProps) {
+export const ChatPrompt = memo(({ chatId, enabled }: ChatPromptProps) => {
     const [promptValue, setPromptValue] = useState('');
     const dispatch = useEcaDispatch();
 
@@ -79,4 +79,4 @@ export function ChatPrompt({ chatId, enabled }: ChatPromptProps) {
             <div className="send"><i onClick={sendPromptValue} className="codicon codicon-send"></i></div>
         </div>
     );
-}
+});
