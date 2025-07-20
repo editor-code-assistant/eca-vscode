@@ -1,15 +1,15 @@
-import { ITooltip, Tooltip } from "react-tooltip";
+import { ITooltip, Tooltip, TooltipRefProps } from "react-tooltip";
 import './ToolTip.scss';
+import { RefAttributes } from "react";
 
-export function ToolTip(props: ITooltip) {
+export function ToolTip(props: (ITooltip & RefAttributes<TooltipRefProps>)) {
     const className = `${props.className} eca-tooltip`;
-
     return (
         <Tooltip
-            className={className}
             {...props}
+            className={className}
             noArrow
             opacity={1}
-            delayShow={200} />
+            delayShow={props.delayShow || 200} />
     );
 }

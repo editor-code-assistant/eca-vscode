@@ -51,6 +51,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                         model: session.chatSelectedModel,
                         behavior: session.chatSelectedBehavior,
                         requestId: message.data.requestId.toString(),
+                        contexts: message.data.contexts,
                     }).then((result) => {
                         this._webview?.postMessage({
                             type: 'chat/newChat',
@@ -75,6 +76,17 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     session.server.connection.sendNotification(protocol.chatPromptStop, {
                         chatId: message.data.chatId,
                     });
+                    return;
+                }
+                case 'chat/queryContext': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendRequest(protocol.chatQueryContext, message.data)
+                        .then((result) => {
+                            this._webview?.postMessage({
+                                type: 'chat/queryContext',
+                                data: result
+                            });
+                        });
                     return;
                 }
             }
@@ -173,6 +185,10 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 models: session.models,
                 selectedModel: session.chatSelectedModel
             },
+        });
+        this._webview?.postMessage({
+            type: 'server/setWorkspaceFolders',
+            data: session.workspaceFolders,
         });
     }
 

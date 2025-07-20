@@ -142,6 +142,19 @@ type ToolCallOrigin = 'mcp' | 'native';
 
 export const chatContentReceived = new rpc.NotificationType<ChatContentReceivedParams>('chat/contentReceived');
 
+export interface ChatQueryContextParams {
+    chatId: string;
+    query: string;
+    contexts: ChatContext[];
+}
+
+export interface ChatQueryContextResponse {
+    chatId: string;
+    contexts: ChatContext[];
+}
+
+export const chatQueryContext = new rpc.RequestType<ChatQueryContextParams, ChatQueryContextResponse, void>('chat/queryContext');
+
 type MCPStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
 
 export interface MCPServerUpdatedParams {

@@ -5,7 +5,6 @@ import { State } from '../../redux/store';
 import './ChatMessages.scss';
 import { ChatTextMessage } from './ChatTextMessage';
 import { ChatToolCall } from './ChatToolCall';
-import { MarkdownContent } from './MarkdownContent';
 
 interface ChatMessagesProps {
     children: React.ReactNode,

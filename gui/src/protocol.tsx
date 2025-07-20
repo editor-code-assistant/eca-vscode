@@ -1,3 +1,8 @@
+export interface WorkspaceFolder {
+    name: string;
+    uri: string;
+}
+
 interface TextContent {
     type: 'text';
     text: string;
@@ -83,4 +88,26 @@ export interface MCPServerTool {
     name: string;
     description: string;
     parameters: MCPServerToolParameters;
+}
+
+interface FileContext {
+    type: 'file';
+    path: string;
+}
+
+interface DirectoryContext {
+    type: 'directory';
+    path: string;
+}
+
+interface WebContext {
+    type: 'web';
+    url: string;
+}
+
+export type ChatContext = FileContext | DirectoryContext | WebContext;
+
+export interface ChatQueryContextResult {
+    chatId?: string,
+    contexts: ChatContext[],
 }

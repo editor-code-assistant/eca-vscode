@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useWebviewListener, webviewSend } from "../hooks";
-import { ChatContentReceived, MCPServerUpdatedParams } from "../protocol";
-import { addContentReceived, setBehaviors, setModels, setSelectedBehavior, setSelectedModel, setWelcomeMessage } from "../redux/slices/chat";
+import { ChatContentReceived, ChatQueryContextResult, MCPServerUpdatedParams, WorkspaceFolder } from "../protocol";
+import { addContentReceived, setBehaviors, setContexts, setModels, setSelectedBehavior, setSelectedModel, setWelcomeMessage } from "../redux/slices/chat";
 import { setMcpServers } from "../redux/slices/mcp";
-import { ServerStatus, setStatus } from "../redux/slices/server";
+import { ServerStatus, setStatus, setWorkspaceFolders } from "../redux/slices/server";
 import { useEcaDispatch } from "../redux/store";
 
 interface NavigateTo {
@@ -32,6 +32,10 @@ const RootWrapper = () => {
         dispatch(setStatus(status));
     });
 
+    useWebviewListener('server/setWorkspaceFolders', (workspaceFolders: WorkspaceFolder[]) => {
+        dispatch(setWorkspaceFolders(workspaceFolders));
+    });
+
     useWebviewListener('chat/setBehaviors', ({ behaviors, selectedBehavior }: { behaviors: string[], selectedBehavior: string }) => {
         dispatch(setBehaviors(behaviors));
         dispatch(setSelectedBehavior(selectedBehavior));
@@ -48,6 +52,10 @@ const RootWrapper = () => {
 
     useWebviewListener('chat/contentReceived', (contentReceived: ChatContentReceived) => {
         dispatch(addContentReceived(contentReceived))
+    });
+
+    useWebviewListener('chat/queryContext', (result: ChatQueryContextResult) => {
+        dispatch(setContexts(result));
     });
 
     useWebviewListener('mcp/serversUpdated', (mcps: MCPServerUpdatedParams) => {

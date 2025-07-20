@@ -4,6 +4,7 @@ import { webviewSend } from "../../hooks";
 import { setSelectedBehavior, setSelectedModel } from "../../redux/slices/chat";
 import { State, useEcaDispatch } from "../../redux/store";
 import { sendPrompt } from "../../redux/thunks/chat";
+import { ChatContexts } from "./ChatContexts";
 import './ChatPrompt.scss';
 
 interface ChatPromptProps {
@@ -15,7 +16,10 @@ export const ChatPrompt = memo(({ chatId, enabled }: ChatPromptProps) => {
     const [promptValue, setPromptValue] = useState('');
     const dispatch = useEcaDispatch();
 
-    const chat = useSelector((state: State) => state.chat);
+    const selectedBehavior = useSelector((state: State) => state.chat.selectedBehavior);
+    const behaviors = useSelector((state: State) => state.chat.behaviors);
+    const selectedModel = useSelector((state: State) => state.chat.selectedModel);
+    const models = useSelector((state: State) => state.chat.models);
 
     const sendPromptValue = () => {
         if (promptValue.trim()) {
@@ -47,8 +51,7 @@ export const ChatPrompt = memo(({ chatId, enabled }: ChatPromptProps) => {
 
     return (
         <div className="prompt-area">
-            <div className="contexts">
-            </div>
+            <ChatContexts chatId={chatId} />
             <textarea
                 value={promptValue}
                 onChange={(e) => setPromptValue(e.target.value)}
@@ -58,18 +61,18 @@ export const ChatPrompt = memo(({ chatId, enabled }: ChatPromptProps) => {
             />
             {enabled && (
                 <div>
-                    <select value={chat.selectedBehavior}
+                    <select value={selectedBehavior}
                         className="behaviors"
                         onChange={handleBehaviorChanged}
                     >
-                        {chat.behaviors.map((behavior) => (
+                        {behaviors.map((behavior) => (
                             <option key={behavior} value={behavior}>{behavior}</option>
                         ))}
                     </select>
                     <select onChange={handleModelChanged}
-                        value={chat.selectedModel}
+                        value={selectedModel}
                         className="models">
-                        {chat.models.map((model) => (
+                        {models.map((model) => (
                             <option key={model} value={model}>{model}</option>
                         ))}
                     </select>

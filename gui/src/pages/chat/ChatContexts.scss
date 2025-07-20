@@ -1,0 +1,87 @@
+.contexts {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+    %context-label {
+        opacity: 0.8;
+        font-size: 0.9em;
+        color: var(--vscode-input-foreground, #cccccc);
+        border-radius: 0.3em;
+        background: none;
+        border: 1px solid var(--vscode-toolbar-hoverBackground, #3c3c3c);
+        transition: opacity 0.1s, background-color 0.1s;
+        padding: 0.2em;
+        margin: 0.2em 0.2em;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 1;
+            background-color: var(--vscode-toolbar-hoverBackground, #3c3c3c);
+        }
+    }
+
+    .add {
+        @extend %context-label;
+    }
+
+    #add-context {
+        background-color: var(--vscode-input-background, #3c3c3c);
+        height: 30vh;
+        max-width: 80vw;
+        overflow: auto;
+        padding: 0.6em 0.4em;
+
+        input {
+            background-color: var(--vscode-input-background, #3c3c3c);
+            outline: none;
+            border: none;
+            color: var(--vscode-input-foreground, #cccccc);
+            margin-bottom: 0.5em;
+        }
+
+        .loading {
+            text-align: center;
+        }
+
+        .context-item {
+            padding: 0.2em 0.5em;
+
+            &:hover {
+                background-color: var(--vscode-toolbar-hoverBackground, #3c3c3c);
+                cursor: pointer;
+            }
+
+            .label {
+                color: var(--vscode-input-foreground, #cccccc);
+            }
+            .description {
+                margin-left: 0.8em;
+                font-size: 0.8em;
+                opacity: 0.5;
+            }
+        }
+    }
+    .context-icon {
+        font-size: 1em;
+        vertical-align: middle;
+        margin: 0 0.2em;
+
+        &.file { color: var(--vscode-terminalSymbolIcon-flagForeground, #ee9d28); }
+        &.directory { color: var(--vscode-terminalSymbolIcon-fileForeground, #cccccc); }
+        &.web { color: var(--vscode-terminalSymbolIcon-argumentForeground, #75beff); }
+    }
+
+    .added-context {
+        @extend %context-label;
+
+        &:hover {
+            .context-icon {
+                &:before {
+                    font-family: var(--vscode-icon-close-font-family);
+                    content: "\ea76";
+                }
+            }
+        }
+    }
+}

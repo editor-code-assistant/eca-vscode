@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { WorkspaceFolder } from "../../protocol";
 
 export enum ServerStatus {
     Stopped = 'Stopped',
@@ -11,12 +12,16 @@ export const serverSlice = createSlice({
     name: 'server',
     initialState: {
         status: ServerStatus.Stopped,
+        workspaceFolders: [] as WorkspaceFolder[],
     },
     reducers: {
         setStatus: (state, status) => {
             state.status = status.payload;
         },
+        setWorkspaceFolders: (state, status) => {
+            state.workspaceFolders = status.payload;
+        },
     },
 });
 
-export const { setStatus } = serverSlice.actions
+export const { setStatus, setWorkspaceFolders } = serverSlice.actions
