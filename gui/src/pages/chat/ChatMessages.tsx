@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { ChatMessage } from '../../redux/slices/chat';
 import { State } from '../../redux/store';
 import './ChatMessages.scss';
+import { ChatTextMessage } from './ChatTextMessage';
 import { ChatToolCall } from './ChatToolCall';
 import { MarkdownContent } from './MarkdownContent';
 
@@ -22,14 +23,12 @@ export function ChatMessages({ chatId, children }: ChatMessagesProps) {
             {children}
             {messages && messages.map((message, index) => {
                 if (message.type === 'text') {
-                    return (<div key={index} className={`${message.role}-message text-message `}>
-                        {message.role === 'assistant' && (
-                            <MarkdownContent content={message.value} />
-                        )}
-                        {message.role != 'assistant' && (
-                            <span>{message.value}</span>
-                        )}
-                    </div>)
+                    return (
+                        <div key={index}>
+                            <ChatTextMessage
+                                text={message.value}
+                                role={message.role} />
+                        </div>);
                 }
 
                 if (message.type == 'toolCall') {
