@@ -106,7 +106,7 @@ export const ChatContexts = memo(({ chatId }: Props) => {
                 clickable
                 place="top-start">
                 <div className="add-context-container">
-                    <input value={query} onChange={onInputQueryChanged} type="text" placeholder="Add files, folders..." />
+                    <input autoFocus value={query} onChange={onInputQueryChanged} type="text" placeholder="Add files, folders..." />
                     {!contexts && (
                         <div className="loading">
                             <i className="codicon codicon-loading codicon-modifier-spin"></i>
