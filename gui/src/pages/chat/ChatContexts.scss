@@ -79,6 +79,7 @@
             .context-icon {
                 &:before {
                     font-family: var(--vscode-icon-close-font-family);
+                    color: var(--vscode-input-foreground, #cccccc);
                     content: "\ea76";
                 }
             }
