@@ -41,6 +41,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     let session = s.getSession()!;
                     this.sessionChanged(session);
                     this.handleNewStatus(session.server.status);
+                    this.configChanged();
                     return;
                 }
                 case 'chat/userPrompt': {
@@ -189,6 +190,14 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         this._webview?.postMessage({
             type: 'server/setWorkspaceFolders',
             data: session.workspaceFolders,
+        });
+    }
+
+    configChanged() {
+        const config = vscode.workspace.getConfiguration('eca');
+        this._webview?.postMessage({
+            type: 'config/updated',
+            data: config,
         });
     }
 

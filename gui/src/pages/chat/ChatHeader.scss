@@ -7,21 +7,27 @@
         flex:1;
         align-items: center;
 
-        .mcps {
+        %item {
             background-color: var(--vscode-input-background, #3c3c3c);
             padding: 0.2em 0.3em;
             border-radius: 0.5em;
-            margin-top: 0.5em;
-            margin-left: 0.8em;
-            margin-right: 0.8em;
+            margin: 0.3em 0.4em;
             opacity: 0.8;
             cursor: pointer;
             transition: opacity 0.1s;
+            font-size: 0.9em;
 
             &:hover {
                 opacity: 1;
             }
+        }
 
+        .details-tooltip {
+            line-height: 0.5;
+        }
+
+        .mcps {
+            @extend %item;
             .running {
                 color: var(--vscode-testing-iconPassed, #73c991);
             }
@@ -31,6 +37,10 @@
             .failed {
                 color: var(--vscode-testing-iconFailed, #f14c4c);
             }
+        }
+
+        .usage {
+            @extend %item;
         }
     }
     .actions {

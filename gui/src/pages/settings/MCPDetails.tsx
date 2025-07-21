@@ -21,7 +21,7 @@ export function MCPDetails() {
                             <dl>
                                 <dt>Tools: </dt>
                                 <dd className="tools">
-                                    {server.tools?.map((tool) => {
+                                    {server.tools?.map((tool, index) => {
                                         let parametersTxt = '';
                                         if (tool.parameters && tool.parameters.properties) {
                                             parametersTxt = Object.entries(tool.parameters.properties)
@@ -30,7 +30,7 @@ export function MCPDetails() {
                                         }
 
                                         return (
-                                            <div style={{display: "inline-block"}}>
+                                            <div key={index} style={{display: "inline-block"}}>
                                                 <span className="tool" data-tooltip-id={`tool-description-${tool.name}`}>{tool.name}</span>
                                                 <ToolTip id={`tool-description-${tool.name}`}>
                                                     <p>{tool.description}</p>

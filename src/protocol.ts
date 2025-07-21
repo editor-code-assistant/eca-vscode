@@ -86,6 +86,7 @@ type ChatContent =
     | TextContent
     | URLContent
     | ProgressContent
+    | UsageContent
     | ToolCallPrepareContent
     | ToolCallRunContent
     | ToolCalledContent;
@@ -105,6 +106,15 @@ interface ProgressContent {
     type: 'progress';
     state: 'running' | 'finished';
     text?: string;
+}
+
+interface UsageContent {
+    type: 'usage';
+    messageInputTokens: number;
+    messageOutputTokens: number;
+    sessionTokens: number;
+    messageCost?: string;
+    sessionCost?: string;
 }
 
 interface ToolCallPrepareContent {

@@ -11,7 +11,6 @@ async function activate(context: vscode.ExtensionContext) {
 	const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
 	statusBar.command = 'eca.manage';
 	statusBar.show();
-
 	const ecaChannel = vscode.window.createOutputChannel('ECA stderr', 'Clojure');
 
 	const webviewProvider = new EcaWebviewProvider(context);
@@ -58,6 +57,11 @@ async function activate(context: vscode.ExtensionContext) {
 			server: server,
 			webviewProvider: webviewProvider,
 			context: context,
+		}),
+		vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
+			if (e.affectsConfiguration('eca')) {
+				webviewProvider.configChanged();
+			}
 		}),
 	);
 }

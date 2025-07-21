@@ -4,7 +4,7 @@ import { useWebviewListener, webviewSend } from "../hooks";
 import { ChatContentReceived, ChatQueryContextResult, MCPServerUpdatedParams, WorkspaceFolder } from "../protocol";
 import { addContentReceived, setBehaviors, setContexts, setModels, setSelectedBehavior, setSelectedModel, setWelcomeMessage } from "../redux/slices/chat";
 import { setMcpServers } from "../redux/slices/mcp";
-import { ServerStatus, setStatus, setWorkspaceFolders } from "../redux/slices/server";
+import { ServerStatus, setConfig, setStatus, setWorkspaceFolders } from "../redux/slices/server";
 import { useEcaDispatch } from "../redux/store";
 
 interface NavigateTo {
@@ -60,6 +60,10 @@ const RootWrapper = () => {
 
     useWebviewListener('mcp/serversUpdated', (mcps: MCPServerUpdatedParams) => {
         dispatch(setMcpServers(mcps));
+    });
+
+    useWebviewListener('config/updated', (config: { [key: string]: any }) => {
+        dispatch(setConfig(config));
     });
 
     useEffect(() => {

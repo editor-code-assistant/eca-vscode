@@ -26,6 +26,15 @@ interface Chat {
     lastRequestId: number,
     progress?: string,
     messages: ChatMessage[],
+    usage: ChatUsage,
+}
+
+interface ChatUsage {
+    messageInputTokens: number,
+    messageOutputTokens: number,
+    sessionTokens: number,
+    messageCost?: string,
+    sessionCost?: string,
 }
 
 export const chatSlice = createSlice({
@@ -37,7 +46,7 @@ export const chatSlice = createSlice({
         selectedModel: "",
         welcomeMessage: "",
         chats: {} as { [key: string]: Chat },
-        contexts: null as (ChatContext[] | null),
+        contexts: undefined as (ChatContext[] | undefined),
         addedContexts: [] as ChatContext[],
     },
     reducers: {
@@ -150,6 +159,10 @@ export const chatSlice = createSlice({
                     tool.outputs = content.outputs
                     tool.status = output?.error ? 'failed' : 'succeeded';
                     chat.messages[existingIndex] = tool;
+                    break;
+                }
+                case 'usage': {
+                    chat.usage = content;
                     break;
                 }
             }

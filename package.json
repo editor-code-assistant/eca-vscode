@@ -43,6 +43,11 @@
             "type": "string",
             "default": "",
             "markdownDescription": "Extra args for the eca start command, example: \"--log-level debug\"."
+          },
+          "eca.usageStringFormat": {
+            "type": "string",
+            "default": "{messageCost} / {sessionCost}",
+            "markdownDescription": "Format string for the usage (tokens/cost) in chat window. variables available:\n\n - `sessionCost`\n- `messageCost`\n- `sessionTokens`\n- `messageInputTokens`\n- `messageOutputTokens`."
           }
         }
       }
