@@ -9,7 +9,7 @@ interface ChatMessageText {
 
 interface ChatMessageToolCall {
     type: 'toolCall',
-    status: 'preparing' | 'run' | 'succeeded' | 'failed',
+    status: 'preparing' | 'run' | 'succeeded' | 'failed' | 'rejected',
     role: ChatContentRole,
     id: string,
     name: string,
@@ -147,8 +147,16 @@ export const chatSlice = createSlice({
                     const existingIndex = chat.messages.findIndex(msg => msg.type === 'toolCall' && msg.id === content.id);
                     let tool = chat.messages[existingIndex] as ChatMessageToolCall;
                     tool.status = 'run';
+                    tool.manualApproval = content.manualApproval;
                     tool.argumentsText = JSON.stringify(content.arguments);
 
+                    chat.messages[existingIndex] = tool;
+                    break;
+                }
+                case 'toolCallRejected': {
+                    const existingIndex = chat.messages.findIndex(msg => msg.type === 'toolCall' && msg.id === content.id);
+                    let tool = chat.messages[existingIndex] as ChatMessageToolCall;
+                    tool.status = 'rejected';
                     chat.messages[existingIndex] = tool;
                     break;
                 }

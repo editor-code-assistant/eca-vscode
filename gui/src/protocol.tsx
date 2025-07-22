@@ -47,6 +47,14 @@ interface ToolCallRunContent {
     manualApproval: boolean;
 }
 
+interface ToolCallRejectedContent {
+    type: 'toolCallRejected';
+    origin: ToolCallOrigin;
+    id: string;
+    name: string;
+    arguments: { [key: string]: string };
+}
+
 interface ToolCalledContent {
     type: 'toolCalled';
     origin: ToolCallOrigin;
@@ -71,6 +79,7 @@ type ChatContent = { type: string } & (
     | UsageContent
     | ToolCallPrepareContent
     | ToolCallRunContent
+    | ToolCallRejectedContent
     | ToolCalledContent);
 
 export type ChatContentRole = 'user' | 'system' | 'assistant';

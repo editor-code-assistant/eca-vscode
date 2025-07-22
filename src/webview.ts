@@ -72,6 +72,22 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     session.chatSelectedBehavior = message.data.value;
                     return;
                 }
+                case 'chat/toolCallApprove': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendNotification(protocol.chatToolCallApprove, {
+                        chatId: message.data.chatId,
+                        toolCallId: message.data.toolCallId,
+                    });
+                    return;
+                }
+                case 'chat/toolCallReject': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendNotification(protocol.chatToolCallReject, {
+                        chatId: message.data.chatId,
+                        toolCallId: message.data.toolCallId,
+                    });
+                    return;
+                }
                 case 'chat/promptStop': {
                     let session = s.getSession()!;
                     session.server.connection.sendNotification(protocol.chatPromptStop, {

@@ -35,10 +35,13 @@ export function ChatMessages({ chatId, children }: ChatMessagesProps) {
                     return (
                         <div key={index}>
                             <ChatToolCall
+                                chatId={chatId}
+                                toolCallId={message.id}
                                 name={message.name}
                                 origin={message.origin}
                                 status={message.status}
                                 outputs={message.outputs}
+                                manualApproval={message.manualApproval}
                                 argumentsText={message.argumentsText}
                             />
                         </div>

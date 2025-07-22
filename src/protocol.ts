@@ -68,6 +68,20 @@ export interface ChatPromptResult {
 
 export const chatPrompt = new rpc.RequestType<ChatPromptParams, ChatPromptResult, void>('chat/prompt');
 
+export interface ChatToolCallApproveParams {
+    chatId: string;
+    toolCallId: string;
+}
+
+export const chatToolCallApprove = new rpc.NotificationType<ChatToolCallApproveParams>('chat/toolCallApprove');
+
+export interface ChatToolCallRejectParams {
+    chatId: string;
+    toolCallId: string;
+}
+
+export const chatToolCallReject = new rpc.NotificationType<ChatToolCallRejectParams>('chat/toolCallReject');
+
 export interface ChatPromptStopParams {
     chatId: string;
 }
@@ -95,6 +109,7 @@ type ChatContent =
     | UsageContent
     | ToolCallPrepareContent
     | ToolCallRunContent
+    | ToolCallRejectedContent
     | ToolCalledContent;
 
 interface TextContent {
@@ -139,6 +154,14 @@ interface ToolCallRunContent {
     name: string;
     arguments: string[];
     manualApproval: boolean;
+}
+
+interface ToolCallRejectedContent {
+    type: 'toolCallRejected';
+    origin: ToolCallOrigin;
+    id: string;
+    name: string;
+    arguments: { [key: string]: string };
 }
 
 interface ToolCalledContent {

@@ -27,6 +27,20 @@ export const sendPrompt = createAsyncThunk<void, { chatId?: string, prompt: stri
     }
 );
 
+export const toolCallApprove = createAsyncThunk<void, { chatId: string, toolCallId: string }, ThunkApiType>(
+    "chat/toolCallApprove",
+    async ({ chatId, toolCallId }, _) => {
+        webviewSend('chat/toolCallApprove', { chatId, toolCallId });
+    }
+);
+
+export const toolCallReject = createAsyncThunk<void, { chatId: string, toolCallId: string }, ThunkApiType>(
+    "chat/toolCallReject",
+    async ({ chatId, toolCallId }, _) => {
+        webviewSend('chat/toolCallReject', { chatId, toolCallId });
+    }
+);
+
 export const stopPrompt = createAsyncThunk<void, { chatId: string }, ThunkApiType>(
     "chat/stopPrompt",
     async ({ chatId }, _) => {
