@@ -74,6 +74,12 @@ export interface ChatPromptStopParams {
 
 export const chatPromptStop = new rpc.NotificationType<ChatPromptStopParams>('chat/promptStop');
 
+interface ChatDeleteParams {
+    chatId: string;
+}
+
+export const chatDelete = new rpc.RequestType<ChatDeleteParams, {}, void>('chat/delete');
+
 export interface ChatContentReceivedParams {
     chatId: string;
     role: ChatContentRole;

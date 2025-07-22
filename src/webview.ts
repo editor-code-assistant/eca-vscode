@@ -90,6 +90,13 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                         });
                     return;
                 }
+                case 'chat/delete': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendRequest(protocol.chatDelete, {
+                        chatId: message.data.chatId,
+                    });
+                    return;
+                }
             }
         });
     }

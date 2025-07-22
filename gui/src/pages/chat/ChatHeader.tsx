@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../App';
-import { clearHistory } from '../../redux/slices/chat';
 import { State, useEcaDispatch } from '../../redux/store';
-import './ChatHeader.scss';
+import { deleteChat } from '../../redux/thunks/chat';
 import { ToolTip } from '../components/ToolTip';
+import './ChatHeader.scss';
 
 interface Props {
     chatId?: string,
@@ -14,8 +14,8 @@ export function ChatHeader({ chatId }: Props) {
     const dispatch = useEcaDispatch();
     const navigate = useNavigate();
 
-    const clearChat = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        dispatch(clearHistory(chatId!));
+    const deleteCurrentChat = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        dispatch(deleteChat({ chatId: chatId! }));
     }
 
     const mcpServers = useSelector((state: State) => state.mcp.servers);
@@ -92,7 +92,7 @@ export function ChatHeader({ chatId }: Props) {
             </div>
             <div className="actions">
                 {chatId && (
-                    <div className="action"><i onClick={clearChat} className="codicon codicon-trash"></i></div>)}
+                    <div className="action"><i onClick={deleteCurrentChat} className="codicon codicon-trash"></i></div>)}
             </div>
         </div>
     );

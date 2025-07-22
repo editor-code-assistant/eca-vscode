@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { webviewSend } from "../../hooks";
 import { ChatContext } from "../../protocol";
-import { incRequestId } from "../slices/chat";
+import { incRequestId, resetChat } from "../slices/chat";
 import { ThunkApiType } from "../store";
 
 export const sendPrompt = createAsyncThunk<void, { chatId?: string, prompt: string }, ThunkApiType>(
@@ -31,6 +31,14 @@ export const stopPrompt = createAsyncThunk<void, { chatId: string }, ThunkApiTyp
     "chat/stopPrompt",
     async ({ chatId }, _) => {
         webviewSend('chat/promptStop', { chatId });
+    }
+);
+
+export const deleteChat = createAsyncThunk<void, { chatId: string }, ThunkApiType>(
+    "chat/delete",
+    async ({ chatId }, { dispatch }) => {
+        webviewSend('chat/delete', { chatId });
+        dispatch(resetChat(chatId));
     }
 );
 

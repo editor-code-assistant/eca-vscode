@@ -26,7 +26,7 @@ interface Chat {
     lastRequestId: number,
     progress?: string,
     messages: ChatMessage[],
-    usage: ChatUsage,
+    usage?: ChatUsage,
 }
 
 interface ChatUsage {
@@ -72,9 +72,9 @@ export const chatSlice = createSlice({
                 lastRequestId: (state.chats[chatId]?.lastRequestId || 0) + 1,
             };
         },
-        clearHistory: (state, action) => {
+        resetChat: (state, action) => {
             const chatId = action.payload;
-            state.chats[chatId].messages = [];
+            delete state.chats[chatId];
         },
         addContentReceived: (state, action) => {
             const { chatId, role, content } = action.payload as ChatContentReceived;
@@ -190,7 +190,7 @@ export const {
     setWelcomeMessage,
     incRequestId,
     addContentReceived,
-    clearHistory,
+    resetChat,
     setContexts,
     addContext,
     removeContext,
