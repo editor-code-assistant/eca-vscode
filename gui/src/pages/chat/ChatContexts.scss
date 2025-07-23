@@ -70,6 +70,7 @@
         &.file { color: var(--vscode-terminalSymbolIcon-flagForeground, #ee9d28); }
         &.directory { color: var(--vscode-terminalSymbolIcon-fileForeground, #cccccc); }
         &.web { color: var(--vscode-terminalSymbolIcon-argumentForeground, #75beff); }
+        &.repoMap { color: var(--vscode-terminalSymbolIcon-methodForeground, #b180d7); }
     }
 
     .added-context {

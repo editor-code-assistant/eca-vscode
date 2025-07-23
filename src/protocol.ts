@@ -58,7 +58,11 @@ interface WebContext {
     url: string;
 }
 
-type ChatContext = FileContext | DirectoryContext | WebContext;
+interface RepoMapContext {
+    type: 'repoMap';
+}
+
+type ChatContext = FileContext | DirectoryContext | WebContext | RepoMapContext;
 export type ChatBehavior = 'agent' | 'chat';
 
 export interface ChatPromptResult {

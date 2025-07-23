@@ -47,7 +47,7 @@ export const chatSlice = createSlice({
         welcomeMessage: "",
         chats: {} as { [key: string]: Chat },
         contexts: undefined as (ChatContext[] | undefined),
-        addedContexts: [] as ChatContext[],
+        addedContexts: [{type: 'repoMap'}] as ChatContext[],
     },
     reducers: {
         setBehaviors: (state, action) => {

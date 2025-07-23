@@ -19,6 +19,8 @@ function contextLabel(context: ChatContext): string {
             return context.path.split('/').pop() || context.path;
         case 'web':
             return context.url;
+        case 'repoMap':
+            return 'repoMap';
         default:
             return 'Unknown Context';
     }
@@ -36,6 +38,8 @@ function contextDescription(context: ChatContext, workspaceFolders: WorkspaceFol
                 }
             }
             return context.path;
+        case 'repoMap':
+            return 'Summary view of workspaces files';
         default:
             return '';
     }
@@ -52,6 +56,9 @@ function contextIcon(context: ChatContext): React.ReactNode {
             break;
         case 'web':
             icon = 'globe';
+            break;
+        case 'repoMap':
+            icon = 'sparkle-filled';
             break;
         default:
             icon = 'question';

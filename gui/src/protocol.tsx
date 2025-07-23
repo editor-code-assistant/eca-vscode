@@ -126,7 +126,11 @@ interface WebContext {
     url: string;
 }
 
-export type ChatContext = FileContext | DirectoryContext | WebContext;
+interface RepoMapContext {
+    type: 'repoMap';
+}
+
+export type ChatContext = FileContext | DirectoryContext | WebContext | RepoMapContext;
 
 export interface ChatQueryContextResult {
     chatId?: string,
