@@ -182,14 +182,14 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         });
     }
 
-    mcpServerUpdated(params: protocol.MCPServerUpdatedParams) {
+    mcpServerUpdated(params: protocol.ToolServerUpdatedParams) {
         let session = s.getSession();
 
         if (session) {
             session.mcpServers[params.name] = params;
 
             this._webview?.postMessage({
-                type: 'mcp/serversUpdated',
+                type: 'tool/serversUpdated',
                 data: Object.values(session.mcpServers),
             });
         }

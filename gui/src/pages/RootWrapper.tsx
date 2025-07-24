@@ -58,7 +58,7 @@ const RootWrapper = () => {
         dispatch(setContexts(result));
     });
 
-    useWebviewListener('mcp/serversUpdated', (mcps: MCPServerUpdatedParams) => {
+    useWebviewListener('tool/serversUpdated', (mcps: MCPServerUpdatedParams) => {
         dispatch(setMcpServers(mcps));
     });
 

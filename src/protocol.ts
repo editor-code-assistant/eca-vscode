@@ -200,7 +200,7 @@ export const chatQueryContext = new rpc.RequestType<ChatQueryContextParams, Chat
 
 type MCPStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
 
-export interface MCPServerUpdatedParams {
+export interface ToolServerUpdatedParams {
     name: string;
     command: string;
     args: string[];
@@ -214,4 +214,4 @@ export interface MCPServerTool {
     parameters: any;
 }
 
-export const mcpServerUpdated = new rpc.NotificationType<MCPServerUpdatedParams>('mcp/serverUpdated');
+export const toolServerUpdated = new rpc.NotificationType<ToolServerUpdatedParams>('tool/serverUpdated');

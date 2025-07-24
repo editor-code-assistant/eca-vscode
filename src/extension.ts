@@ -25,7 +25,7 @@ async function activate(context: vscode.ExtensionContext) {
 				webviewProvider.contentReceived(params);
 			});
 
-			connection.onNotification(protocol.mcpServerUpdated, (params: protocol.MCPServerUpdatedParams) => {
+			connection.onNotification(protocol.toolServerUpdated, (params: protocol.ToolServerUpdatedParams) => {
 				webviewProvider.mcpServerUpdated(params);
 			});
 
