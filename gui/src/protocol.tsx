@@ -119,6 +119,7 @@ export interface ServerTool {
     name: string;
     description: string;
     parameters: ServerToolParameters;
+    disabled?: boolean;
 }
 
 interface FileContext {

@@ -34,7 +34,7 @@ export function MCPDetails() {
 
                                         return (
                                             <div key={index} style={{display: "inline-block"}}>
-                                                <span className="tool" data-tooltip-id={`tool-description-${tool.name}`}>{tool.name}</span>
+                                                <span className={`tool ${tool.disabled ? 'disabled' : ''}`} data-tooltip-id={`tool-description-${tool.name}`}>{tool.name}</span>
                                                 <ToolTip id={`tool-description-${tool.name}`}>
                                                     <p>{tool.description}</p>
                                                     {parametersTxt &&
