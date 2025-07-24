@@ -182,7 +182,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         });
     }
 
-    mcpServerUpdated(params: protocol.ToolServerUpdatedParams) {
+    toolServerUpdated(params: protocol.ToolServerUpdatedParams) {
         let session = s.getSession();
 
         if (session) {

@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { MCPServerUpdatedParams } from "../../protocol";
+import { ToolServerUpdatedParams } from "../../protocol";
 
 export const mcpSlice = createSlice({
     name: 'mcp',
     initialState: {
-        servers: [] as MCPServerUpdatedParams[],
+        servers: [] as ToolServerUpdatedParams[],
     },
     reducers: {
         setMcpServers: (state, action) => {

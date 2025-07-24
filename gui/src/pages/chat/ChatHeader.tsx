@@ -18,7 +18,7 @@ export function ChatHeader({ chatId }: Props) {
         dispatch(deleteChat({ chatId: chatId! }));
     }
 
-    const mcpServers = useSelector((state: State) => state.mcp.servers);
+    const mcpServers = useSelector((state: State) => state.mcp.servers.filter((server) => server.type === 'mcp'));
 
     const usage = useSelector((state: State) => chatId && state.chat.chats[chatId].usage);
     const usageStringFormat = useSelector((state: State) => state.server.config.usageStringFormat);

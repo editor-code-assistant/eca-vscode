@@ -12,7 +12,10 @@ export function MCPDetails() {
                 <h2 className="title">MCP Servers</h2>
                 <p className="description">MCPs are extra tools that can offer more power to ECA, for more details check <a href="https://modelcontextprotocol.io">MCP</a></p>
                 {mcpServers.map((server, index) => {
-                    const commandTxt = server.command + " " + (server.args?.join(" ") || "");
+                    let commandTxt;
+                    if (server.type === 'mcp') {
+                        commandTxt = server.command + " " + (server.args?.join(" ") || "");
+                    }
 
                     return (
                         <div key={index} className="server">
@@ -44,8 +47,8 @@ export function MCPDetails() {
                                         );
                                     })}
                                 </dd>
-                                <dt>Command: </dt>
-                                <dd className="command">{commandTxt}</dd>
+                                {commandTxt && <dt>Command: </dt>}
+                                {commandTxt && <dd className="command">{commandTxt}</dd>}
                             </dl>
                         </div>
                     );

@@ -26,7 +26,7 @@ async function activate(context: vscode.ExtensionContext) {
 			});
 
 			connection.onNotification(protocol.toolServerUpdated, (params: protocol.ToolServerUpdatedParams) => {
-				webviewProvider.mcpServerUpdated(params);
+				webviewProvider.toolServerUpdated(params);
 			});
 
 			webviewProvider.sessionChanged(session);

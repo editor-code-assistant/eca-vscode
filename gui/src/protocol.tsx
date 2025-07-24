@@ -90,25 +90,35 @@ export interface ChatContentReceived {
     content: ChatContent,
 }
 
-type MCPStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
+type ToolServerStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
 
-export interface MCPServerUpdatedParams {
+interface MCPServerUpdatedParams {
+    type: 'mcp';
     name: string;
     command: string;
     args: string[];
-    status: MCPStatus;
-    tools?: MCPServerTool[];
+    status: ToolServerStatus;
+    tools?: ServerTool[];
 }
 
-export interface MCPServerToolParameters {
+export interface EcaServerUpdatedParams {
+    type: 'native';
+    name: string;
+    status: ToolServerStatus;
+    tools: ServerTool[];
+}
+
+export type ToolServerUpdatedParams = EcaServerUpdatedParams | MCPServerUpdatedParams;
+
+export interface ServerToolParameters {
     properties: { [key: string]: { type: string, description?: string } },
     required: string[],
 }
 
-export interface MCPServerTool {
+export interface ServerTool {
     name: string;
     description: string;
-    parameters: MCPServerToolParameters;
+    parameters: ServerToolParameters;
 }
 
 interface FileContext {

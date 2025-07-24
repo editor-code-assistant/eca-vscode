@@ -30,6 +30,8 @@ export interface InitializeResult {
 
 export const initialize = new rpc.RequestType<InitializeParams, InitializeResult, void>('initialize');
 
+export const initialized = new rpc.NotificationType<any>('initialized');
+
 export const shutdown = new rpc.RequestType<any, void, void>('shutdown');
 
 export const exit = new rpc.NotificationType<any>('exit');
@@ -198,17 +200,27 @@ export interface ChatQueryContextResponse {
 
 export const chatQueryContext = new rpc.RequestType<ChatQueryContextParams, ChatQueryContextResponse, void>('chat/queryContext');
 
-type MCPStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
+type ToolServerStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
 
-export interface ToolServerUpdatedParams {
+interface MCPServerUpdatedParams {
+    type: 'mcp';
     name: string;
     command: string;
     args: string[];
-    status: MCPStatus;
-    tools?: MCPServerTool[];
+    status: ToolServerStatus;
+    tools?: ServerTool[];
 }
 
-export interface MCPServerTool {
+interface EcaServerUpdatedParams {
+    type: 'native';
+    name: string;
+    status: ToolServerStatus;
+    tools: ServerTool[];
+}
+
+export type ToolServerUpdatedParams = EcaServerUpdatedParams | MCPServerUpdatedParams;
+
+export interface ServerTool {
     name: string;
     description: string;
     parameters: any;

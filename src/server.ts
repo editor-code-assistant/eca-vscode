@@ -113,6 +113,7 @@ class EcaServer {
                 session.chatBehaviors = result.chatBehaviors;
                 session.chatSelectedBehavior = result.chatDefaultBehavior;
                 this.changeStatus(EcaServerStatus.Running);
+                this.connection.sendNotification(protocol.initialized, {});
                 this._onStarted(this.connection);
             });
         }).catch((err) => console.error('Fail to find eca server path.', err));
