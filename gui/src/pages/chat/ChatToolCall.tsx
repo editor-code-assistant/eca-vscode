@@ -3,8 +3,8 @@ import { ToolCallOutput } from '../../protocol';
 import { useEcaDispatch } from '../../redux/store';
 import { toolCallApprove, toolCallReject } from '../../redux/thunks/chat';
 import { ChatCollapsableMessage } from './ChatCollapsableMessage';
-import { MarkdownContent } from './MarkdownContent';
 import './ChatToolCall.scss';
+import { MarkdownContent } from './MarkdownContent';
 
 interface Props {
     chatId?: string,
@@ -79,17 +79,18 @@ export const ChatToolCall = memo(({ chatId, toolCallId, name, status, origin, ar
                     )}
                 </div>
             )}
-            content={showOutput &&
+            content={
                 <div style={{ display: 'inline' }}>
                     <p>Parameters:</p>
                     <MarkdownContent content={argsTxt} />
-                    <div>
-                        <p>Result:</p>
-                        {outputs!.map((output, index) => {
-                            const outputTxt = '```javascript\n' + output.content + '\n```';
-                            return (<MarkdownContent key={index} content={outputTxt} />)
-                        })}
-                    </div>
+                    {showOutput &&
+                        <div>
+                            <p>Result:</p>
+                            {outputs!.map((output, index) => {
+                                const outputTxt = '```javascript\n' + output.content + '\n```';
+                                return (<MarkdownContent key={index} content={outputTxt} />)
+                            })}
+                        </div>}
                 </div>
             }
         />
