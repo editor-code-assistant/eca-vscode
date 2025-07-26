@@ -1,0 +1,38 @@
+.collapsable {
+    padding: 0.5em 0.8em;
+    border: 0.1em solid var(--vscode-input-background, #3c3c3c);
+    border-radius: 0.4em;
+
+    &.open {
+        .header {
+            .chrevron {
+                transform: rotate(90deg);
+            }
+        }
+        .content {
+            max-height: 100%;
+        }
+    }
+
+    .header {
+        opacity: 0.8;
+        transition: opacity 100ms;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        .chrevron {
+            margin-right: 0.5em;
+            vertical-align: middle;
+            transition: transform 0.1s;
+        }
+    }
+
+    .content {
+        overflow: hidden;
+        transition: max-height 0.1s, overflow 0.1s;
+        max-height: 0;
+    }
+}

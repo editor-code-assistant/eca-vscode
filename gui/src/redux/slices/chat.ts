@@ -19,7 +19,15 @@ interface ChatMessageToolCall {
     manualApproval: boolean,
 }
 
-export type ChatMessage = ChatMessageText | ChatMessageToolCall;
+interface ChatMessageReason {
+    type: 'reason',
+    role: ChatContentRole,
+    id: string,
+    status: 'thinking' | 'done',
+    content?: string,
+}
+
+export type ChatMessage = ChatMessageText | ChatMessageReason | ChatMessageToolCall;
 
 interface Chat {
     id: string,
@@ -47,7 +55,7 @@ export const chatSlice = createSlice({
         welcomeMessage: "",
         chats: {} as { [key: string]: Chat },
         contexts: undefined as (ChatContext[] | undefined),
-        addedContexts: [{type: 'repoMap'}] as ChatContext[],
+        addedContexts: [{ type: 'repoMap' }] as ChatContext[],
     },
     reducers: {
         setBehaviors: (state, action) => {
@@ -167,6 +175,31 @@ export const chatSlice = createSlice({
                     tool.outputs = content.outputs
                     tool.status = output?.error ? 'failed' : 'succeeded';
                     chat.messages[existingIndex] = tool;
+                    break;
+                }
+                case 'reasonStarted': {
+                    chat.messages.push({
+                        type: 'reason',
+                        role: role,
+                        status: 'thinking',
+                        id: content.id,
+                    });
+                    break;
+                }
+                case 'reasonText': {
+                    const existingIndex = chat.messages.findIndex(msg => msg.type === 'reason' && msg.id === content.id);
+                    let reason = chat.messages[existingIndex] as ChatMessageReason;
+                    const newReason = { ...reason } as ChatMessageReason;
+                    newReason.content = (newReason.content || '') + content.text;
+                    chat.messages[existingIndex] = newReason;
+                    break;
+                }
+                case 'reasonFinished': {
+                    const existingIndex = chat.messages.findIndex(msg => msg.type === 'reason' && msg.id === content.id);
+                    let reason = chat.messages[existingIndex] as ChatMessageReason;
+                    const newReason = { ...reason } as ChatMessageReason;
+                    newReason.status = 'done';
+                    chat.messages[existingIndex] = newReason;
                     break;
                 }
                 case 'usage': {

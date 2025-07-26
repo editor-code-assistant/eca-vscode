@@ -116,7 +116,10 @@ type ChatContent =
     | ToolCallPrepareContent
     | ToolCallRunContent
     | ToolCallRejectedContent
-    | ToolCalledContent;
+    | ToolCalledContent
+    | ReasonStartedContent
+    | ReasonTextContent
+    | ReasonFinishedContent;
 
 interface TextContent {
     type: 'text';
@@ -184,6 +187,22 @@ interface ToolCalledContent {
 }
 
 type ToolCallOrigin = 'mcp' | 'native';
+
+interface ReasonStartedContent {
+    type: 'reasonStarted';
+    id: string;
+}
+
+interface ReasonTextContent {
+    type: 'reasonText';
+    id: string;
+    text: string;
+}
+
+interface ReasonFinishedContent {
+    type: 'reasonFinished';
+    id: string;
+}
 
 export const chatContentReceived = new rpc.NotificationType<ChatContentReceivedParams>('chat/contentReceived');
 

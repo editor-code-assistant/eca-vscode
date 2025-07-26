@@ -72,6 +72,22 @@ export interface ToolCallOutput {
 
 export type ToolCallOrigin = 'mcp' | 'native';
 
+interface ReasonStartedContent {
+    type: 'reasonStarted';
+    id: string;
+}
+
+interface ReasonTextContent {
+    type: 'reasonText';
+    id: string;
+    text: string;
+}
+
+interface ReasonFinishedContent {
+    type: 'reasonFinished';
+    id: string;
+}
+
 type ChatContent = { type: string } & (
     TextContent
     | URLContent
@@ -80,7 +96,10 @@ type ChatContent = { type: string } & (
     | ToolCallPrepareContent
     | ToolCallRunContent
     | ToolCallRejectedContent
-    | ToolCalledContent);
+    | ToolCalledContent
+    | ReasonStartedContent
+    | ReasonTextContent
+    | ReasonFinishedContent);
 
 export type ChatContentRole = 'user' | 'system' | 'assistant';
 

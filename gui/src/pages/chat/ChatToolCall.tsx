@@ -1,9 +1,10 @@
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { ToolCallOutput } from '../../protocol';
 import { useEcaDispatch } from '../../redux/store';
 import { toolCallApprove, toolCallReject } from '../../redux/thunks/chat';
-import './ChatToolCall.scss';
+import { ChatCollapsableMessage } from './ChatCollapsableMessage';
 import { MarkdownContent } from './MarkdownContent';
+import './ChatToolCall.scss';
 
 interface Props {
     chatId?: string,
@@ -19,8 +20,6 @@ interface Props {
 export const ChatToolCall = memo(({ chatId, toolCallId, name, status, origin, argumentsText, outputs, manualApproval }: Props) => {
     const argsTxt = '```javascript\n' + argumentsText + '\n```';
     const dispatch = useEcaDispatch();
-
-    const [open, setOpen] = useState(false);
 
     const originTxt = origin === 'mcp' ? 'MCP' : 'ECA';
     const showOutput = status === 'succeeded' || status === 'failed';
@@ -56,10 +55,6 @@ export const ChatToolCall = memo(({ chatId, toolCallId, name, status, origin, ar
     const description = `${verb} ${originTxt} tool`;
     const waitingApproval = manualApproval && status === 'run';
 
-    const toggleOpen = (_event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        setOpen(!open);
-    }
-
     const rejectToolCall = (_: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         dispatch(toolCallReject({ chatId: chatId!, toolCallId }));
     }
@@ -69,33 +64,34 @@ export const ChatToolCall = memo(({ chatId, toolCallId, name, status, origin, ar
     }
 
     return (
-        <div className={`tool-call ${open ? 'open' : ''}`}>
-            <div className="header">
-                <i onClick={toggleOpen} className="chrevron codicon codicon-chevron-right"></i>
-                <span onClick={toggleOpen} className="description">{description}</span>
-                <span onClick={toggleOpen} className="name">{name}</span>
-                <i onClick={toggleOpen} className={`status codicon ${iconClass}`}></i>
-                {waitingApproval && (
-                    <div className="approval-actions">
-                        <button onClick={rejectToolCall} className="cancel">Cancel</button>
-                        <button onClick={approveToolCall} className="run">Run</button>
-                    </div>
-                )}
-            </div>
-            <div className="content">
-                {showOutput &&
-                    <p>Parameters:</p>}
-                <MarkdownContent content={argsTxt} />
-                {showOutput &&
+        <ChatCollapsableMessage
+            className="tool-call"
+            header={(toggleOpen) => (
+                <div style={{ display: 'inline' }}>
+                    <span onClick={toggleOpen} className="description">{description}</span>
+                    <span onClick={toggleOpen} className="name">{name}</span>
+                    <i onClick={toggleOpen} className={`status codicon ${iconClass}`}></i>
+                    {waitingApproval && (
+                        <div className="approval-actions">
+                            <button onClick={rejectToolCall} className="cancel">Cancel</button>
+                            <button onClick={approveToolCall} className="run">Run</button>
+                        </div>
+                    )}
+                </div>
+            )}
+            content={showOutput &&
+                <div style={{ display: 'inline' }}>
+                    <p>Parameters:</p>
+                    <MarkdownContent content={argsTxt} />
                     <div>
                         <p>Result:</p>
                         {outputs!.map((output, index) => {
                             const outputTxt = '```javascript\n' + output.content + '\n```';
                             return (<MarkdownContent key={index} content={outputTxt} />)
                         })}
-                    </div>}
-            </div>
-        </div>
-
+                    </div>
+                </div>
+            }
+        />
     );
 });

@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { ChatMessage } from '../../redux/slices/chat';
 import { State } from '../../redux/store';
 import './ChatMessages.scss';
+import { ChatReason } from './ChatReason';
 import { ChatTextMessage } from './ChatTextMessage';
 import { ChatToolCall } from './ChatToolCall';
 
@@ -21,33 +22,41 @@ export function ChatMessages({ chatId, children }: ChatMessagesProps) {
         <div className="messages-container scrollable" ref={scrollRef} >
             {children}
             {messages && messages.map((message, index) => {
-                if (message.type === 'text') {
-                    return (
-                        <div key={index}>
-                            <ChatTextMessage
-                                text={message.value}
-                                role={message.role} />
-                        </div>
-                    );
+                switch (message.type) {
+                    case 'text':
+                        return (
+                            <div key={index}>
+                                <ChatTextMessage
+                                    text={message.value}
+                                    role={message.role} />
+                            </div>
+                        );
+                    case 'toolCall':
+                        return (
+                            <div key={index}>
+                                <ChatToolCall
+                                    chatId={chatId}
+                                    toolCallId={message.id}
+                                    name={message.name}
+                                    origin={message.origin}
+                                    status={message.status}
+                                    outputs={message.outputs}
+                                    manualApproval={message.manualApproval}
+                                    argumentsText={message.argumentsText}
+                                />
+                            </div>
+                        );
+                    case 'reason':
+                        return (
+                            <div key={index}>
+                                <ChatReason
+                                    status={message.status}
+                                    content={message.content} />
+                            </div>
+                        );
+                    default:
+                        return (<div></div>);
                 }
-
-                if (message.type == 'toolCall') {
-                    return (
-                        <div key={index}>
-                            <ChatToolCall
-                                chatId={chatId}
-                                toolCallId={message.id}
-                                name={message.name}
-                                origin={message.origin}
-                                status={message.status}
-                                outputs={message.outputs}
-                                manualApproval={message.manualApproval}
-                                argumentsText={message.argumentsText}
-                            />
-                        </div>
-                    );
-                }
-
             })}
         </div>
     );
