@@ -58,7 +58,7 @@ export const ChatPrompt = memo(({ chatId, enabled }: ChatPromptProps) => {
 
     return (
         <div className="prompt-area">
-            <ChatContexts chatId={chatId} />
+            <ChatContexts enabled={enabled} chatId={chatId} />
             <textarea
                 ref={inputRef}
                 autoFocus

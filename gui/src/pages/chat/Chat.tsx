@@ -36,7 +36,7 @@ export function Chat() {
                 <div className="loading">
                     <div className="content">
                         <p>Waiting for server to start... </p>
-                        <img width="80em" src={`${window.vscodeMediaUrl}/loading.png`} />
+                        <img className="image" src={`${window.vscodeMediaUrl}/logo.png`} />
                     </div>
                 </div>
             }
@@ -45,6 +45,7 @@ export function Chat() {
                 {running && (
                     <div className="welcome-message">
                         <h2>{welcomeMessage}</h2>
+                        <img className="image" src={`${window.vscodeMediaUrl}/logo.png`} />
                     </div>)
                 }
             </ChatMessages>

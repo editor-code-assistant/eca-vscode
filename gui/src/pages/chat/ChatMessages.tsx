@@ -20,8 +20,8 @@ export function ChatMessages({ chatId, children }: ChatMessagesProps) {
 
     return (
         <div className="messages-container scrollable" ref={scrollRef} >
-            {children}
-            {messages && messages.map((message, index) => {
+            {messages.length === 0 && children}
+            {messages.map((message, index) => {
                 switch (message.type) {
                     case 'text':
                         return (

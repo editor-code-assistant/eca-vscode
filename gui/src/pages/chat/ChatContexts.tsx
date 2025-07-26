@@ -10,6 +10,7 @@ import './ChatContexts.scss';
 
 interface Props {
     chatId?: string,
+    enabled: boolean,
 }
 
 function contextLabel(context: ChatContext): string {
@@ -68,7 +69,7 @@ function contextIcon(context: ChatContext): React.ReactNode {
     return (<i className={`context-icon ${context.type} codicon codicon-${icon}`}></i>);
 }
 
-export const ChatContexts = memo(({ chatId }: Props) => {
+export const ChatContexts = memo(({ chatId, enabled }: Props) => {
     const [query, setQuery] = useState('');
     const contexts = useSelector((state: State) => state.chat.contexts);
     const addedContexts = useSelector((state: State) => state.chat.addedContexts);
@@ -97,8 +98,8 @@ export const ChatContexts = memo(({ chatId }: Props) => {
 
     return (
         <div className="contexts">
-            <button data-tooltip-id="add-context" className="add">@{addedContexts.length === 0 ? " Add context" : ""}</button>
-            {addedContexts.map((context, index) => (
+            <button disabled={!enabled} data-tooltip-id="add-context" className="add">@{addedContexts.length === 0 ? " Add context" : ""}</button>
+            {enabled && addedContexts.map((context, index) => (
                 <span onClick={() => onContextRemoved(context)} key={index} className="added-context">
                     {contextIcon(context)}
                     {contextLabel(context)}
