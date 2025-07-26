@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { webviewSend } from "../../hooks";
 import { setSelectedBehavior, setSelectedModel } from "../../redux/slices/chat";
@@ -49,10 +49,19 @@ export const ChatPrompt = memo(({ chatId, enabled }: ChatPromptProps) => {
         }
     }
 
+    const inputRef = useRef<HTMLTextAreaElement>(null);
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [enabled]);
+
     return (
         <div className="prompt-area">
             <ChatContexts chatId={chatId} />
             <textarea
+                ref={inputRef}
+                autoFocus
                 value={promptValue}
                 onChange={(e) => setPromptValue(e.target.value)}
                 onKeyDown={handleKeyDown}
