@@ -2,12 +2,20 @@ import { useSelector } from 'react-redux';
 import { State } from '../../redux/store';
 import './MCPDetails.scss';
 import { ToolTip } from '../components/ToolTip';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../App';
 
 export function MCPDetails() {
     const mcpServers = useSelector((state: State) => state.mcp.servers);
+    const navigate = useNavigate();
 
     return (
         <div className="mcp-details-container scrollable">
+            <div className="header">
+                <button onClick={() => navigate(ROUTES.CHAT)} className="link">
+                    <i className={`codicon codicon-arrow-left`}></i>
+                </button>
+            </div>
             <div className="servers">
                 <h2 className="title">MCP Servers</h2>
                 <p className="description">MCPs are extra tools that can offer more power to ECA, for more details check <a href="https://modelcontextprotocol.io">MCP</a></p>
@@ -33,7 +41,7 @@ export function MCPDetails() {
                                         }
 
                                         return (
-                                            <div key={index} style={{display: "inline-block"}}>
+                                            <div key={index} style={{ display: "inline-block" }}>
                                                 <span className={`tool ${tool.disabled ? 'disabled' : ''}`} data-tooltip-id={`tool-description-${tool.name}`}>{tool.name}</span>
                                                 <ToolTip id={`tool-description-${tool.name}`}>
                                                     <p>{tool.description}</p>
