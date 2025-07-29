@@ -16,6 +16,11 @@ interface Props {
 function contextLabel(context: ChatContext): string {
     switch (context.type) {
         case 'file':
+            const path = context.path.split('/').pop() || context.path;
+            if (context.linesRange) {
+               return `${path} (${context.linesRange.start}-${context.linesRange.end})`;
+            }
+            return path;
         case 'directory':
             return context.path.split('/').pop() || context.path;
         case 'web':

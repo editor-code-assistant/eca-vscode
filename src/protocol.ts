@@ -48,6 +48,10 @@ export interface ChatPromptParams {
 interface FileContext {
     type: 'file';
     path: string;
+    linesRange?: {
+        start: number,
+        end: number,
+    }
 }
 
 interface DirectoryContext {
@@ -64,7 +68,7 @@ interface RepoMapContext {
     type: 'repoMap';
 }
 
-type ChatContext = FileContext | DirectoryContext | WebContext | RepoMapContext;
+export type ChatContext = FileContext | DirectoryContext | WebContext | RepoMapContext;
 export type ChatBehavior = 'agent' | 'chat';
 
 export interface ChatPromptResult {

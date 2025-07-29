@@ -253,5 +253,10 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             });
         };
     }
-
+    addChatContext(chatContext: protocol.ChatContext) {
+        this._webview?.postMessage({
+            type: 'chat/addContext',
+            data: chatContext,
+        });
+    }
 };

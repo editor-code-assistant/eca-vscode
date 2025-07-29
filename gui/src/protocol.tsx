@@ -144,6 +144,10 @@ export interface ServerTool {
 interface FileContext {
     type: 'file';
     path: string;
+    linesRange: {
+        start: number;
+        end: number;
+    }
 }
 
 interface DirectoryContext {
