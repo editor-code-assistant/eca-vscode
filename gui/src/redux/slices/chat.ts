@@ -171,9 +171,8 @@ export const chatSlice = createSlice({
                 case 'toolCalled': {
                     const existingIndex = chat.messages.findIndex(msg => msg.type === 'toolCall' && msg.id === content.id);
                     let tool = chat.messages[existingIndex] as ChatMessageToolCall;
-                    const output = content.outputs[0];
                     tool.outputs = content.outputs
-                    tool.status = output?.error ? 'failed' : 'succeeded';
+                    tool.status = content.error ? 'failed' : 'succeeded';
                     chat.messages[existingIndex] = tool;
                     break;
                 }

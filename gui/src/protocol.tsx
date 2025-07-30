@@ -61,13 +61,13 @@ interface ToolCalledContent {
     id: string;
     name: string;
     arguments: { [key: string]: string };
+    error: boolean;
     outputs: ToolCallOutput[];
 }
 
 export interface ToolCallOutput {
     type: 'text';
     content: string;
-    error: boolean;
 }
 
 export type ToolCallOrigin = 'mcp' | 'native';

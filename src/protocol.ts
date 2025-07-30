@@ -183,10 +183,10 @@ interface ToolCalledContent {
     id: string;
     name: string;
     arguments: string[];
+    error: boolean;
     outputs: [{
         type: 'text';
         content: string;
-        error: boolean;
     }];
 }
 
