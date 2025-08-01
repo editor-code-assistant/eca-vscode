@@ -4,8 +4,9 @@ import { useWebviewListener, webviewSend } from "../hooks";
 import { ChatContentReceived, ChatContext, ChatQueryCommandsResult, ChatQueryContextResult, ToolServerUpdatedParams, WorkspaceFolder } from "../protocol";
 import { addContentReceived, addContext, setBehaviors, setCommands, setContexts, setModels, setSelectedBehavior, setSelectedModel, setWelcomeMessage } from "../redux/slices/chat";
 import { setMcpServers } from "../redux/slices/mcp";
-import { ServerStatus, setConfig, setStatus, setWorkspaceFolders } from "../redux/slices/server";
+import { ServerStatus, setConfig, setWorkspaceFolders } from "../redux/slices/server";
 import { useEcaDispatch } from "../redux/store";
+import { statusChanged } from "../redux/thunks/server";
 
 interface NavigateTo {
     path: string,
@@ -29,7 +30,7 @@ const RootWrapper = () => {
     );
 
     useWebviewListener('server/statusChanged', (status: ServerStatus) => {
-        dispatch(setStatus(status));
+        dispatch(statusChanged({ status: status }));
     });
 
     useWebviewListener('server/setWorkspaceFolders', (workspaceFolders: WorkspaceFolder[]) => {

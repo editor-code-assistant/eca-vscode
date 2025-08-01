@@ -85,6 +85,9 @@ export const chatSlice = createSlice({
             const chatId = action.payload;
             delete state.chats[chatId];
         },
+        resetChats: (state) => {
+            state.chats = {};
+        },
         addContentReceived: (state, action) => {
             const { chatId, role, content } = action.payload as ChatContentReceived;
             let chat = state.chats[chatId] || { id: chatId, lastRequestId: 0, messages: [] };
@@ -235,6 +238,7 @@ export const {
     incRequestId,
     addContentReceived,
     resetChat,
+    resetChats,
     setContexts,
     addContext,
     removeContext,
