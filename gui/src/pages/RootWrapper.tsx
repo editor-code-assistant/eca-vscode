@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useWebviewListener, webviewSend } from "../hooks";
-import { ChatContentReceived, ChatContext, ChatQueryContextResult, ToolServerUpdatedParams, WorkspaceFolder } from "../protocol";
-import { addContentReceived, addContext, setBehaviors, setContexts, setModels, setSelectedBehavior, setSelectedModel, setWelcomeMessage } from "../redux/slices/chat";
+import { ChatContentReceived, ChatContext, ChatQueryCommandsResult, ChatQueryContextResult, ToolServerUpdatedParams, WorkspaceFolder } from "../protocol";
+import { addContentReceived, addContext, setBehaviors, setCommands, setContexts, setModels, setSelectedBehavior, setSelectedModel, setWelcomeMessage } from "../redux/slices/chat";
 import { setMcpServers } from "../redux/slices/mcp";
 import { ServerStatus, setConfig, setStatus, setWorkspaceFolders } from "../redux/slices/server";
 import { useEcaDispatch } from "../redux/store";
@@ -60,6 +60,10 @@ const RootWrapper = () => {
 
     useWebviewListener('chat/addContext', (context: ChatContext) => {
         dispatch(addContext(context));
+    });
+
+    useWebviewListener('chat/queryCommands', (result: ChatQueryCommandsResult) => {
+        dispatch(setCommands(result));
     });
 
     useWebviewListener('tool/serversUpdated', (mcps: ToolServerUpdatedParams) => {

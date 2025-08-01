@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ChatContentReceived, ChatContentRole, ChatContext, ToolCallOrigin, ToolCallOutput } from "../../protocol";
+import { ChatCommand, ChatContentReceived, ChatContentRole, ChatContext, ToolCallOrigin, ToolCallOutput } from "../../protocol";
 
 interface ChatMessageText {
     type: 'text',
@@ -56,6 +56,7 @@ export const chatSlice = createSlice({
         chats: {} as { [key: string]: Chat },
         contexts: undefined as (ChatContext[] | undefined),
         addedContexts: [{ type: 'repoMap' }] as ChatContext[],
+        commands: undefined as (ChatCommand[] | undefined),
     },
     reducers: {
         setBehaviors: (state, action) => {
@@ -219,6 +220,9 @@ export const chatSlice = createSlice({
             const i = state.addedContexts.findIndex(context => JSON.stringify(context) === toRemove);
             state.addedContexts = [...state.addedContexts.slice(0, i), ...state.addedContexts.slice(i + 1)];
         },
+        setCommands: (state, action) => {
+            state.commands = action.payload.commands;
+        },
     },
 });
 
@@ -234,4 +238,5 @@ export const {
     setContexts,
     addContext,
     removeContext,
+    setCommands,
 } = chatSlice.actions

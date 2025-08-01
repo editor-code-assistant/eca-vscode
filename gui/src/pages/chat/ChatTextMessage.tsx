@@ -7,12 +7,9 @@ interface Props {
 }
 
 export const ChatTextMessage = memo(({ role, text }: Props) => {
-    return (<div className={`${role}-message text-message `}>
-        {role === 'assistant' && (
+    return (
+        <div className={`${role}-message text-message `}>
             <MarkdownContent content={text} />
-        )}
-        {role != 'assistant' && (
-            <span>{text}</span>
-        )}
-    </div>);
+        </div>
+    );
 });

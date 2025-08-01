@@ -106,6 +106,17 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                         });
                     return;
                 }
+                case 'chat/queryCommands': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendRequest(protocol.chatQueryCommands, message.data)
+                        .then((result) => {
+                            this._webview?.postMessage({
+                                type: 'chat/queryCommands',
+                                data: result
+                            });
+                        });
+                    return;
+                }
                 case 'chat/delete': {
                     let session = s.getSession()!;
                     session.server.connection.sendRequest(protocol.chatDelete, {

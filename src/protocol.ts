@@ -223,6 +223,29 @@ export interface ChatQueryContextResponse {
 
 export const chatQueryContext = new rpc.RequestType<ChatQueryContextParams, ChatQueryContextResponse, void>('chat/queryContext');
 
+export interface ChatQueryCommandsParams {
+    chatId: string;
+    query: string;
+}
+
+export interface ChatQueryCommandsResponse {
+    chatId: string;
+    contexts: ChatCommand[];
+}
+
+interface ChatCommand {
+    name: string;
+    description: string;
+    type: 'mcpPrompt' | 'native';
+    arguments: [{
+        name: string;
+        description?: string;
+        required: boolean;
+    }];
+}
+
+export const chatQueryCommands = new rpc.RequestType<ChatQueryCommandsParams, ChatQueryCommandsResponse, void>('chat/queryCommands');
+
 type ToolServerStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
 
 interface MCPServerUpdatedParams {

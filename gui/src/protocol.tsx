@@ -170,3 +170,19 @@ export interface ChatQueryContextResult {
     chatId?: string,
     contexts: ChatContext[],
 }
+
+export interface ChatQueryCommandsResult {
+    chatId: string;
+    contexts: ChatCommand[];
+}
+
+export interface ChatCommand {
+    name: string;
+    description: string;
+    type: 'mcpPrompt' | 'native';
+    arguments: [{
+        name: string;
+        description?: string;
+        required: boolean;
+    }];
+}

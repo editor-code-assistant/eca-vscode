@@ -62,3 +62,10 @@ export const queryContext = createAsyncThunk<void, { chatId?: string, query: str
         webviewSend('chat/queryContext', { chatId, query, contexts });
     }
 );
+
+export const queryCommands = createAsyncThunk<void, { chatId?: string, query: string }, ThunkApiType>(
+    "chat/queryCommands",
+    async ({ chatId, query }, _) => {
+        webviewSend('chat/queryCommands', { chatId, query });
+    }
+);

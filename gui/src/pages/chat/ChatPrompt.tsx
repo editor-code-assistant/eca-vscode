@@ -4,6 +4,7 @@ import { webviewSend } from "../../hooks";
 import { setSelectedBehavior, setSelectedModel } from "../../redux/slices/chat";
 import { State, useEcaDispatch } from "../../redux/store";
 import { sendPrompt } from "../../redux/thunks/chat";
+import { ChatCommands } from "./ChatCommands";
 import { ChatContexts } from "./ChatContexts";
 import './ChatPrompt.scss';
 
@@ -14,6 +15,7 @@ interface ChatPromptProps {
 
 export const ChatPrompt = memo(({ chatId, enabled }: ChatPromptProps) => {
     const [promptValue, setPromptValue] = useState('');
+    const [inputCompleting, setInputCompleting] = useState(false);
     const dispatch = useEcaDispatch();
 
     const selectedBehavior = useSelector((state: State) => state.chat.selectedBehavior);
@@ -22,8 +24,9 @@ export const ChatPrompt = memo(({ chatId, enabled }: ChatPromptProps) => {
     const models = useSelector((state: State) => state.chat.models);
 
     const sendPromptValue = () => {
-        if (promptValue.trim()) {
-            dispatch(sendPrompt({ prompt: promptValue, chatId }));
+        const prompt = promptValue.trim();
+        if (prompt && !inputCompleting) {
+            dispatch(sendPrompt({ prompt: prompt, chatId }));
             setPromptValue('')
         }
     }
@@ -56,14 +59,27 @@ export const ChatPrompt = memo(({ chatId, enabled }: ChatPromptProps) => {
         }
     }, [enabled]);
 
+    const onPromptChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setPromptValue(event.target.value);
+    }
+
     return (
         <div className="prompt-area">
             <ChatContexts enabled={enabled} chatId={chatId} />
+            <ChatCommands
+                input={inputRef.current}
+                chatId={chatId}
+                onCommandSelected={(command) => {
+                    setPromptValue(`/${command.name} `);
+                    inputRef.current?.focus();
+                }}
+                onCompleting={setInputCompleting}
+            />
             <textarea
                 ref={inputRef}
                 autoFocus
                 value={promptValue}
-                onChange={(e) => setPromptValue(e.target.value)}
+                onChange={onPromptChange}
                 onKeyDown={handleKeyDown}
                 placeholder="Ask, plan, build..."
                 className="field"
