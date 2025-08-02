@@ -1,7 +1,5 @@
 # ECA vscode
 
-:warning: The project is still alpha and experimental, with bugs and missing features, but being consistenly improved.
-
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 
 ![demo](./demo.gif)
