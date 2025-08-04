@@ -273,3 +273,15 @@ export interface ServerTool {
 }
 
 export const toolServerUpdated = new rpc.NotificationType<ToolServerUpdatedParams>('tool/serverUpdated');
+
+interface McpStartServerParams {
+    name: string;
+}
+
+export const mcpStartServer = new rpc.NotificationType<McpStartServerParams>('mcp/startServer');
+
+interface McpStopServerParams {
+    name: string;
+}
+
+export const mcpStopServer = new rpc.NotificationType<McpStopServerParams>('mcp/stopServer');

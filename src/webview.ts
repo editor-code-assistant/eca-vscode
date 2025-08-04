@@ -124,6 +124,20 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     });
                     return;
                 }
+                case 'mcp/startServer': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendNotification(protocol.mcpStartServer, {
+                        name: message.data.name,
+                    });
+                    return;
+                }
+                case 'mcp/stopServer': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendNotification(protocol.mcpStopServer, {
+                        name: message.data.name,
+                    });
+                    return;
+                }
             }
         });
     }

@@ -1,13 +1,25 @@
 import { useSelector } from 'react-redux';
-import { State } from '../../redux/store';
-import './MCPDetails.scss';
-import { ToolTip } from '../components/ToolTip';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../App';
+import { ToolServerUpdatedParams } from '../../protocol';
+import { State, useEcaDispatch } from '../../redux/store';
+import { startServer, stopServer } from '../../redux/thunks/mcp';
+import { Toggle } from '../components/Toggle';
+import { ToolTip } from '../components/ToolTip';
+import './MCPDetails.scss';
 
 export function MCPDetails() {
     const mcpServers = useSelector((state: State) => state.mcp.servers);
     const navigate = useNavigate();
+    const dispatch = useEcaDispatch();
+
+    const changeServerStatus = (enabled: boolean, server: ToolServerUpdatedParams) => {
+        if (enabled) {
+            dispatch(startServer({ name: server.name }));
+        } else {
+            dispatch(stopServer({ name: server.name }));
+        }
+    }
 
     return (
         <div className="mcp-details-container scrollable">
@@ -25,10 +37,19 @@ export function MCPDetails() {
                         commandTxt = server.command + " " + (server.args?.join(" ") || "");
                     }
 
+                    const stoppable = server.status === 'running' || server.status === 'starting';
+
                     return (
                         <div key={index} className="server">
                             <span className="name">{server.name}</span>
-                            <i className={`status ${server.status}`}></i>
+                            <i data-tooltip-id={`status-${server.name}`} className={`status ${server.status}`}></i>
+                            <ToolTip id={`status-${server.name}`}>
+                                <span>{server.status}</span>
+                            </ToolTip>
+                            <div className="divider"></div>
+                            <Toggle
+                                defaultChecked={stoppable}
+                                onChange={(enabled) => changeServerStatus(enabled, server)} />
                             <dl>
                                 <dt>Tools: </dt>
                                 <dd className="tools">
