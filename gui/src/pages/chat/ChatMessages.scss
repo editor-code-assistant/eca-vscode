@@ -18,7 +18,7 @@
     }
 
     .system-message {
-      line-height: 1.4;
       color: var(--vscode-activityWarningBadge-background, #cca700);
+      white-space: pre;
     }
 }
