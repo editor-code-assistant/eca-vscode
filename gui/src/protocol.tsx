@@ -164,7 +164,16 @@ interface RepoMapContext {
     type: 'repoMap';
 }
 
-export type ChatContext = FileContext | DirectoryContext | WebContext | RepoMapContext;
+interface McpResourceContext {
+    type: 'mcpResource';
+    uri: string;
+    name: string;
+    description: string;
+    mimeType: string;
+    server: string;
+}
+
+export type ChatContext = FileContext | DirectoryContext | WebContext | RepoMapContext | McpResourceContext;
 
 export interface ChatQueryContextResult {
     chatId?: string,

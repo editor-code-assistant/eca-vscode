@@ -71,6 +71,7 @@
         &.directory { color: var(--vscode-terminalSymbolIcon-fileForeground, #cccccc); }
         &.web { color: var(--vscode-terminalSymbolIcon-argumentForeground, #75beff); }
         &.repoMap { color: var(--vscode-terminalSymbolIcon-methodForeground, #b180d7); }
+        &.mcpResource { color: var(--vscode-terminal-ansiBrightGreen, #23d18b); }
     }
 
     .added-context {

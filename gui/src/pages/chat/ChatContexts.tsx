@@ -18,7 +18,7 @@ function contextLabel(context: ChatContext): string {
         case 'file':
             const path = context.path.split('/').pop() || context.path;
             if (context.linesRange) {
-               return `${path} (${context.linesRange.start}-${context.linesRange.end})`;
+                return `${path} (${context.linesRange.start}-${context.linesRange.end})`;
             }
             return path;
         case 'directory':
@@ -27,6 +27,8 @@ function contextLabel(context: ChatContext): string {
             return context.url;
         case 'repoMap':
             return 'repoMap';
+        case 'mcpResource':
+            return context.server + ':' + context.name;
         default:
             return 'Unknown Context';
     }
@@ -46,6 +48,8 @@ function contextDescription(context: ChatContext, workspaceFolders: WorkspaceFol
             return context.path;
         case 'repoMap':
             return 'Summary view of workspaces files';
+        case 'mcpResource':
+            return context.description;
         default:
             return '';
     }
@@ -65,6 +69,9 @@ function contextIcon(context: ChatContext): React.ReactNode {
             break;
         case 'repoMap':
             icon = 'sparkle-filled';
+            break;
+        case 'mcpResource':
+            icon = 'file-code';
             break;
         default:
             icon = 'question';
