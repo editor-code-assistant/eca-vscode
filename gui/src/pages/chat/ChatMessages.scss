@@ -8,21 +8,17 @@
     gap: 0.6em;
 
     .text-message {
-      word-wrap: break-word;
-      white-space: pre-wrap;
     }
 
     .user-message {
       line-height: 1.4;
-      padding: 0.5em 0.8em;
+      padding: 0.1em 0.8em;
       background-color: var(--vscode-input-background, #3c3c3c);
-      white-space: pre-wrap;
       border-radius: 0.4em;
     }
 
     .system-message {
       line-height: 1.4;
       color: var(--vscode-activityWarningBadge-background, #cca700);
-      white-space: pre-wrap;
     }
 }
