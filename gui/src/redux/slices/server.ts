@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { WorkspaceFolder } from "../../protocol";
+import { WorkspaceFolder } from "@protocol/protocol";
 
 export enum ServerStatus {
     Stopped = 'Stopped',

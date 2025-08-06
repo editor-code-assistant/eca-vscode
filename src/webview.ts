@@ -1,5 +1,6 @@
+import * as protocol from '@protocol/protocol';
 import * as vscode from 'vscode';
-import * as protocol from './protocol';
+import * as ecaApi from './ecaApi';
 import { EcaServerStatus } from './server';
 import * as s from './session';
 import * as util from './util';
@@ -46,7 +47,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 }
                 case 'chat/userPrompt': {
                     let session = s.getSession()!;
-                    session.server.connection.sendRequest(protocol.chatPrompt, {
+                    session.server.connection.sendRequest(ecaApi.chatPrompt, {
                         chatId: message.data.chatId,
                         message: message.data.prompt,
                         model: session.chatSelectedModel,
@@ -74,7 +75,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 }
                 case 'chat/toolCallApprove': {
                     let session = s.getSession()!;
-                    session.server.connection.sendNotification(protocol.chatToolCallApprove, {
+                    session.server.connection.sendNotification(ecaApi.chatToolCallApprove, {
                         chatId: message.data.chatId,
                         toolCallId: message.data.toolCallId,
                     });
@@ -82,7 +83,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 }
                 case 'chat/toolCallReject': {
                     let session = s.getSession()!;
-                    session.server.connection.sendNotification(protocol.chatToolCallReject, {
+                    session.server.connection.sendNotification(ecaApi.chatToolCallReject, {
                         chatId: message.data.chatId,
                         toolCallId: message.data.toolCallId,
                     });
@@ -90,14 +91,14 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 }
                 case 'chat/promptStop': {
                     let session = s.getSession()!;
-                    session.server.connection.sendNotification(protocol.chatPromptStop, {
+                    session.server.connection.sendNotification(ecaApi.chatPromptStop, {
                         chatId: message.data.chatId,
                     });
                     return;
                 }
                 case 'chat/queryContext': {
                     let session = s.getSession()!;
-                    session.server.connection.sendRequest(protocol.chatQueryContext, message.data)
+                    session.server.connection.sendRequest(ecaApi.chatQueryContext, message.data)
                         .then((result) => {
                             this._webview?.postMessage({
                                 type: 'chat/queryContext',
@@ -108,7 +109,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 }
                 case 'chat/queryCommands': {
                     let session = s.getSession()!;
-                    session.server.connection.sendRequest(protocol.chatQueryCommands, message.data)
+                    session.server.connection.sendRequest(ecaApi.chatQueryCommands, message.data)
                         .then((result) => {
                             this._webview?.postMessage({
                                 type: 'chat/queryCommands',
@@ -119,21 +120,21 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 }
                 case 'chat/delete': {
                     let session = s.getSession()!;
-                    session.server.connection.sendRequest(protocol.chatDelete, {
+                    session.server.connection.sendRequest(ecaApi.chatDelete, {
                         chatId: message.data.chatId,
                     });
                     return;
                 }
                 case 'mcp/startServer': {
                     let session = s.getSession()!;
-                    session.server.connection.sendNotification(protocol.mcpStartServer, {
+                    session.server.connection.sendNotification(ecaApi.mcpStartServer, {
                         name: message.data.name,
                     });
                     return;
                 }
                 case 'mcp/stopServer': {
                     let session = s.getSession()!;
-                    session.server.connection.sendNotification(protocol.mcpStopServer, {
+                    session.server.connection.sendNotification(ecaApi.mcpStopServer, {
                         name: message.data.name,
                     });
                     return;

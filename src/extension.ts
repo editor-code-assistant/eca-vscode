@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as commands from './commands';
-import * as protocol from './protocol';
+import * as ecaApi from './ecaApi';
+import * as protocol from '@protocol/protocol';
 import { EcaServer, EcaServerPathFinder } from './server';
 import * as s from './session';
 import * as statusbar from './status-bar';
@@ -21,11 +22,11 @@ async function activate(context: vscode.ExtensionContext) {
 		channel: ecaChannel,
 		onStarted: (connection) => {
 			const session = s.getSession()!;
-			connection.onNotification(protocol.chatContentReceived, (params: protocol.ChatContentReceivedParams) => {
+			connection.onNotification(ecaApi.chatContentReceived, (params: protocol.ChatContentReceivedParams) => {
 				webviewProvider.contentReceived(params);
 			});
 
-			connection.onNotification(protocol.toolServerUpdated, (params: protocol.ToolServerUpdatedParams) => {
+			connection.onNotification(ecaApi.toolServerUpdated, (params: protocol.ToolServerUpdatedParams) => {
 				webviewProvider.toolServerUpdated(params);
 			});
 

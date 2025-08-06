@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { ToolCallOutput } from '../../protocol';
+import { ToolCallOutput } from '@protocol/protocol';
 import { useEcaDispatch } from '../../redux/store';
 import { toolCallApprove, toolCallReject } from '../../redux/thunks/chat';
 import { ChatCollapsableMessage } from './ChatCollapsableMessage';

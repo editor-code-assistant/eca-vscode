@@ -6,8 +6,11 @@
 			"ES2022"
 		],
 		"sourceMap": true,
-		"rootDir": "src",
-		"strict": true
+		"rootDirs": ["src", "protocol"],
+		"strict": true,
+		"paths": {
+			"@protocol/*": ["./protocol/*"]
+		}
 	},
 	"exclude": [
 		"gui"

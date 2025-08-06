@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useWebviewListener, webviewSend } from "../hooks";
-import { ChatContentReceived, ChatContext, ChatQueryCommandsResult, ChatQueryContextResult, ToolServerUpdatedParams, WorkspaceFolder } from "../protocol";
+import { ChatContentReceivedParams, ChatContext, ChatQueryCommandsResponse, ChatQueryContextResponse, ToolServerUpdatedParams, WorkspaceFolder } from "@protocol/protocol";
 import { addContentReceived, addContext, setBehaviors, setCommands, setContexts, setModels, setSelectedBehavior, setSelectedModel, setWelcomeMessage } from "../redux/slices/chat";
 import { setMcpServers } from "../redux/slices/mcp";
 import { ServerStatus, setConfig, setWorkspaceFolders } from "../redux/slices/server";
@@ -51,11 +51,11 @@ const RootWrapper = () => {
         dispatch(setWelcomeMessage(params.message));
     });
 
-    useWebviewListener('chat/contentReceived', (contentReceived: ChatContentReceived) => {
+    useWebviewListener('chat/contentReceived', (contentReceived: ChatContentReceivedParams) => {
         dispatch(addContentReceived(contentReceived))
     });
 
-    useWebviewListener('chat/queryContext', (result: ChatQueryContextResult) => {
+    useWebviewListener('chat/queryContext', (result: ChatQueryContextResponse) => {
         dispatch(setContexts(result));
     });
 
@@ -63,7 +63,7 @@ const RootWrapper = () => {
         dispatch(addContext(context));
     });
 
-    useWebviewListener('chat/queryCommands', (result: ChatQueryCommandsResult) => {
+    useWebviewListener('chat/queryCommands', (result: ChatQueryCommandsResponse) => {
         dispatch(setCommands(result));
     });
 

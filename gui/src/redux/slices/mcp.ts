@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ToolServerUpdatedParams } from "../../protocol";
+import { ToolServerUpdatedParams } from "@protocol/protocol";
 
 export const mcpSlice = createSlice({
     name: 'mcp',

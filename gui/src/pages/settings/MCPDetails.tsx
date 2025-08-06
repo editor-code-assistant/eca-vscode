@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../App';
-import { ToolServerUpdatedParams } from '../../protocol';
+import { ToolServerUpdatedParams } from '@protocol/protocol';
 import { State, useEcaDispatch } from '../../redux/store';
 import { startServer, stopServer } from '../../redux/thunks/mcp';
 import { Toggle } from '../components/Toggle';

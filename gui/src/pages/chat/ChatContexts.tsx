@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { ChatContext, WorkspaceFolder } from "../../protocol";
+import { ChatContext, WorkspaceFolder } from "@protocol/protocol";
 import { addContext, removeContext } from "../../redux/slices/chat";
 import { State, useEcaDispatch } from "../../redux/store";
 import { queryContext } from "../../redux/thunks/chat";

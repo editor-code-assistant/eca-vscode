@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { webviewSend } from "../../hooks";
-import { ChatContext } from "../../protocol";
+import { ChatContext } from "@protocol/protocol";
 import { incRequestId, resetChat } from "../slices/chat";
 import { ThunkApiType } from "../store";
 

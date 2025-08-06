@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ChatCommand, ChatContentReceived, ChatContentRole, ChatContext, ToolCallOrigin, ToolCallOutput } from "../../protocol";
+import { ChatCommand, ChatContentReceivedParams, ChatContentRole, ChatContext, ToolCallOrigin, ToolCallOutput } from "@protocol/protocol";
 
 interface ChatMessageText {
     type: 'text',
@@ -89,7 +89,7 @@ export const chatSlice = createSlice({
             state.chats = {};
         },
         addContentReceived: (state, action) => {
-            const { chatId, role, content } = action.payload as ChatContentReceived;
+            const { chatId, role, content } = action.payload as ChatContentReceivedParams;
             let chat = state.chats[chatId] || { id: chatId, lastRequestId: 0, messages: [] };
 
             switch (content.type) {

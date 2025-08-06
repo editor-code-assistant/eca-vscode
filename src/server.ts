@@ -1,3 +1,4 @@
+import * as protocol from '@protocol/protocol';
 import * as cp from 'child_process';
 import * as extractZip from 'extract-zip';
 import { https } from 'follow-redirects';
@@ -5,7 +6,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as vscode from 'vscode';
 import * as rpc from 'vscode-jsonrpc/node';
-import * as protocol from './protocol';
+import * as ecaApi from './ecaApi';
 import * as s from './session';
 import * as util from './util';
 
@@ -91,7 +92,7 @@ class EcaServer {
 
             this.connection.listen();
 
-            this.connection.sendRequest(protocol.initialize, {
+            this.connection.sendRequest(ecaApi.initialize, {
                 processId: process.pid,
                 clientInfo: {
                     name: 'VsCode',
@@ -113,7 +114,7 @@ class EcaServer {
                 session.chatBehaviors = result.chatBehaviors;
                 session.chatSelectedBehavior = result.chatDefaultBehavior;
                 this.changeStatus(EcaServerStatus.Running);
-                this.connection.sendNotification(protocol.initialized, {});
+                this.connection.sendNotification(ecaApi.initialized, {});
                 this._onStarted(this.connection);
             });
         }).catch((err) => console.error('Fail to find eca server path.', err));
@@ -121,8 +122,8 @@ class EcaServer {
 
     async stop() {
         if (isClosable(this._status)) {
-            await this.connection.sendRequest(protocol.shutdown, {});
-            this.connection.sendNotification(protocol.exit, {});
+            await this.connection.sendRequest(ecaApi.shutdown, {});
+            this.connection.sendNotification(ecaApi.exit, {});
             this.connection.dispose();
         }
         this.changeStatus(EcaServerStatus.Stopped);

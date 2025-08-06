@@ -1,5 +1,3 @@
-import * as rpc from 'vscode-jsonrpc/node';
-
 export interface InitializeParams {
     processId: number;
     clientInfo: {
@@ -27,14 +25,6 @@ export interface InitializeResult {
     chatDefaultBehavior: ChatBehavior;
     chatWelcomeMessage: string;
 }
-
-export const initialize = new rpc.RequestType<InitializeParams, InitializeResult, void>('initialize');
-
-export const initialized = new rpc.NotificationType<any>('initialized');
-
-export const shutdown = new rpc.RequestType<any, void, void>('shutdown');
-
-export const exit = new rpc.NotificationType<any>('exit');
 
 export interface ChatPromptParams {
     chatId?: string;
@@ -85,33 +75,23 @@ export interface ChatPromptResult {
     model: string;
 }
 
-export const chatPrompt = new rpc.RequestType<ChatPromptParams, ChatPromptResult, void>('chat/prompt');
-
 export interface ChatToolCallApproveParams {
     chatId: string;
     toolCallId: string;
 }
-
-export const chatToolCallApprove = new rpc.NotificationType<ChatToolCallApproveParams>('chat/toolCallApprove');
 
 export interface ChatToolCallRejectParams {
     chatId: string;
     toolCallId: string;
 }
 
-export const chatToolCallReject = new rpc.NotificationType<ChatToolCallRejectParams>('chat/toolCallReject');
-
 export interface ChatPromptStopParams {
     chatId: string;
 }
 
-export const chatPromptStop = new rpc.NotificationType<ChatPromptStopParams>('chat/promptStop');
-
-interface ChatDeleteParams {
+export interface ChatDeleteParams {
     chatId: string;
 }
-
-export const chatDelete = new rpc.RequestType<ChatDeleteParams, {}, void>('chat/delete');
 
 export interface ChatContentReceivedParams {
     chatId: string;
@@ -119,7 +99,7 @@ export interface ChatContentReceivedParams {
     content: ChatContent;
 }
 
-type ChatContentRole = 'user' | 'system' | 'assistant';
+export type ChatContentRole = 'user' | 'system' | 'assistant';
 
 type ChatContent =
     | TextContent
@@ -193,13 +173,15 @@ interface ToolCalledContent {
     name: string;
     arguments: string[];
     error: boolean;
-    outputs: [{
-        type: 'text';
-        content: string;
-    }];
+    outputs: ToolCallOutput[];
 }
 
-type ToolCallOrigin = 'mcp' | 'native';
+export interface ToolCallOutput {
+    type: 'text';
+    content: string;
+}
+
+export type ToolCallOrigin = 'mcp' | 'native';
 
 interface ReasonStartedContent {
     type: 'reasonStarted';
@@ -217,8 +199,6 @@ interface ReasonFinishedContent {
     id: string;
 }
 
-export const chatContentReceived = new rpc.NotificationType<ChatContentReceivedParams>('chat/contentReceived');
-
 export interface ChatQueryContextParams {
     chatId: string;
     query: string;
@@ -230,8 +210,6 @@ export interface ChatQueryContextResponse {
     contexts: ChatContext[];
 }
 
-export const chatQueryContext = new rpc.RequestType<ChatQueryContextParams, ChatQueryContextResponse, void>('chat/queryContext');
-
 export interface ChatQueryCommandsParams {
     chatId: string;
     query: string;
@@ -242,7 +220,7 @@ export interface ChatQueryCommandsResponse {
     contexts: ChatCommand[];
 }
 
-interface ChatCommand {
+export interface ChatCommand {
     name: string;
     description: string;
     type: 'mcpPrompt' | 'native';
@@ -253,9 +231,7 @@ interface ChatCommand {
     }];
 }
 
-export const chatQueryCommands = new rpc.RequestType<ChatQueryCommandsParams, ChatQueryCommandsResponse, void>('chat/queryCommands');
-
-type ToolServerStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
+export type ToolServerStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
 
 interface MCPServerUpdatedParams {
     type: 'mcp';
@@ -275,22 +251,22 @@ interface EcaServerUpdatedParams {
 
 export type ToolServerUpdatedParams = EcaServerUpdatedParams | MCPServerUpdatedParams;
 
+export interface ServerToolParameters {
+    properties: { [key: string]: { type: string, description?: string } },
+    required: string[],
+}
+
 export interface ServerTool {
     name: string;
     description: string;
-    parameters: any;
+    parameters: ServerToolParameters;
+    disabled?: boolean;
 }
 
-export const toolServerUpdated = new rpc.NotificationType<ToolServerUpdatedParams>('tool/serverUpdated');
-
-interface McpStartServerParams {
+export interface McpStartServerParams {
     name: string;
 }
 
-export const mcpStartServer = new rpc.NotificationType<McpStartServerParams>('mcp/startServer');
-
-interface McpStopServerParams {
+export interface McpStopServerParams {
     name: string;
 }
-
-export const mcpStopServer = new rpc.NotificationType<McpStopServerParams>('mcp/stopServer');

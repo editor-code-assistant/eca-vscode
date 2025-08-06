@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { TooltipRefProps } from "react-tooltip";
-import { ChatCommand } from "../../protocol";
+import { ChatCommand } from "@protocol/protocol";
 import { State, useEcaDispatch } from "../../redux/store";
 import { queryCommands } from "../../redux/thunks/chat";
 import { ToolTip } from "../components/ToolTip";
