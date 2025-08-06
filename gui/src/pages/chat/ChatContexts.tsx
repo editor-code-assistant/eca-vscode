@@ -4,7 +4,7 @@ import { ChatContext, WorkspaceFolder } from "@protocol/protocol";
 import { addContext, removeContext } from "../../redux/slices/chat";
 import { State, useEcaDispatch } from "../../redux/store";
 import { queryContext } from "../../redux/thunks/chat";
-import { relativizeFromRoot, uriToPath } from "../../util";
+import { relativizeFromRoot } from "../../util";
 import { ToolTip } from "../components/ToolTip";
 import './ChatContexts.scss';
 

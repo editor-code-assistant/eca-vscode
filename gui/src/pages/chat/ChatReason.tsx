@@ -21,12 +21,10 @@ export const ChatReason = memo(({ status, content }: Props) => {
     return (
         <ChatCollapsableMessage
             className="reason"
-            header={(toggleOpen) => (
-                <div style={{ display: 'inline' }}>
-                    <span onClick={toggleOpen}>{label}</span>
-                    <i onClick={toggleOpen} className={`icon codicon ${extraIconClass}`}></i>
-                </div>
-            )}
+            header={(toggleOpen) => [
+                <span onClick={toggleOpen}>{label}</span>,
+                <i onClick={toggleOpen} className={`icon codicon ${extraIconClass}`}></i>
+            ]}
             content={
                 <p>{content}</p>
             }

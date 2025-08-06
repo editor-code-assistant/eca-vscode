@@ -1,13 +1,10 @@
 import { FileChangeDetails, ToolCallDetails, ToolCallOutput } from '@protocol/protocol';
-import * as p from 'path';
 import { memo } from 'react';
 import { Diff, Hunk, parseDiff } from 'react-diff-view';
 import 'react-diff-view/style/index.css';
-import { useSelector } from 'react-redux';
-import { State, useEcaDispatch } from '../../redux/store';
+import { useEcaDispatch } from '../../redux/store';
 import { toolCallApprove, toolCallReject } from '../../redux/thunks/chat';
 import { openFileInEditor } from '../../redux/thunks/vscode';
-import { relativizeFromRoot } from '../../util';
 import { ChatCollapsableMessage } from './ChatCollapsableMessage';
 import './ChatToolCall.scss';
 import { MarkdownContent } from './MarkdownContent';
