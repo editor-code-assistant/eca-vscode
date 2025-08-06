@@ -139,6 +139,10 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     });
                     return;
                 }
+                case 'vscode/openFileInEditor': {
+                    const fileUri = vscode.Uri.file(message.data.path);
+                    vscode.window.showTextDocument(fileUri);
+                }
             }
         });
     }

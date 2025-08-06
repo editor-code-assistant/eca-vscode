@@ -3,12 +3,13 @@ import './ChatCollapsableMessage.scss';
 
 interface Props {
     className: string,
-    header: (toggleOpen: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void) => React.ReactNode,
+    header: (toggleOpen: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void) => React.ReactNode[],
     content?: React.ReactNode,
+    defaultOpen?: boolean,
 }
 
-export const ChatCollapsableMessage = memo(({ header, content, className }: Props) => {
-    const [open, setOpen] = useState(false);
+export const ChatCollapsableMessage = memo(({ header, content, className, defaultOpen }: Props) => {
+    const [open, setOpen] = useState(defaultOpen || false);
 
     const toggleOpen = (_event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         setOpen(!open);

@@ -1,56 +1,87 @@
+@use '../components/diff';
+
 .tool-call {
-    .name {
-        margin: 0 0.5em;
-        font-style: italic;
-        border-radius: 0.2em;
-        padding: 0.2em 0.4em;
-        color: var(--vscode-input-foreground, #cccccc);
-        background-color: var(--vscode-input-background, #3c3c3c);
-    }
+    .header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
 
-    .status {
-        vertical-align: middle;
-
-        &.succeeded {
-            color: var(--vscode-testing-iconPassed, #73c991);
+        .spacing {
+            flex: 1;
         }
-        &.failed {
-            color: var(--vscode-testing-iconFailed, #f14c4c);
-        }
-    }
 
-    .approval-actions {
-        display: block;
-        padding-top: 0.6em;
-        text-align: right;
-
-        .cancel {
-            opacity: 0.8;
-            border: none;
-            background: none;
-            cursor: pointer;
-            transition: opacity 0.1s;
-            color: var(--vscode-input-placeholderForeground, #767676);
+        .name {
             margin: 0 0.5em;
+            font-style: italic;
+            border-radius: 0.2em;
+            padding: 0.2em 0.4em;
+            color: var(--vscode-input-foreground, #cccccc);
+            background-color: var(--vscode-input-background, #3c3c3c);
+        }
 
-            &:hover {
-                opacity: 1;
+        .status {
+            vertical-align: middle;
+
+            &.succeeded {
+                color: var(--vscode-testing-iconPassed, #73c991);
+            }
+            &.failed {
+                color: var(--vscode-testing-iconFailed, #f14c4c);
             }
         }
 
-        .run {
-            opacity: 0.8;
-            border: none;
-            border-radius: 0.3em;
-            background: var(--vscode-banner-iconForeground, #73c991);
-            cursor: pointer;
-            transition: opacity 0.1s;
-            color: var(--vscode-badge-foreground, #f8f8f8);
+        .file-change-name {
+            margin: 0 0.2em;
 
             &:hover {
-                opacity: 1;
+                text-decoration: underline;
+            }
+        }
+
+        .file-change-lines-added {
+            color: var(--vscode-testing-iconPassed, #73c991);
+            margin: 0 0.1em;
+        }
+        .file-change-lines-removed {
+            color: var(--vscode-testing-iconFailed, #f14c4c);
+            margin: 0 0.1em;
+        }
+
+        .approval-actions {
+            display: block;
+            padding-top: 0.6em;
+            text-align: right;
+
+            .cancel {
+                opacity: 0.8;
+                border: none;
+                background: none;
+                cursor: pointer;
+                transition: opacity 0.1s;
+                color: var(--vscode-input-placeholderForeground, #767676);
+                margin: 0 0.5em;
+
+                &:hover {
+                    opacity: 1;
+                }
             }
 
+            .run {
+                opacity: 0.8;
+                border: none;
+                border-radius: 0.3em;
+                background: var(--vscode-banner-iconForeground, #73c991);
+                cursor: pointer;
+                transition: opacity 0.1s;
+                color: var(--vscode-badge-foreground, #f8f8f8);
+
+                &:hover {
+                    opacity: 1;
+                }
+
+            }
         }
+
     }
+
 }

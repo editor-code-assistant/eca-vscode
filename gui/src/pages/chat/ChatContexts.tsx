@@ -4,7 +4,7 @@ import { ChatContext, WorkspaceFolder } from "@protocol/protocol";
 import { addContext, removeContext } from "../../redux/slices/chat";
 import { State, useEcaDispatch } from "../../redux/store";
 import { queryContext } from "../../redux/thunks/chat";
-import { uriToPath } from "../../util";
+import { relativizeFromRoot, uriToPath } from "../../util";
 import { ToolTip } from "../components/ToolTip";
 import './ChatContexts.scss';
 
@@ -38,14 +38,7 @@ function contextDescription(context: ChatContext, workspaceFolders: WorkspaceFol
     switch (context.type) {
         case 'file':
         case 'directory':
-            for (const root of workspaceFolders) {
-                const rootPath = uriToPath(root.uri);
-                if (context.path.startsWith(rootPath)) {
-                    const relativePath = context.path.substring(rootPath.length).replace(/^\//, '');
-                    return relativePath.split('/').slice(0, -1).join('/');
-                }
-            }
-            return context.path;
+            return relativizeFromRoot(context.path, workspaceFolders) || context.path;
         case 'repoMap':
             return 'Summary view of workspaces files';
         case 'mcpResource':

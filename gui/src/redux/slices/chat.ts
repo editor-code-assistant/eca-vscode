@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ChatCommand, ChatContentReceivedParams, ChatContentRole, ChatContext, ToolCallOrigin, ToolCallOutput } from "@protocol/protocol";
+import { ChatCommand, ChatContentReceivedParams, ChatContentRole, ChatContext, ToolCallDetails, ToolCallOrigin, ToolCallOutput } from "@protocol/protocol";
 
 interface ChatMessageText {
     type: 'text',
@@ -17,6 +17,7 @@ interface ChatMessageToolCall {
     outputs?: ToolCallOutput[],
     origin: ToolCallOrigin,
     manualApproval: boolean,
+    details?: ToolCallDetails,
 }
 
 interface ChatMessageReason {
@@ -160,6 +161,7 @@ export const chatSlice = createSlice({
                     let tool = chat.messages[existingIndex] as ChatMessageToolCall;
                     tool.status = 'run';
                     tool.manualApproval = content.manualApproval;
+                    tool.details = content.details;
                     tool.argumentsText = JSON.stringify(content.arguments);
 
                     chat.messages[existingIndex] = tool;
@@ -170,6 +172,7 @@ export const chatSlice = createSlice({
                     let tool = chat.messages[existingIndex] as ChatMessageToolCall;
                     tool.status = 'rejected';
                     chat.messages[existingIndex] = tool;
+                    tool.details = content.details;
                     break;
                 }
                 case 'toolCalled': {
@@ -178,6 +181,7 @@ export const chatSlice = createSlice({
                     tool.outputs = content.outputs
                     tool.status = content.error ? 'failed' : 'succeeded';
                     chat.messages[existingIndex] = tool;
+                    tool.details = content.details;
                     break;
                 }
                 case 'reasonStarted': {

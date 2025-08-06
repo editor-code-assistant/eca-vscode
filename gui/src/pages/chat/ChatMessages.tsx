@@ -41,6 +41,7 @@ export function ChatMessages({ chatId, children }: ChatMessagesProps) {
                                     origin={message.origin}
                                     status={message.status}
                                     outputs={message.outputs}
+                                    details={message.details}
                                     manualApproval={message.manualApproval}
                                     argumentsText={message.argumentsText}
                                 />

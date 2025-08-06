@@ -1,0 +1,15 @@
+.diff {
+    margin: 0.5em 0;
+}
+
+.diff-code-normal {
+    background-color: var(--vscode-diffEditor-unchangedCodeBackground, rgba(116, 116, 116, 0.16)) !important;
+}
+
+.diff-code-insert {
+    background-color: var(--vscode-diffEditor-insertedTextBackground, rgba(156, 204, 44, 0.2)) !important;
+}
+
+.diff-code-delete {
+    background-color: var(--vscode-diffEditor-removedLineBackground, rgba(255, 0, 0, 0.2)) !important;
+}

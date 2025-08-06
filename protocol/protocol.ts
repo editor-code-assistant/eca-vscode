@@ -156,6 +156,7 @@ interface ToolCallRunContent {
     name: string;
     arguments: string[];
     manualApproval: boolean;
+    details?: ToolCallDetails;
 }
 
 interface ToolCallRejectedContent {
@@ -164,6 +165,7 @@ interface ToolCallRejectedContent {
     id: string;
     name: string;
     arguments: { [key: string]: string };
+    details?: ToolCallDetails;
 }
 
 interface ToolCalledContent {
@@ -174,14 +176,25 @@ interface ToolCalledContent {
     arguments: string[];
     error: boolean;
     outputs: ToolCallOutput[];
+    details?: ToolCallDetails;
 }
 
 export interface ToolCallOutput {
     type: 'text';
-    content: string;
+    text: string;
 }
 
 export type ToolCallOrigin = 'mcp' | 'native';
+
+export type ToolCallDetails = FileChangeDetails;
+
+export interface FileChangeDetails {
+    type: 'fileChange';
+    path: string;
+    diff: string;
+    linesAdded: number;
+    linesRemoved: number;
+}
 
 interface ReasonStartedContent {
     type: 'reasonStarted';
