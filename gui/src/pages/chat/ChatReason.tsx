@@ -3,11 +3,12 @@ import { ChatCollapsableMessage } from "./ChatCollapsableMessage";
 import './ChatReason.scss';
 
 interface Props {
+    id: string,
     status: string,
     content?: string,
 }
 
-export const ChatReason = memo(({ status, content }: Props) => {
+export const ChatReason = memo(({ id, status, content }: Props) => {
     let label;
     let extraIconClass;
     if (status === 'done') {
@@ -22,8 +23,8 @@ export const ChatReason = memo(({ status, content }: Props) => {
         <ChatCollapsableMessage
             className="reason"
             header={(toggleOpen) => [
-                <span onClick={toggleOpen}>{label}</span>,
-                <i onClick={toggleOpen} className={`icon codicon ${extraIconClass}`}></i>
+                <span key={`reason-${id}-label`} onClick={toggleOpen}>{label}</span>,
+                <i key={`reason-${id}-icon`} onClick={toggleOpen} className={`icon codicon ${extraIconClass}`}></i>
             ]}
             content={
                 <p>{content}</p>

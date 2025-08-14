@@ -25,7 +25,7 @@ export function ChatMessages({ chatId, children }: ChatMessagesProps) {
                 switch (message.type) {
                     case 'text':
                         return (
-                            <div key={index}>
+                            <div key={`chat-message-${index}`}>
                                 <ChatTextMessage
                                     text={message.value}
                                     role={message.role} />
@@ -33,7 +33,7 @@ export function ChatMessages({ chatId, children }: ChatMessagesProps) {
                         );
                     case 'toolCall':
                         return (
-                            <div key={index}>
+                            <div key={`chat-toolcall-${index}`}>
                                 <ChatToolCall
                                     chatId={chatId}
                                     toolCallId={message.id}
@@ -49,8 +49,9 @@ export function ChatMessages({ chatId, children }: ChatMessagesProps) {
                         );
                     case 'reason':
                         return (
-                            <div key={index}>
+                            <div key={`chat-reason-${index}`}>
                                 <ChatReason
+                                    id={message.id}
                                     status={message.status}
                                     content={message.content} />
                             </div>

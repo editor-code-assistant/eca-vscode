@@ -150,7 +150,7 @@ export const ChatToolCall = memo((props: Props) => {
 
     const approvalComp = waitingApproval && (
         <div className="approval-actions">
-            <button onClick={rejectToolCall} className="cancel">Cancel</button>
+            <button onClick={rejectToolCall} className="cancel">Reject</button>
             <button onClick={approveToolCall} className="run">Run</button>
         </div>
     )
