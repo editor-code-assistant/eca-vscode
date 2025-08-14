@@ -18,6 +18,7 @@ interface ChatMessageToolCall {
     origin: ToolCallOrigin,
     manualApproval: boolean,
     details?: ToolCallDetails,
+    summary?: string,
 }
 
 interface ChatMessageReason {
@@ -149,6 +150,7 @@ export const chatSlice = createSlice({
                         origin: content.origin,
                         argumentsText: content.argumentsText,
                         manualApproval: content.manualApproval,
+                        summary: content.summary,
                     };
 
                     const existingIndex = chat.messages.findIndex(msg => msg.type === 'toolCall' && msg.id === content.id);
@@ -164,6 +166,7 @@ export const chatSlice = createSlice({
                     let tool = chat.messages[existingIndex] as ChatMessageToolCall;
                     tool.status = 'run';
                     tool.manualApproval = content.manualApproval;
+                    tool.summary = content.summary;
                     tool.details = content.details;
                     tool.argumentsText = JSON.stringify(content.arguments);
 
@@ -176,6 +179,7 @@ export const chatSlice = createSlice({
                     tool.status = 'rejected';
                     chat.messages[existingIndex] = tool;
                     tool.details = content.details;
+                    tool.summary = content.summary;
                     break;
                 }
                 case 'toolCalled': {
@@ -185,6 +189,7 @@ export const chatSlice = createSlice({
                     tool.status = content.error ? 'failed' : 'succeeded';
                     chat.messages[existingIndex] = tool;
                     tool.details = content.details;
+                    tool.summary = content.summary;
                     break;
                 }
                 case 'reasonStarted': {

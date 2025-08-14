@@ -43,6 +43,7 @@ export function ChatMessages({ chatId, children }: ChatMessagesProps) {
                                     outputs={message.outputs}
                                     details={message.details}
                                     manualApproval={message.manualApproval}
+                                    summary={message.summary}
                                     argumentsText={message.argumentsText}
                                 />
                             </div>

@@ -9,7 +9,11 @@ import { ChatCollapsableMessage } from './ChatCollapsableMessage';
 import './ChatToolCall.scss';
 import { MarkdownContent } from './MarkdownContent';
 
-function genericToolCall({ toolCallId, name, status, origin, argumentsText, outputs }: Props, iconClass: string, approvalComp: React.ReactNode) {
+function genericToolCall(
+    { toolCallId, name, summary, status, origin, argumentsText, outputs }: Props,
+    iconClass: string,
+    approvalComp: React.ReactNode,
+) {
     const argsTxt = '```javascript\n' + argumentsText + '\n```';
 
     const originTxt = origin === 'mcp' ? 'MCP' : 'ECA';
@@ -36,14 +40,15 @@ function genericToolCall({ toolCallId, name, status, origin, argumentsText, outp
             verb = 'Calling';
     }
 
-    const description = `${verb} ${originTxt} tool`;
+    const description = summary || `${verb} ${originTxt} tool`;
 
     return (
         <ChatCollapsableMessage
             className="tool-call"
             header={(toggleOpen) => [
                 <span onClick={toggleOpen} className="description">{description}</span>,
-                <span onClick={toggleOpen} className="name">{name}</span>,
+                !summary ?
+                    <span onClick={toggleOpen} className="name">{name}</span> : null,
                 <span onClick={toggleOpen} className="spacing"></span>,
                 <i onClick={toggleOpen} className={`status codicon ${iconClass}`}></i>,
                 approvalComp
@@ -111,7 +116,8 @@ interface Props {
     argumentsText?: string,
     manualApproval: boolean,
     outputs?: ToolCallOutput[],
-    details?: ToolCallDetails;
+    details?: ToolCallDetails,
+    summary?: string,
 }
 
 export const ChatToolCall = memo((props: Props) => {

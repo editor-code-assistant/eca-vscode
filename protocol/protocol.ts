@@ -147,6 +147,7 @@ interface ToolCallPrepareContent {
     name: string;
     argumentsText: string;
     manualApproval: boolean;
+    summary?: string;
 }
 
 interface ToolCallRunContent {
@@ -157,6 +158,7 @@ interface ToolCallRunContent {
     arguments: string[];
     manualApproval: boolean;
     details?: ToolCallDetails;
+    summary?: string;
 }
 
 interface ToolCallRejectedContent {
@@ -166,6 +168,7 @@ interface ToolCallRejectedContent {
     name: string;
     arguments: { [key: string]: string };
     details?: ToolCallDetails;
+    summary?: string;
 }
 
 interface ToolCalledContent {
@@ -177,6 +180,7 @@ interface ToolCalledContent {
     error: boolean;
     outputs: ToolCallOutput[];
     details?: ToolCallDetails;
+    summary?: string;
 }
 
 export interface ToolCallOutput {

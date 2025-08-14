@@ -12,8 +12,8 @@ export const ChatReason = memo(({ id, status, content }: Props) => {
     let label;
     let extraIconClass;
     if (status === 'done') {
-        label = 'Thought';
-        extraIconClass = 'codicon-symbol-misc';
+        label = 'Thoughts';
+        extraIconClass = 'codicon-sparkle';
     } else {
         label = 'Thinking';
         extraIconClass = 'codicon-loading codicon-modifier-spin';
