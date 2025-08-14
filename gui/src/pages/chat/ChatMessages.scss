@@ -16,6 +16,6 @@
 
     .system-message {
       color: var(--vscode-activityWarningBadge-background, #cca700);
-      white-space: pre;
+      white-space: pre-wrap;
     }
 }

@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
 import { ChatCommand, ChatContentReceivedParams, ChatContentRole, ChatContext, ToolCallDetails, ToolCallOrigin, ToolCallOutput } from "@protocol/protocol";
+import { createSlice } from "@reduxjs/toolkit";
 
 interface ChatMessageText {
     type: 'text',
@@ -77,14 +77,17 @@ export const chatSlice = createSlice({
         },
         incRequestId: (state, action) => {
             const chatId = action.payload.chatId;
-            state.chats[chatId] = {
-                ...state.chats[chatId],
-                lastRequestId: (state.chats[chatId]?.lastRequestId || 0) + 1,
-            };
+            if (state.chats[chatId]) {
+                state.chats[chatId] = {
+                    ...state.chats[chatId],
+                    lastRequestId: (state.chats[chatId]?.lastRequestId || 0) + 1,
+                };
+            }
         },
         resetChat: (state, action) => {
             const chatId = action.payload;
-            delete state.chats[chatId];
+            const { [chatId]: oldChat, ...newChats } = state.chats;
+            state.chats = newChats;
         },
         resetChats: (state) => {
             state.chats = {};
