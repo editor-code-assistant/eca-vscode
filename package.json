@@ -119,11 +119,14 @@
     "vsix": "vsce package",
     "dev:gui": "cd gui && npm run dev",
     "build:gui": "cd gui && npm run build",
-    "publish": "vsce publish"
+    "publish": "npm run publish:vscode && npm run publish:ovsx",
+    "publish:vscode": "vsce publish",
+    "publish:ovsx": "ovsx publish -p $ECA_OPENVSX_TOKEN"
   },
   "dependencies": {
     "extract-zip": "^2.0.1",
     "follow-redirects": "^1.15.9",
+    "ovsx": "^0.10.5",
     "sass": "^1.89.2",
     "vscode-jsonrpc": "^8.2.1"
   },
