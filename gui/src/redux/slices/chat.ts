@@ -157,6 +157,8 @@ export const chatSlice = createSlice({
                     if (existingIndex === -1) {
                         chat.messages.push(tool);
                     } else {
+                        const existingTool = chat.messages[existingIndex] as ChatMessageToolCall;
+                        tool.argumentsText = existingTool.argumentsText + content.argumentsText;
                         chat.messages[existingIndex] = tool;
                     }
                     break;
