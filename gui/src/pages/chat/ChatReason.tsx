@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { ChatCollapsableMessage } from "./ChatCollapsableMessage";
 import './ChatReason.scss';
+import { MarkdownContent } from "./MarkdownContent";
 
 interface Props {
     id: string,
@@ -27,7 +28,7 @@ export const ChatReason = memo(({ id, status, content }: Props) => {
                 <i key={`reason-${id}-icon`} onClick={toggleOpen} className={`icon codicon ${extraIconClass}`}></i>
             ]}
             content={
-                <p>{content}</p>
+                <MarkdownContent content={content} />
             }
         />
     );
