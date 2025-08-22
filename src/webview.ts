@@ -154,7 +154,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         const nonce = util.randUuid();
         let scriptUri: string;
         let styleMainUri: string;
-        const vscodeMediaUrl: string = webview
+        const mediaUrl: string = webview
             .asWebviewUri(vscode.Uri.joinPath(extensionUri, "eca-webview", "public"))
             .toString();
 
@@ -182,7 +182,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <script>const vscode = acquireVsCodeApi();</script>
-            <script>window.vscodeMediaUrl = "${vscodeMediaUrl}"</script>
+            <script>window.mediaUrl = "${mediaUrl}"</script>
             <title>ECA</title>
             <link href="${styleMainUri}" rel="stylesheet">
             <link href="${codiconsUri}" rel="stylesheet" />
