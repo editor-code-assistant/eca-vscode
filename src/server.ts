@@ -1,4 +1,4 @@
-import * as protocol from '@protocol/protocol';
+import * as protocol from './protocol';
 import * as cp from 'child_process';
 import * as extractZip from 'extract-zip';
 import { https } from 'follow-redirects';

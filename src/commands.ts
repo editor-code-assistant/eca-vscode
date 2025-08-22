@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import type { ChatContext } from '@protocol/protocol';
+import type { ChatContext } from './protocol';
 import { EcaServer, EcaServerStatus } from './server';
 import { EcaWebviewProvider } from './webview';
 

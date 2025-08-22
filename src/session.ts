@@ -1,4 +1,4 @@
-import * as protocol from '@protocol/protocol';
+import * as protocol from './protocol';
 import { EcaServer } from './server';
 
 export class Session {

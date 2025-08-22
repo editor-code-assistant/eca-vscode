@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as commands from './commands';
 import * as ecaApi from './ecaApi';
-import * as protocol from '@protocol/protocol';
+import * as protocol from './protocol';
 import { EcaServer, EcaServerPathFinder } from './server';
 import * as s from './session';
 import * as statusbar from './status-bar';

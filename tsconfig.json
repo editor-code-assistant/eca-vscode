@@ -6,11 +6,8 @@
 			"ES2022"
 		],
 		"sourceMap": true,
-		"rootDirs": ["src", "protocol"],
-		"strict": true,
-		"paths": {
-			"@protocol/*": ["./eca-webview/src/protocol/*"]
-		}
+		"rootDirs": ["src"],
+		"strict": true
 	},
 	"exclude": [
 		"eca-webview"

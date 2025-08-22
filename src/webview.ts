@@ -1,4 +1,4 @@
-import * as protocol from '@protocol/protocol';
+import * as protocol from './protocol';
 import * as vscode from 'vscode';
 import * as ecaApi from './ecaApi';
 import { EcaServerStatus } from './server';

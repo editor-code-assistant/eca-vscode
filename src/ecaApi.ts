@@ -1,5 +1,5 @@
 import * as rpc from 'vscode-jsonrpc/node';
-import * as p from '@protocol/protocol';
+import * as p from './protocol';
 
 export const initialize = new rpc.RequestType<p.InitializeParams, p.InitializeResult, void>('initialize');
 export const initialized = new rpc.NotificationType<any>('initialized');
