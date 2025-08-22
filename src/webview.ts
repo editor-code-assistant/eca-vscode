@@ -158,10 +158,6 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             .asWebviewUri(vscode.Uri.joinPath(extensionUri, "eca-webview", "public"))
             .toString();
 
-        const codiconsUri = webview
-            .asWebviewUri(vscode.Uri.joinPath(extensionUri, "eca-webview", 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'))
-            .toString();
-
         const isDev =
             this.context?.extensionMode === vscode.ExtensionMode.Development;
         if (!isDev) {
@@ -185,7 +181,6 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             <script>window.mediaUrl = "${mediaUrl}"</script>
             <title>ECA</title>
             <link href="${styleMainUri}" rel="stylesheet">
-            <link href="${codiconsUri}" rel="stylesheet" />
         </head>
         <body>
             <div id="root"></div>
