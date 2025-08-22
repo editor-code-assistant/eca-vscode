@@ -201,6 +201,9 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             }
 
             <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
+            <script>
+              localStorage.setItem("editor", '"vscode"');
+            </script>
         </body>
         </html>`;
     }
