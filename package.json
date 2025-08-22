@@ -117,8 +117,8 @@
     "lint": "eslint src",
     "test": "vscode-test",
     "vsix": "vsce package",
-    "dev:gui": "cd gui && npm run dev",
-    "build:gui": "cd gui && npm run build",
+    "dev:gui": "cd eca-webview && npm run dev",
+    "build:gui": "cd eca-webview && npm run build",
     "publish": "npm run publish:vscode && npm run publish:ovsx",
     "publish:vscode": "vsce publish",
     "publish:ovsx": "ovsx publish -p $ECA_OPENVSX_TOKEN"

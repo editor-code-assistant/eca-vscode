@@ -30,7 +30,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         this._webview.options = {
             enableScripts: true,
             localResourceRoots: [
-                vscode.Uri.joinPath(extensionUri, "gui"),
+                vscode.Uri.joinPath(extensionUri, "eca-webview"),
                 vscode.Uri.joinPath(extensionUri, "assets"),
             ],
             enableCommandUris: true,
@@ -155,21 +155,21 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         let scriptUri: string;
         let styleMainUri: string;
         const vscodeMediaUrl: string = webview
-            .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui", "public"))
+            .asWebviewUri(vscode.Uri.joinPath(extensionUri, "eca-webview", "public"))
             .toString();
 
         const codiconsUri = webview
-            .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui", 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'))
+            .asWebviewUri(vscode.Uri.joinPath(extensionUri, "eca-webview", 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'))
             .toString();
 
         const isDev =
             this.context?.extensionMode === vscode.ExtensionMode.Development;
         if (!isDev) {
             scriptUri = webview
-                .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui/dist/assets/index.js"))
+                .asWebviewUri(vscode.Uri.joinPath(extensionUri, "eca-webview/dist/assets/index.js"))
                 .toString();
             styleMainUri = webview
-                .asWebviewUri(vscode.Uri.joinPath(extensionUri, "gui/dist/assets/index.css"))
+                .asWebviewUri(vscode.Uri.joinPath(extensionUri, "eca-webview/dist/assets/index.css"))
                 .toString();
         } else {
             scriptUri = "http://localhost:5173/src/main.tsx";

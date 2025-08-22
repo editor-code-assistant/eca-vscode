@@ -9,10 +9,10 @@
 		"rootDirs": ["src", "protocol"],
 		"strict": true,
 		"paths": {
-			"@protocol/*": ["./protocol/*"]
+			"@protocol/*": ["./eca-webview/src/protocol/*"]
 		}
 	},
 	"exclude": [
-		"gui"
+		"eca-webview"
 	]
 }
