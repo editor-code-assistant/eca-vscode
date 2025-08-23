@@ -3,7 +3,7 @@
   "displayName": "ECA (Editor Code Assistant)",
   "description": "ECA (Editor Code Assistant) integration for VsCode",
   "icon": "assets/logo.png",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "publisher": "editor-code-assistant",
   "author": {
     "name": "Eric Dallo",
