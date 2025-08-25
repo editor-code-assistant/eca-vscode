@@ -64,6 +64,11 @@ async function activate(context: vscode.ExtensionContext) {
 				webviewProvider.configChanged();
 			}
 		}),
+		vscode.window.onDidChangeActiveTextEditor((editor) => {
+			if (!editor) return;
+			const path = editor.document.uri.path;
+			webviewProvider.onFileFocused(path);
+		})
 	);
 }
 

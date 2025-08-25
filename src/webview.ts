@@ -1,6 +1,6 @@
-import * as protocol from './protocol';
 import * as vscode from 'vscode';
 import * as ecaApi from './ecaApi';
+import * as protocol from './protocol';
 import { EcaServerStatus } from './server';
 import * as s from './session';
 import * as util from './util';
@@ -43,6 +43,11 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     this.sessionChanged(session);
                     this.handleNewStatus(session.server.status);
                     this.configChanged();
+                    // get opened editor file path
+                    const editor = vscode.window.activeTextEditor;
+                    if (editor) {
+                        this.onFileFocused(editor.document.uri.path);
+                    }
                     return;
                 }
                 case 'chat/userPrompt': {
@@ -285,6 +290,16 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         this._webview?.postMessage({
             type: 'chat/addContext',
             data: chatContext,
+        });
+    }
+
+    onFileFocused(path: string) {
+        this._webview?.postMessage({
+            type: 'editor/focusChanged',
+            data: {
+                type: 'fileFocused',
+                path: path,
+            },
         });
     }
 };
