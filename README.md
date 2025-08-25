@@ -23,6 +23,10 @@ This extension will auto download `eca` and manage the process.
 - `eca.serverPath`: Custom server path, if not set it will download latest server from https://github.com/editor-code-assistant/eca
 - `eca.serverArgs`: Extra server args used when starting eca server.
 
+## Troubleshooting
+
+Check [troubleshooting](http://eca.dev/troubleshooting) docs section.
+
 ## Development
 
 ```bash
