@@ -46,8 +46,8 @@
           },
           "eca.usageStringFormat": {
             "type": "string",
-            "default": "{messageCost} / {sessionCost}",
-            "markdownDescription": "Format string for the usage (tokens/cost) in chat window. variables available:\n\n - `sessionCost`\n- `messageCost`\n- `sessionTokens`\n- `messageInputTokens`\n- `messageOutputTokens`."
+            "default": "{sessionTokens} / {contextLimit} ({sessionCost})",
+            "markdownDescription": "Format string for the usage (tokens/cost) in chat window. variables available:\n\n - `sessionCost`\n- `lastMessageCost`\n- `sessionTokens`\n- `contextLimit`\n- `outputLimit`."
           }
         }
       }
