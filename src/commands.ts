@@ -47,12 +47,14 @@ const manageHandler = async (
 
 const getContextFile = async (): Promise<ChatContext | undefined> => {
     const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
+    if (!editor) {
+        return;
+    }
     return {
         type: 'file',
         path: editor.document.uri.fsPath,
     };
-}
+};
 
 const getContextAtCursor = async (): Promise<ChatContext | undefined> => {
     const editor = vscode.window.activeTextEditor;
@@ -95,7 +97,7 @@ const getContextAtCursor = async (): Promise<ChatContext | undefined> => {
         };
     }
     return;
-}
+};
 
 type RegisterCommandsParams = {
     server: EcaServer,

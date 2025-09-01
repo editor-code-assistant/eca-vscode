@@ -72,6 +72,7 @@ class EcaServer {
         }
 
         this._serverPathFinder.find().then((serverPath) => {
+            console.log('-----------> Spawning process...');
             this._proc = cp.spawn(
                 serverPath,
                 args,
@@ -83,6 +84,7 @@ class EcaServer {
             this._proc.stderr.on('data', (data) => {
                 this._channel.appendLine(data.toString());
             });
+            console.log('-----------> Initing conn...');
             this._connection = rpc.createMessageConnection(
                 new rpc.StreamMessageReader(this._proc.stdout),
                 new rpc.StreamMessageWriter(this._proc.stdin));
@@ -116,6 +118,7 @@ class EcaServer {
 
     async stop() {
         if (isClosable(this._status)) {
+            console.log('-----------> stopping...');
             await this.connection.sendRequest(ecaApi.shutdown, {});
             this.connection.sendNotification(ecaApi.exit, {});
             this.connection.dispose();
@@ -216,6 +219,7 @@ class EcaServerPathFinder {
             const releases = JSON.parse(releasesJSON);
             return releases[0].tag_name;
         } catch (err) {
+            console.error('Could not fetch latest server version', err);
             return '';
         }
     }
