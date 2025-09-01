@@ -268,7 +268,7 @@ class EcaServerPathFinder {
             throw new Error('Could not fetch latest version of eca. Please check your internet connection and try again. You can also download eca manually and set the path in the vscode settings.');
         }
 
-        if (!exists || (currentVersion !== latestVersion)) {
+        if (!exists || (latestVersion !== '' && currentVersion !== latestVersion)) {
             await this.downloadLatestServer(serverPath, latestVersion);
         }
 
