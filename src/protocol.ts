@@ -245,9 +245,9 @@ export interface ChatCommand {
 export interface ConfigUpdatedParams {
     chat?: {
         models?: string[];
-        defaultModel?: string;
         behaviors?: string[];
-        defaultBehavior?: ChatBehavior;
+        selectModel?: string;
+        selectBehavior?: ChatBehavior;
         welcomeMessage?: string;
     }
 }
