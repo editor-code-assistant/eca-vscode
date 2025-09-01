@@ -1,4 +1,3 @@
-import * as protocol from './protocol';
 import * as cp from 'child_process';
 import * as extractZip from 'extract-zip';
 import { https } from 'follow-redirects';
@@ -107,12 +106,7 @@ class EcaServer {
                     // TODO custom setting chatBehavior
                 },
                 workspaceFolders: session.workspaceFolders,
-            }).then((result: protocol.InitializeResult) => {
-                session.models = result.models;
-                session.chatWelcomeMessage = result.chatWelcomeMessage;
-                session.chatSelectedModel = result.chatDefaultModel;
-                session.chatBehaviors = result.chatBehaviors;
-                session.chatSelectedBehavior = result.chatDefaultBehavior;
+            }).then((_) => {
                 this.changeStatus(EcaServerStatus.Running);
                 this.connection.sendNotification(ecaApi.initialized, {});
                 this._onStarted(this.connection);

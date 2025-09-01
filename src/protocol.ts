@@ -18,13 +18,7 @@ export interface WorkspaceFolder {
     uri: string;
 }
 
-export interface InitializeResult {
-    models: string[];
-    chatDefaultModel: string;
-    chatBehaviors: string[];
-    chatDefaultBehavior: ChatBehavior;
-    chatWelcomeMessage: string;
-}
+export interface InitializeResult {}
 
 export interface ChatPromptParams {
     chatId?: string;
@@ -246,6 +240,16 @@ export interface ChatCommand {
         description?: string;
         required: boolean;
     }];
+}
+
+export interface ConfigUpdatedParams {
+    chat?: {
+        models?: string[];
+        defaultModel?: string;
+        behaviors?: string[];
+        defaultBehavior?: ChatBehavior;
+        welcomeMessage?: string;
+    }
 }
 
 export type ToolServerStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';

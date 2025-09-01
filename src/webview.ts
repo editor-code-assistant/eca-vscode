@@ -42,7 +42,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     let session = s.getSession()!;
                     this.sessionChanged(session);
                     this.handleNewStatus(session.server.status);
-                    this.configChanged();
+                    this.configUpdated(undefined);
                     // get opened editor file path
                     const editor = vscode.window.activeTextEditor;
                     if (editor) {
@@ -55,8 +55,8 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     session.server.connection.sendRequest(ecaApi.chatPrompt, {
                         chatId: message.data.chatId,
                         message: message.data.prompt,
-                        model: session.chatSelectedModel,
-                        behavior: session.chatSelectedBehavior,
+                        model: message.data.model,
+                        behavior: message.data.behavior,
                         requestId: message.data.requestId.toString(),
                         contexts: message.data.contexts,
                     }).then((result) => {
@@ -66,16 +66,6 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                         });
                     });
 
-                    return;
-                }
-                case 'chat/selectedModelChanged': {
-                    let session = s.getSession()!;
-                    session.chatSelectedModel = message.data.value;
-                    return;
-                }
-                case 'chat/selectedBehaviorChanged': {
-                    let session = s.getSession()!;
-                    session.chatSelectedBehavior = message.data.value;
                     return;
                 }
                 case 'chat/toolCallApprove': {
@@ -230,45 +220,20 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
 
     sessionChanged(session: s.Session) {
         this._webview?.postMessage({
-            type: 'chat/setBehaviors',
-            data: {
-                behaviors: session.chatBehaviors,
-                selectedBehavior: session.chatSelectedBehavior,
-            },
-        });
-        this._webview?.postMessage({
-            type: 'chat/setModels',
-            data: {
-                models: session.models,
-                selectedModel: session.chatSelectedModel
-            },
-        });
-        this._webview?.postMessage({
             type: 'server/setWorkspaceFolders',
             data: session.workspaceFolders,
         });
     }
 
-    configChanged() {
+    configUpdated(params?: protocol.ConfigUpdatedParams) {
         const config = vscode.workspace.getConfiguration('eca');
         this._webview?.postMessage({
             type: 'config/updated',
-            data: config,
+            data: { ...params, ...config },
         });
     }
 
     handleNewStatus(status: EcaServerStatus) {
-        let enabled = status === EcaServerStatus.Running;
-
-        if (enabled) {
-            let session = s.getSession()!;
-            this._webview?.postMessage({
-                type: 'chat/setWelcomeMessage',
-                data: {
-                    message: session.chatWelcomeMessage,
-                }
-            });
-        }
         this._webview?.postMessage({
             type: 'server/statusChanged',
             data: status,

@@ -30,6 +30,10 @@ async function activate(context: vscode.ExtensionContext) {
 				webviewProvider.toolServerUpdated(params);
 			});
 
+			connection.onNotification(ecaApi.configUpdated, (params: protocol.ConfigUpdatedParams) => {
+				webviewProvider.configUpdated(params);
+			});
+
 			webviewProvider.sessionChanged(session);
 			webviewProvider.focus();
 		},
@@ -61,7 +65,7 @@ async function activate(context: vscode.ExtensionContext) {
 		}),
 		vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
 			if (e.affectsConfiguration('eca')) {
-				webviewProvider.configChanged();
+				webviewProvider.configUpdated(undefined);
 			}
 		}),
 		vscode.window.onDidChangeActiveTextEditor((editor) => {
