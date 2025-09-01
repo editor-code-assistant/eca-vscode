@@ -72,7 +72,7 @@ class EcaServer {
         }
 
         this._serverPathFinder.find().then((serverPath) => {
-            console.log('-----------> Spawning process...');
+            this._channel.appendLine(`[VSCODE] spawning server: ${serverPath}`);
             this._proc = cp.spawn(
                 serverPath,
                 args,
@@ -84,7 +84,6 @@ class EcaServer {
             this._proc.stderr.on('data', (data) => {
                 this._channel.appendLine(data.toString());
             });
-            console.log('-----------> Initing conn...');
             this._connection = rpc.createMessageConnection(
                 new rpc.StreamMessageReader(this._proc.stdout),
                 new rpc.StreamMessageWriter(this._proc.stdin));
@@ -118,7 +117,6 @@ class EcaServer {
 
     async stop() {
         if (isClosable(this._status)) {
-            console.log('-----------> stopping...');
             await this.connection.sendRequest(ecaApi.shutdown, {});
             this.connection.sendNotification(ecaApi.exit, {});
             this.connection.dispose();
@@ -147,6 +145,7 @@ class EcaServerPathFinder {
 
     constructor(
         private _context: vscode.ExtensionContext,
+        private _channel: vscode.OutputChannel,
     ) {
     }
 
@@ -175,7 +174,7 @@ class EcaServerPathFinder {
 
         const downloadPath = path.join(extensionPath, artifactName);
 
-        console.log(`Downloading eca from ${url} to ${downloadPath}`);
+        this._channel.appendLine(`Downloading eca from ${url} to ${downloadPath}`);
 
         try {
             await new Promise((resolve, reject) => {
@@ -186,7 +185,7 @@ class EcaServerPathFinder {
                             response
                                 .on('end', () => {
                                     writeStream.close();
-                                    console.log('ECA artifact downloaded to', downloadPath);
+                                    this._channel.appendLine(`ECA artifact downloaded to ${downloadPath}`);
                                     resolve(true);
                                 })
                                 .pipe(writeStream);
@@ -205,7 +204,6 @@ class EcaServerPathFinder {
             }
             this.writeVersionFile(version);
         } catch (e) {
-            console.log(`Error downloading eca, from ${url}`, e);
             throw new Error(`Error downloading eca, from ${url}`);
         }
 
@@ -242,7 +240,7 @@ class EcaServerPathFinder {
         try {
             fs.writeFileSync(filePath, version);
         } catch (e) {
-            console.log('Could not write eca version file.', e);
+            console.error('Could not write eca version file.', e);
         }
 
     }

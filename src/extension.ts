@@ -15,7 +15,7 @@ async function activate(context: vscode.ExtensionContext) {
 	const ecaChannel = vscode.window.createOutputChannel('ECA stderr', 'Clojure');
 
 	const webviewProvider = new EcaWebviewProvider(context);
-	const serverPathFinder = new EcaServerPathFinder(context);
+	const serverPathFinder = new EcaServerPathFinder(context, ecaChannel);
 
 	const server = new EcaServer({
 		serverPathFinder: serverPathFinder,
