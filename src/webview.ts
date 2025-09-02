@@ -11,6 +11,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
 
     constructor(
         private readonly context: vscode.ExtensionContext,
+        private readonly _channel: vscode.OutputChannel,
     ) {}
 
     get webview() {
@@ -137,6 +138,9 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 case 'editor/openFile': {
                     const fileUri = vscode.Uri.file(message.data.path);
                     vscode.window.showTextDocument(fileUri);
+                }
+                case 'editor/openServerLogs': {
+                    this._channel.show();
                 }
             }
         });
