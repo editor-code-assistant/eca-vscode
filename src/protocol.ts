@@ -87,106 +87,9 @@ export interface ChatDeleteParams {
     chatId: string;
 }
 
-export interface ChatContentReceivedParams {
-    chatId: string;
-    role: ChatContentRole;
-    content: ChatContent;
-}
+export interface ChatContentReceivedParams {}
 
 export type ChatContentRole = 'user' | 'system' | 'assistant';
-
-type ChatContent =
-    | TextContent
-    | URLContent
-    | ProgressContent
-    | UsageContent
-    | ToolCallPrepareContent
-    | ToolCallRunContent
-    | ToolCallRunningContent
-    | ToolCallRejectedContent
-    | ToolCalledContent
-    | ReasonStartedContent
-    | ReasonTextContent
-    | ReasonFinishedContent;
-
-interface TextContent {
-    type: 'text';
-    text: string;
-}
-
-interface URLContent {
-    type: 'url';
-    title: string;
-    url: string;
-}
-
-interface ProgressContent {
-    type: 'progress';
-    state: 'running' | 'finished';
-    text?: string;
-}
-
-interface UsageContent {
-    type: 'usage';
-    messageInputTokens: number;
-    messageOutputTokens: number;
-    sessionTokens: number;
-    messageCost?: string;
-    sessionCost?: string;
-}
-
-interface ToolCallPrepareContent {
-    type: 'toolCallPrepare';
-    origin: ToolCallOrigin;
-    id: string;
-    name: string;
-    argumentsText: string;
-    manualApproval: boolean;
-    summary?: string;
-}
-
-interface ToolCallRunContent {
-    type: 'toolCallRun';
-    origin: ToolCallOrigin;
-    id: string;
-    name: string;
-    arguments: string[];
-    manualApproval: boolean;
-    details?: ToolCallDetails;
-    summary?: string;
-}
-
-interface ToolCallRunningContent {
-    type: 'toolCallRunning';
-    origin: ToolCallOrigin;
-    id: string;
-    name: string;
-    arguments: string[];
-    details?: ToolCallDetails;
-    summary?: string;
-}
-
-interface ToolCallRejectedContent {
-    type: 'toolCallRejected';
-    origin: ToolCallOrigin;
-    id: string;
-    name: string;
-    arguments: { [key: string]: string };
-    details?: ToolCallDetails;
-    summary?: string;
-}
-
-interface ToolCalledContent {
-    type: 'toolCalled';
-    origin: ToolCallOrigin;
-    id: string;
-    name: string;
-    arguments: string[];
-    error: boolean;
-    outputs: ToolCallOutput[];
-    details?: ToolCallDetails;
-    summary?: string;
-}
 
 export interface ToolCallOutput {
     type: 'text';
@@ -203,22 +106,6 @@ export interface FileChangeDetails {
     diff: string;
     linesAdded: number;
     linesRemoved: number;
-}
-
-interface ReasonStartedContent {
-    type: 'reasonStarted';
-    id: string;
-}
-
-interface ReasonTextContent {
-    type: 'reasonText';
-    id: string;
-    text: string;
-}
-
-interface ReasonFinishedContent {
-    type: 'reasonFinished';
-    id: string;
 }
 
 export interface ChatQueryContextParams {
