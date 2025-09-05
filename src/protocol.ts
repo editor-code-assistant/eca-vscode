@@ -102,6 +102,7 @@ type ChatContent =
     | UsageContent
     | ToolCallPrepareContent
     | ToolCallRunContent
+    | ToolCallRunningContent
     | ToolCallRejectedContent
     | ToolCalledContent
     | ReasonStartedContent
@@ -151,6 +152,16 @@ interface ToolCallRunContent {
     name: string;
     arguments: string[];
     manualApproval: boolean;
+    details?: ToolCallDetails;
+    summary?: string;
+}
+
+interface ToolCallRunningContent {
+    type: 'toolCallRunning';
+    origin: ToolCallOrigin;
+    id: string;
+    name: string;
+    arguments: string[];
     details?: ToolCallDetails;
     summary?: string;
 }
