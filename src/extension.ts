@@ -70,8 +70,7 @@ async function activate(context: vscode.ExtensionContext) {
 		}),
 		vscode.window.onDidChangeActiveTextEditor((editor) => {
 			if (!editor) return;
-			const path = editor.document.uri.path;
-			webviewProvider.onFileFocused(path);
+			webviewProvider.onFileFocused(editor);
 		})
 	);
 }

@@ -47,7 +47,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     // get opened editor file path
                     const editor = vscode.window.activeTextEditor;
                     if (editor) {
-                        this.onFileFocused(editor.document.uri.path);
+                        this.onFileFocused(editor);
                     }
                     return;
                 }
@@ -262,12 +262,21 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         });
     }
 
-    onFileFocused(path: string) {
+    onFileFocused(editor: vscode.TextEditor) {
+        const selection = editor.selection;
         this._webview?.postMessage({
             type: 'editor/focusChanged',
             data: {
                 type: 'fileFocused',
-                path: path,
+                path: editor.document.uri.path,
+                position: {
+                    start: {
+                        line: selection.start.line, character: selection.start.character
+                    },
+                    end: {
+                        line: selection.end.line, character: selection.end.character
+                    }
+                }
             },
         });
     }
