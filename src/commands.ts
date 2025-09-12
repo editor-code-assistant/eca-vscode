@@ -66,8 +66,8 @@ const getContextAtCursor = async (): Promise<ChatContext | undefined> => {
             type: 'file',
             path: document.uri.fsPath,
             linesRange: {
-                start: selection.start.line,
-                end: selection.end.line
+                start: selection.start.line + 1,
+                end: selection.end.line + 1
             }
         };
     }
