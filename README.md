@@ -28,6 +28,12 @@ This extension will auto download `eca` and manage the process.
 Check [troubleshooting](http://eca.dev/troubleshooting) docs section.
 
 ## Development
+Make sure that you have the `eca-webview` submodule cloned. To download it, you can run:
+```
+git submodule update --init --recursive
+```
+
+### Run locally
 
 ```bash
 npm run dev:gui
@@ -37,3 +43,4 @@ This will start Vite dev server on `http://localhost:5173`, so any changes will 
 
 then start vscode on debug mode, open this project in vscode and hit F5 (Debug), this should open a new vscode extension with this plugin running.
 
+WARN: To run the task from VsCode, need to install the [esbuild Problem Matchers](https://marketplace.visualstudio.com/items?itemName=connor4312.esbuild-problem-matchers) extension.
