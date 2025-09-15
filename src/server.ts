@@ -64,15 +64,15 @@ class EcaServer {
         const userShellEnv = await util.getUserShellEnv();
 
         const config = vscode.workspace.getConfiguration('eca');
-        const customServerArgs = config.get<string>('serverArgs');
+        const customServerArgsStr = config.get<string>('serverArgs');
+        const customServerArgs = customServerArgsStr?.trim()
+            ? customServerArgsStr.split(' ')
+            : [];
 
-        let args = ['server'];
-        if (customServerArgs) {
-            args.push(customServerArgs);
-        }
+        let args = ['server', ...customServerArgs];
 
         this._serverPathFinder.find().then((serverPath) => {
-            this._channel.appendLine(`[VSCODE] spawning server: ${serverPath}`);
+            this._channel.appendLine(`[VSCODE] spawning server: ${serverPath} with args: ${args.join(' ')}`);
             this._proc = cp.spawn(
                 serverPath,
                 args,
