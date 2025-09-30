@@ -135,6 +135,21 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     });
                     return;
                 }
+                case 'editor/readInput': {
+                    vscode.window.showInputBox({
+                        prompt: message.data.message,
+                        placeHolder: 'Enter the value',
+                    }).then((userInput) => {
+                        this._webview?.postMessage({
+                            type: 'editor/readInput',
+                            data: {
+                                requestId: message.data.requestId,
+                                value: userInput,
+                            }
+                        });
+                    });
+                    return;
+                }
                 case 'editor/openFile': {
                     const fileUri = vscode.Uri.file(message.data.path);
                     vscode.window.showTextDocument(fileUri);
