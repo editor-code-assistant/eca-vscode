@@ -74,6 +74,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     session.server.connection.sendNotification(ecaApi.chatToolCallApprove, {
                         chatId: message.data.chatId,
                         toolCallId: message.data.toolCallId,
+                        save: message.data.save,
                     });
                     return;
                 }
