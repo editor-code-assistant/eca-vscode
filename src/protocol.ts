@@ -69,9 +69,12 @@ export interface ChatPromptResult {
     model: string;
 }
 
+type ChatToolCallApproveSave = 'session';
+
 export interface ChatToolCallApproveParams {
     chatId: string;
     toolCallId: string;
+    save: ChatToolCallApproveSave;
 }
 
 export interface ChatToolCallRejectParams {
