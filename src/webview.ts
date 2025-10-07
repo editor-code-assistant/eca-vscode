@@ -284,7 +284,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             type: 'editor/focusChanged',
             data: {
                 type: 'fileFocused',
-                path: editor.document.uri.path,
+                path: editor.document.uri.fsPath,
                 position: {
                     start: {
                         line: selection.start.line, character: selection.start.character

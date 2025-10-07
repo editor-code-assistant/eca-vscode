@@ -73,10 +73,15 @@ class EcaServer {
 
         this._serverPathFinder.find().then((serverPath) => {
             this._channel.appendLine(`[VSCODE] spawning server: ${serverPath} with args: ${args.join(' ')}`);
+
+            let session = s.getSession()!;
             this._proc = cp.spawn(
                 serverPath,
                 args,
                 {
+                    cwd: session.workspaceFolders.length > 0 ?
+                        vscode.Uri.parse(session.workspaceFolders[0].uri).fsPath :
+                        undefined,
                     env: { ...process.env, ...userShellEnv }
                 }
             );
@@ -87,8 +92,6 @@ class EcaServer {
             this._connection = rpc.createMessageConnection(
                 new rpc.StreamMessageReader(this._proc.stdout),
                 new rpc.StreamMessageWriter(this._proc.stdin));
-
-            let session = s.getSession()!;
 
             this.connection.listen();
 
