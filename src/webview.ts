@@ -4,6 +4,9 @@ import * as protocol from './protocol';
 import { EcaServerStatus } from './server';
 import * as s from './session';
 import * as util from './util';
+import * as os from 'os';
+import * as path from 'path';
+import * as fs from 'fs';
 
 export class EcaWebviewProvider implements vscode.WebviewViewProvider {
     public providerId = 'eca.webview';
@@ -12,7 +15,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
     constructor(
         private readonly context: vscode.ExtensionContext,
         private readonly _channel: vscode.OutputChannel,
-    ) {}
+    ) { }
 
     get webview() {
         return this._webview;
@@ -157,6 +160,29 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 }
                 case 'editor/openServerLogs': {
                     this._channel.show();
+                }
+                case 'editor/openGlobalConfig': {
+                    const homedir = os.homedir();
+                    const configFilePath = path.join(homedir, '.config', 'eca', 'config.json');
+                    const configDir = path.dirname(configFilePath);
+
+                    try {
+                        if (!fs.existsSync(configDir)) {
+                            fs.mkdirSync(configDir, { recursive: true });
+                        }
+
+                        if (!fs.existsSync(configFilePath)) {
+                            fs.writeFileSync(configFilePath, '{}');
+                        }
+                    } catch (error) {
+                        const message = error instanceof Error ? error.message : String(error);
+                        vscode.window.showErrorMessage(`Failed to prepare global config: ${message}`);
+                        return;
+                    }
+
+                    const fileUri = vscode.Uri.file(configFilePath);
+                    vscode.window.showTextDocument(fileUri);
+                    return;
                 }
             }
         });
