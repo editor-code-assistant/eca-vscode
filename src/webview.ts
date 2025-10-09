@@ -163,7 +163,8 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 }
                 case 'editor/openGlobalConfig': {
                     const homedir = os.homedir();
-                    const configFilePath = path.join(homedir, '.config', 'eca', 'config.json');
+                    const configHome = process.env.XDG_CONFIG_HOME || path.join(homedir, '.config');
+                    const configFilePath = path.join(configHome, 'eca', 'config.json');
                     const configDir = path.dirname(configFilePath);
 
                     try {
