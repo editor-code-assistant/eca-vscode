@@ -86,6 +86,22 @@ class EcaServer {
                 }
             );
 
+            this._proc.on('close', (code, signal) => {
+                this._channel.appendLine(`[VSCODE] server process closed: code=${code} signal=${signal}`);
+                if (this._status !== EcaServerStatus.Stopped &&
+                    this._status !== EcaServerStatus.Failed) {
+                    this.changeStatus(EcaServerStatus.Failed);
+                }
+            });
+
+            this._proc.on('error', (err) => {
+                this._channel.appendLine(`[VSCODE] server process error: ${err}`);
+                if (this._status !== EcaServerStatus.Stopped &&
+                    this._status !== EcaServerStatus.Failed) {
+                    this.changeStatus(EcaServerStatus.Failed);
+                }
+            });
+
             this._proc.stderr.on('data', (data) => {
                 this._channel.appendLine(data.toString());
             });
