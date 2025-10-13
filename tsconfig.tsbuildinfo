@@ -1,1 +1,1 @@
-{"root":["./src/commands.ts","./src/ecaApi.ts","./src/extension.ts","./src/protocol.ts","./src/server.ts","./src/session.ts","./src/status-bar.ts","./src/util.ts","./src/webview.ts","./src/test/extension.test.ts"],"version":"5.8.3"}
+{"root":["./src/commands.ts","./src/ecaApi.ts","./src/extension.ts","./src/protocol.ts","./src/server.ts","./src/session.ts","./src/status-bar.ts","./src/util.ts","./src/webview.ts","./src/test/extension.test.ts"],"version":"5.9.3"}
