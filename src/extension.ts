@@ -68,9 +68,9 @@ async function activate(context: vscode.ExtensionContext) {
 				webviewProvider.configUpdated(undefined);
 			}
 		}),
-		vscode.window.onDidChangeActiveTextEditor((editor) => {
-			if (!editor) return;
-			webviewProvider.onFileFocused(editor);
+		vscode.window.onDidChangeTextEditorSelection((e) => {
+			if (e.textEditor !== vscode.window.activeTextEditor) return;
+			webviewProvider.onFileFocused(e.textEditor);
 		})
 	);
 }
