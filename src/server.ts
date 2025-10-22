@@ -131,7 +131,14 @@ class EcaServer {
                 this.connection.sendNotification(ecaApi.initialized, {});
                 this._onStarted(this.connection);
             });
-        }).catch((err) => console.error('Fail to find eca server path.', err));
+        }).catch((err) => {
+            this._channel.appendLine(`[VSCODE] Fail to find eca server path: ${err}`);
+            if (this._status !== EcaServerStatus.Stopped &&
+                this._status !== EcaServerStatus.Failed) {
+                this.changeStatus(EcaServerStatus.Failed);
+            }
+        }
+        );
     }
 
     async stop() {
