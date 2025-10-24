@@ -222,6 +222,11 @@ class EcaServerPathFinder {
                     })
                     .on('error', reject);
             });
+
+            if (fs.existsSync(serverPath)) {
+                await fs.promises.rm(serverPath, { force: true });
+            }
+
             if (path.extname(downloadPath) === '.zip') {
                 await extractZip.default(downloadPath, { dir: extensionPath });
             }
