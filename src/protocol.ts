@@ -99,7 +99,7 @@ export interface ToolCallOutput {
 
 export type ToolCallOrigin = 'mcp' | 'native';
 
-export type ToolCallDetails = FileChangeDetails;
+export type ToolCallDetails = FileChangeDetails | JsonOutputsDetails;
 
 export interface FileChangeDetails {
     type: 'fileChange';
@@ -107,6 +107,11 @@ export interface FileChangeDetails {
     diff: string;
     linesAdded: number;
     linesRemoved: number;
+}
+
+interface JsonOutputsDetails {
+    type: 'jsonOutputs';
+    jsons: string[];
 }
 
 export interface ChatQueryContextParams {
