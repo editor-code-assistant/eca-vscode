@@ -75,16 +75,20 @@ class EcaServer {
             this._channel.appendLine(`[VSCODE] spawning server: ${serverPath} with args: ${args.join(' ')}`);
 
             let session = s.getSession()!;
-            this._proc = cp.spawn(
-                serverPath,
-                args,
-                {
-                    cwd: session.workspaceFolders.length > 0 ?
-                        vscode.Uri.parse(session.workspaceFolders[0].uri).fsPath :
-                        undefined,
-                    env: { ...process.env, ...userShellEnv }
-                }
-            );
+            const envAll = { ...process.env, ...userShellEnv };
+
+            if (process.platform === 'win32' && serverPath.endsWith('.bat')) {
+                this._proc = cp.spawn('cmd.exe', ['/s', '/c', 'call', serverPath, ...args], {
+                    cwd: path.dirname(serverPath),
+                    env: envAll,
+                });
+            } else {
+                this._proc = cp.spawn(serverPath, args, {
+                    cwd: path.dirname(serverPath),
+                    env: envAll,
+                });
+            }
+
 
             this._proc.on('close', (code, signal) => {
                 this._channel.appendLine(`[VSCODE] server process closed: code=${code} signal=${signal}`);
