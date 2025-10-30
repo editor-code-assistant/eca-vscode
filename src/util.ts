@@ -27,7 +27,8 @@ export async function getUserShellEnv(): Promise<{ [key: string]: string }> {
                 const i = line.indexOf('=');
                 if (i > 0) {
                     const key = line.slice(0, i);
-                    const value = line.slice(i + 1);
+                    // sanitize: remove embedded NULs and CR, then trim
+                    const value = line.slice(i + 1).replace(/\0/g, '').replace(/\r/g, '').trim();;
                     env[key] = value;
                 }
             });
