@@ -74,12 +74,8 @@
         "title": "ECA: Open MCP Details"
       },
       {
-        "command": "eca.chat.addContextFile",
-        "title": "ECA: Add current file as context"
-      },
-      {
-        "command": "eca.chat.addContextCursor",
-        "title": "ECA: Add context at cursor"
+        "command": "eca.chat.addContextToSystemPrompt",
+        "title": "ECA: Add context to system prompt"
       }
     ],
     "viewsContainers": {

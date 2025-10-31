@@ -15,8 +15,7 @@ This extension will auto download `eca` and manage the process.
 
 ### Commands
 
-- `eca.chat.addContextFile`: Add current file as chat context.
-- `eca.chat.addContextCursor`: Add selection at cursor as chat context.
+- `eca.chat.addContextToSystemPrompt`: Add context to system prompt in chat in a DWIM (do what I mean) manner.
 
 ### Settings
 

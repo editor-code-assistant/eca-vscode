@@ -45,17 +45,6 @@ const manageHandler = async (
     }
 };
 
-const getContextFile = async (): Promise<ChatContext | undefined> => {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
-        return;
-    }
-    return {
-        type: 'file',
-        path: editor.document.uri.fsPath,
-    };
-};
-
 const getContextAtCursor = async (): Promise<ChatContext | undefined> => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
@@ -72,31 +61,11 @@ const getContextAtCursor = async (): Promise<ChatContext | undefined> => {
         };
     }
 
-    // No selection: use document symbols to find function under cursor
-    const symbols: vscode.DocumentSymbol[] =
-        await vscode.commands.executeCommand('vscode.executeDocumentSymbolProvider', document.uri);
-
-    const position = selection.active;
-    function findSymbolAtPosition(symbols: vscode.DocumentSymbol[]): vscode.DocumentSymbol | undefined {
-        for (const symbol of symbols) {
-            if (symbol.range.contains(position)) {
-                return findSymbolAtPosition(symbol.children) || symbol;
-            }
-        }
-        return undefined;
-    }
-    const symbol = findSymbolAtPosition(symbols);
-    if (symbol) {
-        return {
-            type: 'file',
-            path: document.uri.fsPath,
-            linesRange: {
-                start: symbol.range.start.line + 1,
-                end: symbol.range.end.line + 1
-            }
-        };
-    }
-    return;
+    // No selection: use full file
+    return {
+        type: 'file',
+        path: document.uri.fsPath,
+    };
 };
 
 type RegisterCommandsParams = {
@@ -123,20 +92,12 @@ export const registerVSCodeCommands = (params: RegisterCommandsParams) => {
         vscode.commands.registerCommand('eca.mcp-details.focus', () => {
             params.webviewProvider.focus('/mcp-details');
         }),
-        vscode.commands.registerCommand('eca.chat.addContextCursor', async () => {
+        vscode.commands.registerCommand('eca.chat.addContextToSystemPrompt', async () => {
             const context = await getContextAtCursor();
             if (context) {
-                params.webviewProvider.addChatContext(context);
+                params.webviewProvider.addContextToSystemPrompt(context);
             } else {
                 vscode.window.showWarningMessage('No selection or function/method found at cursor.');
-            }
-        }),
-        vscode.commands.registerCommand('eca.chat.addContextFile', async () => {
-            const context = await getContextFile();
-            if (context) {
-                params.webviewProvider.addChatContext(context);
-            } else {
-                vscode.window.showWarningMessage('No opened file found.');
             }
         }),
     ];

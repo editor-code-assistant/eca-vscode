@@ -15,7 +15,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
     constructor(
         private readonly context: vscode.ExtensionContext,
         private readonly _channel: vscode.OutputChannel,
-    ) { }
+    ) {}
 
     get webview() {
         return this._webview;
@@ -300,9 +300,9 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             });
         };
     }
-    addChatContext(chatContext: protocol.ChatContext) {
+    addContextToSystemPrompt(chatContext: protocol.ChatContext) {
         this._webview?.postMessage({
-            type: 'chat/addContext',
+            type: 'chat/addContextToSystemPrompt',
             data: chatContext,
         });
     }
