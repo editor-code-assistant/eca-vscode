@@ -78,6 +78,27 @@
         "title": "ECA: Add context to system prompt"
       }
     ],
+    "submenus": [
+      {
+        "id": "eca.menu",
+        "label": "ECA"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "eca.menu",
+          "group": "navigation@100",
+          "when": "editorTextFocus"
+        }
+      ],
+      "eca.menu": [
+        {
+          "command": "eca.chat.addContextToSystemPrompt",
+          "group": "1_context"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
