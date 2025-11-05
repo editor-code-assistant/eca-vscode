@@ -123,7 +123,8 @@ class EcaServer {
                 },
                 capabilities: {
                     codeAssistant: {
-                        chat: true
+                        chat: true,
+                        rewrite: true
                     }
                 },
                 initializationOptions: {

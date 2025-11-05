@@ -17,3 +17,7 @@ export const toolServerUpdated = new rpc.NotificationType<p.ToolServerUpdatedPar
 export const configUpdated = new rpc.NotificationType<p.ConfigUpdatedParams>('config/updated');
 export const mcpStartServer = new rpc.NotificationType<p.McpStartServerParams>('mcp/startServer');
 export const mcpStopServer = new rpc.NotificationType<p.McpStopServerParams>('mcp/stopServer');
+
+// Rewrite
+export const rewritePrompt = new rpc.RequestType<p.RewritePromptParams, p.RewritePromptResponse, void>('rewrite/prompt');
+export const rewriteContentReceived = new rpc.NotificationType<p.RewriteContentReceivedParams>('rewrite/contentReceived');

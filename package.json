@@ -50,6 +50,17 @@
             "type": "string",
             "default": "{sessionTokens} / {contextLimit} ({sessionCost})",
             "markdownDescription": "Format string for the usage (tokens/cost) in chat window. variables available:\n\n - `sessionCost`\n- `lastMessageCost`\n- `sessionTokens`\n- `contextLimit`\n- `outputLimit`."
+          },
+          "eca.rewrite.promptPrefix": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "Prefix appended to rewrite prompts."
+          },
+          "eca.rewrite.finishAction": {
+            "type": "string",
+            "enum": ["showActions", "accept"],
+            "default": "showActions",
+            "markdownDescription": "What to do when streaming finishes. 'accept' auto-dismisses the green highlight; 'showActions' keeps Accept/Reject lens visible."
           }
         }
       }
@@ -78,6 +89,18 @@
       {
         "command": "eca.chat.addContextToSystemPrompt",
         "title": "ECA: Add context to system prompt"
+      },
+      {
+        "command": "eca.rewrite",
+        "title": "ECA: Rewrite"
+      },
+      {
+        "command": "eca.rewrite.accept",
+        "title": "ECA: Rewrite Accept"
+      },
+      {
+        "command": "eca.rewrite.reject",
+        "title": "ECA: Rewrite Reject"
       }
     ],
     "submenus": [
@@ -95,6 +118,11 @@
         }
       ],
       "eca.menu": [
+        {
+          "command": "eca.rewrite",
+          "group": "0_rewrite",
+          "when": "editorHasSelection"
+        },
         {
           "command": "eca.chat.addContextToSystemPrompt",
           "group": "1_context"

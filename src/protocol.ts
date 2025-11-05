@@ -7,6 +7,10 @@ export interface InitializeParams {
     capabilities: {
         codeAssistant: {
             chat: boolean;
+            rewrite?: boolean;
+            editor?: {
+                diagnostics?: boolean;
+            }
         };
     };
     initializationOptions?: any;
@@ -19,6 +23,18 @@ export interface WorkspaceFolder {
 }
 
 export interface InitializeResult {}
+
+export type ChatBehavior = 'agent' | 'chat';
+
+export interface Position {
+    line: number;
+    character: number;
+}
+
+export interface Range {
+    start: Position;
+    end: Position;
+}
 
 export interface ChatPromptParams {
     chatId?: string;
@@ -62,7 +78,6 @@ interface McpResourceContext {
 }
 
 export type ChatContext = FileContext | DirectoryContext | WebContext | RepoMapContext | McpResourceContext;
-export type ChatBehavior = 'agent' | 'chat';
 
 export interface ChatPromptResult {
     chatId: string;
@@ -194,4 +209,30 @@ export interface McpStartServerParams {
 
 export interface McpStopServerParams {
     name: string;
+}
+
+// === Rewrite ===
+
+export interface RewritePromptParams {
+    id: string;
+    text: string;
+    prompt: string;
+    path?: string;
+    range: Range;
+}
+
+export interface RewritePromptResponse {
+    status: 'prompting';
+    model: string;
+}
+
+export type RewriteContent =
+    | { type: 'started' }
+    | { type: 'reasoning' }
+    | { type: 'text'; text: string }
+    | { type: 'finished'; totalTimeMs?: number };
+
+export interface RewriteContentReceivedParams {
+    rewriteId: string;
+    content: RewriteContent;
 }

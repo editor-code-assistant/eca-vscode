@@ -6,6 +6,7 @@ import { EcaServer, EcaServerPathFinder } from './server';
 import * as s from './session';
 import * as statusbar from './status-bar';
 import { EcaWebviewProvider } from './webview';
+import { RewriteFeature } from './rewrite';
 
 async function activate(context: vscode.ExtensionContext) {
 
@@ -16,6 +17,9 @@ async function activate(context: vscode.ExtensionContext) {
 
 	const webviewProvider = new EcaWebviewProvider(context, ecaChannel);
 	const serverPathFinder = new EcaServerPathFinder(context, ecaChannel);
+
+	const rewrite = new RewriteFeature(context);
+	const rewriteDisposables = rewrite.register();
 
 	const server = new EcaServer({
 		serverPathFinder: serverPathFinder,
@@ -33,6 +37,8 @@ async function activate(context: vscode.ExtensionContext) {
 			connection.onNotification(ecaApi.configUpdated, (params: protocol.ConfigUpdatedParams) => {
 				webviewProvider.configUpdated(params);
 			});
+
+			rewrite.attach(connection);
 
 			webviewProvider.sessionChanged(session);
 			webviewProvider.focus();
@@ -63,6 +69,7 @@ async function activate(context: vscode.ExtensionContext) {
 			webviewProvider: webviewProvider,
 			context: context,
 		}),
+		...rewriteDisposables,
 		vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
 			if (e.affectsConfiguration('eca')) {
 				webviewProvider.configUpdated(undefined);
