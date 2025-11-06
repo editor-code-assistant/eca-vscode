@@ -79,7 +79,6 @@ class RewriteLensProvider implements vscode.CodeLensProvider {
             const startPos = document.positionAt(lens.startOffset);
             const lensRange = new vscode.Range(startPos.line, 0, startPos.line, 0);
 
-            // Header lens (always shown)
             out.push(new vscode.CodeLens(lensRange, {
                 command: 'eca.rewrite.noop',
                 title: lens.header,
@@ -87,14 +86,17 @@ class RewriteLensProvider implements vscode.CodeLensProvider {
             }));
 
             if (lens.showActions) {
-                // Accept
+                out.push(new vscode.CodeLens(lensRange, {
+                    command: 'eca.rewrite.reject',
+                    title: 'Reject',
+                    arguments: [id],
+                }));
                 out.push(new vscode.CodeLens(lensRange, {
                     command: 'eca.rewrite.accept',
                     title: 'Accept',
                     arguments: [id],
                 }));
-
-                // Reject
+            } else {
                 out.push(new vscode.CodeLens(lensRange, {
                     command: 'eca.rewrite.reject',
                     title: 'Reject',
@@ -207,7 +209,7 @@ export class RewriteFeature {
             }
         };
         // Show header lens while we wait for server
-        this.lensProvider.upsert(id, document.uri, startOffset, `$(sync~spin)  Requesting LLM`, false);
+        this.lensProvider.upsert(id, document.uri, startOffset, `$(sync~spin) Requesting LLM`, false);
 
         // Best-effort; let server stream responses; do not block UI
         this.connection?.sendRequest(ecaApi.rewritePrompt, params).catch(err => {
@@ -227,8 +229,7 @@ export class RewriteFeature {
         const content = params.content;
         switch (content.type) {
             case 'reasoning': {
-                const spinner = '$(sync~spin) ';
-                this.lensProvider.updateHeader(state.id, `${spinner} LLM reasoning`);
+                this.lensProvider.updateHeader(state.id, `$(sync~spin) LLM reasoning`);
                 return;
             }
             case 'started':
@@ -303,7 +304,7 @@ export class RewriteFeature {
         } finally {
             state.flushing = false;
             // Defer un-suppress to the next tick to let VSCode fire change events for our edit
-        setTimeout(() => { state.suppressDocChange = false; }, 0);
+            setTimeout(() => { state.suppressDocChange = false; }, 0);
             // If more text came in while we were flushing, schedule again
             if (state.pendingBuffer) {
                 state.flushScheduled = true;
@@ -452,6 +453,13 @@ export class RewriteFeature {
     private async reject(id: string) {
         const state = this.rewrites.get(id);
         if (!state) return;
+
+        // If rewrite hasn't started, nothing was changed yet: just clear UI/state
+        if (!state.started) {
+            this.lensProvider.clear(id);
+            this.rewrites.delete(id);
+            return;
+        }
 
         const editor = this.ensureOpenEditor(state);
         if (!editor) {
