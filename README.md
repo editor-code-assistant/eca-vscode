@@ -16,6 +16,7 @@ This extension will auto download `eca` and manage the process.
 ### Commands
 
 - `eca.chat.addContextToSystemPrompt`: Add context to system prompt in chat in a DWIM (do what I mean) manner.
+- `eca.chat.rewrite`: Rewrite a piece of code given a prompt.
 
 ### Settings
 
