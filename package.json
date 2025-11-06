@@ -3,7 +3,7 @@
   "displayName": "ECA (Editor Code Assistant)",
   "description": "ECA (Editor Code Assistant) integration for VsCode",
   "icon": "assets/logo.png",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "publisher": "editor-code-assistant",
   "author": {
     "name": "Eric Dallo",
@@ -28,7 +28,7 @@
     "Other"
   ],
   "activationEvents": [
-      "onStartupFinished"
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -58,7 +58,10 @@
           },
           "eca.rewrite.finishAction": {
             "type": "string",
-            "enum": ["showActions", "accept"],
+            "enum": [
+              "showActions",
+              "accept"
+            ],
             "default": "showActions",
             "markdownDescription": "What to do when streaming finishes. 'accept' auto-dismisses the green highlight; 'showActions' keeps Accept/Reject lens visible."
           }
