@@ -230,6 +230,7 @@ export type RewriteContent =
     | { type: 'started' }
     | { type: 'reasoning' }
     | { type: 'text'; text: string }
+    | { type: 'error'; message: string }
     | { type: 'finished'; totalTimeMs?: number };
 
 export interface RewriteContentReceivedParams {

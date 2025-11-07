@@ -242,6 +242,9 @@ export class RewriteFeature {
                 // If we've already started, flush soon; otherwise keep buffering
                 if (state.started) this.scheduleFlush(state);
                 return;
+            case 'error':
+                this.reject(state.id);
+                vscode.window.showErrorMessage(`Rewrite error: ${content.message}`);
             case 'finished':
                 state.finished = true;
                 // Ensure we've started (server should send 'started' first but be defensive)
