@@ -125,6 +125,35 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     });
                     return;
                 }
+                case 'chat/rollback': {
+                    let session = s.getSession()!;
+                    const rollbackBoth = 'Rollback messages and changes done by tool calls';
+                    const rollbackMessages = 'Rollback only messages';
+                    const rollbackTools = 'Rollback only changes done by tool calls';
+                    vscode.window.showQuickPick([rollbackBoth, rollbackMessages, rollbackTools], {
+                        placeHolder: 'Select which rollback type',
+                    }).then((choice) => {
+                        const getInclude = () => {
+                            switch (choice) {
+                                case rollbackBoth: return ['messages', 'tools'];
+                                case rollbackMessages: return ['messages'];
+                                case rollbackTools: return ['tools'];
+                                default: return '';
+                            }
+                        }
+
+                        const include = getInclude();
+
+                        if (include !== '') {
+                            session.server.connection.sendRequest(ecaApi.chatRollback, {
+                                chatId: message.data.chatId,
+                                contentId: message.data.contentId,
+                                include: getInclude(),
+                            });
+                        }
+                    });
+                    return;
+                }
                 case 'mcp/startServer': {
                     let session = s.getSession()!;
                     session.server.connection.sendNotification(ecaApi.mcpStartServer, {
@@ -247,9 +276,16 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         </html>`;
     }
 
-    contentReceived(params: protocol.ChatContentReceivedParams) {
+    chatContentReceived(params: protocol.ChatContentReceivedParams) {
         this._webview?.postMessage({
             type: 'chat/contentReceived',
+            data: params
+        });
+    }
+
+    chatCleared(params: protocol.ChatClearedParams) {
+        this._webview?.postMessage({
+            type: 'chat/cleared',
             data: params
         });
     }

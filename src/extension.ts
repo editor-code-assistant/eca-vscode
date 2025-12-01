@@ -27,7 +27,11 @@ async function activate(context: vscode.ExtensionContext) {
 		onStarted: (connection) => {
 			const session = s.getSession()!;
 			connection.onNotification(ecaApi.chatContentReceived, (params: protocol.ChatContentReceivedParams) => {
-				webviewProvider.contentReceived(params);
+				webviewProvider.chatContentReceived(params);
+			});
+
+			connection.onNotification(ecaApi.chatCleared, (params: protocol.ChatClearedParams) => {
+				webviewProvider.chatCleared(params);
 			});
 
 			connection.onNotification(ecaApi.toolServerUpdated, (params: protocol.ToolServerUpdatedParams) => {

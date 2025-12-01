@@ -103,6 +103,17 @@ export interface ChatDeleteParams {
     chatId: string;
 }
 
+export interface ChatClearedParams {
+    chatId: string;
+    messages: boolean;
+}
+
+export interface ChatRollbackParams {
+    chatId: string;
+    contentId: string;
+    include: string[];
+}
+
 export interface ChatContentReceivedParams {}
 
 export type ChatContentRole = 'user' | 'system' | 'assistant';
