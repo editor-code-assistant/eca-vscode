@@ -352,10 +352,10 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 path: editor.document.uri.fsPath,
                 position: {
                     start: {
-                        line: selection.start.line, character: selection.start.character
+                        line: selection.start.line + 1, character: selection.start.character + 1
                     },
                     end: {
-                        line: selection.end.line, character: selection.end.character
+                        line: selection.end.line + 1, character: selection.end.character + 1
                     }
                 }
             },
