@@ -188,6 +188,11 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     vscode.window.showTextDocument(fileUri);
                     return;
                 }
+                case 'editor/openUrl': {
+                    const url = vscode.Uri.parse(message.data.url);
+                    vscode.env.openExternal(url);
+                    return;
+                }
                 case 'editor/openServerLogs': {
                     this._channel.show();
                     return;
