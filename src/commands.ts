@@ -105,5 +105,26 @@ export const registerVSCodeCommands = (params: RegisterCommandsParams) => {
                 vscode.window.showWarningMessage('No selection or function/method found at cursor.');
             }
         }),
+        vscode.commands.registerCommand('eca.chat.send-prompt-new-chat', async () => {
+            const prompt = await vscode.window.showInputBox({
+                prompt: 'Enter your prompt',
+                placeHolder: 'Ask, plan, build...',
+            });
+            if (prompt) {
+                params.webviewProvider.focus('/');
+                params.webviewProvider.createNewChat();
+                params.webviewProvider.sendPromptToCurrentChat(prompt);
+            }
+        }),
+        vscode.commands.registerCommand('eca.chat.send-prompt', async () => {
+            const prompt = await vscode.window.showInputBox({
+                prompt: 'Enter your prompt',
+                placeHolder: 'Ask, plan, build...',
+            });
+            if (prompt) {
+                params.webviewProvider.focus('/');
+                params.webviewProvider.sendPromptToCurrentChat(prompt);
+            }
+        }),
     ];
 };

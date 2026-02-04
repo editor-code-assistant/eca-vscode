@@ -94,6 +94,14 @@
         "title": "ECA: Add context to system prompt"
       },
       {
+        "command": "eca.chat.send-prompt-new-chat",
+        "title": "ECA: Send prompt to new chat"
+      },
+      {
+        "command": "eca.chat.send-prompt",
+        "title": "ECA: Send prompt to current chat"
+      },
+      {
         "command": "eca.rewrite",
         "title": "ECA: Rewrite"
       },
