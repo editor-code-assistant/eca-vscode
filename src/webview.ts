@@ -11,6 +11,7 @@ import * as fs from 'fs';
 export class EcaWebviewProvider implements vscode.WebviewViewProvider {
     public providerId = 'eca.webview';
     private _webview?: vscode.Webview;
+    private _webviewView?: vscode.WebviewView;
 
     constructor(
         private readonly context: vscode.ExtensionContext,
@@ -25,6 +26,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         webviewView: vscode.WebviewView,
         _context: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken): void | Thenable<void> {
+        this._webviewView = webviewView;
         this._webview = webviewView.webview;
 
         const extensionUri = util.getExtensionUri();
@@ -331,7 +333,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     focus(focus?: string) {
-        vscode.commands.executeCommand('eca.webview.focus');
+        this._webviewView?.show(true);
         if (focus) {
             this._webview?.postMessage({
                 type: 'navigateTo',
@@ -345,6 +347,12 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         this._webview?.postMessage({
             type: 'chat/addContextToSystemPrompt',
             data: chatContext,
+        });
+    }
+
+    focusPrompt() {
+        this._webview?.postMessage({
+            type: 'chat/focusPrompt',
         });
     }
 

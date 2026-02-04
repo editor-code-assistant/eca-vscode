@@ -88,6 +88,11 @@ export const registerVSCodeCommands = (params: RegisterCommandsParams) => {
         }),
         vscode.commands.registerCommand('eca.chat.focus', () => {
             params.webviewProvider.focus('/');
+            params.webviewProvider.focusPrompt();
+        }),
+        vscode.commands.registerCommand('eca.webview.focus', () => {
+            params.webviewProvider.focus('/');
+            params.webviewProvider.focusPrompt();
         }),
         vscode.commands.registerCommand('eca.mcp-details.focus', () => {
             params.webviewProvider.focus('/mcp-details');
