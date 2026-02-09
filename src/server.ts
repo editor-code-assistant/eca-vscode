@@ -128,7 +128,7 @@ class EcaServer {
                     }
                 },
                 initializationOptions: {
-                    // TODO custom setting chatBehavior
+                    // TODO custom setting chatAgent
                 },
                 workspaceFolders: session.workspaceFolders,
             }).then((_) => {

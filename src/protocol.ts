@@ -24,7 +24,7 @@ export interface WorkspaceFolder {
 
 export interface InitializeResult {}
 
-export type ChatBehavior = 'agent' | 'chat';
+export type ChatAgent = string;
 
 export interface Position {
     line: number;
@@ -41,7 +41,7 @@ export interface ChatPromptParams {
     requestId: string;
     message: string;
     model?: string;
-    behavior?: ChatBehavior;
+    agent?: ChatAgent;
     contexts?: ChatContext[];
 }
 
@@ -175,9 +175,9 @@ export interface ChatCommand {
 export interface ConfigUpdatedParams {
     chat?: {
         models?: string[];
-        behaviors?: string[];
+        agents?: ChatAgent[];
         selectModel?: string;
-        selectBehavior?: ChatBehavior;
+        selectAgent?: ChatAgent;
         welcomeMessage?: string;
     }
 }

@@ -62,7 +62,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                         chatId: message.data.chatId,
                         message: message.data.prompt,
                         model: message.data.model,
-                        behavior: message.data.behavior,
+                        agent: message.data.agent,
                         requestId: message.data.requestId.toString(),
                         contexts: message.data.contexts,
                     }).then((result) => {
