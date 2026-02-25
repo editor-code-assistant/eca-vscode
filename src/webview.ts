@@ -63,6 +63,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                         message: message.data.prompt,
                         model: message.data.model,
                         agent: message.data.agent,
+                        variant: message.data.variant,
                         requestId: message.data.requestId.toString(),
                         contexts: message.data.contexts,
                     }).then((result) => {
@@ -72,6 +73,14 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                         });
                     });
 
+                    return;
+                }
+                case 'chat/selectedModelChanged': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendNotification(ecaApi.chatSelectedModelChanged, {
+                        model: message.data.model,
+                        variant: message.data.variant,
+                    });
                     return;
                 }
                 case 'chat/toolCallApprove': {

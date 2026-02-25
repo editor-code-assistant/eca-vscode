@@ -17,6 +17,7 @@ export const chatQueryContext = new rpc.RequestType<p.ChatQueryContextParams, p.
 export const chatQueryCommands = new rpc.RequestType<p.ChatQueryCommandsParams, p.ChatQueryCommandsResponse, void>('chat/queryCommands');
 export const toolServerUpdated = new rpc.NotificationType<p.ToolServerUpdatedParams>('tool/serverUpdated');
 export const configUpdated = new rpc.NotificationType<p.ConfigUpdatedParams>('config/updated');
+export const chatSelectedModelChanged = new rpc.NotificationType<p.ChatSelectedModelChangedParams>('chat/selectedModelChanged');
 export const mcpStartServer = new rpc.NotificationType<p.McpStartServerParams>('mcp/startServer');
 export const mcpStopServer = new rpc.NotificationType<p.McpStopServerParams>('mcp/stopServer');
 

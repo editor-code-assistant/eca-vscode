@@ -42,7 +42,13 @@ export interface ChatPromptParams {
     message: string;
     model?: string;
     agent?: ChatAgent;
+    variant?: string;
     contexts?: ChatContext[];
+}
+
+export interface ChatSelectedModelChangedParams {
+    model: string;
+    variant?: string;
 }
 
 interface FileContext {
@@ -179,6 +185,8 @@ export interface ConfigUpdatedParams {
         selectModel?: string;
         selectAgent?: ChatAgent;
         welcomeMessage?: string;
+        variants?: string[];
+        selectVariant?: string | null;
     }
 }
 
