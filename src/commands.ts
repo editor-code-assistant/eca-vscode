@@ -11,6 +11,7 @@ const manageHandler = async (
     const choices: Choice[] = [];
 
     if (server.status === EcaServerStatus.Running || server.status === EcaServerStatus.Starting) {
+        choices.push({ label: 'Restart ECA server', value: '::restart' });
         choices.push({ label: 'Stop ECA server', value: '::stop' });
     } else if (server.status === EcaServerStatus.Stopped || server.status === EcaServerStatus.Failed) {
         choices.push({ label: 'Start ECA server', value: '::start' });
@@ -36,6 +37,10 @@ const manageHandler = async (
     switch (choice.value) {
         case '::start': {
             server.start();
+            return;
+        }
+        case '::restart': {
+            server.restart();
             return;
         }
         case '::stop': {
@@ -85,6 +90,9 @@ export const registerVSCodeCommands = (params: RegisterCommandsParams) => {
         }),
         vscode.commands.registerCommand('eca.stop', () => {
             params.server.stop();
+        }),
+        vscode.commands.registerCommand('eca.restart', () => {
+            params.server.restart();
         }),
         vscode.commands.registerCommand('eca.chat.focus', () => {
             params.webviewProvider.focus('/');

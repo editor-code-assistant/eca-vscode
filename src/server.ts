@@ -154,6 +154,11 @@ class EcaServer {
         }
         this.changeStatus(EcaServerStatus.Stopped);
     }
+
+    async restart() {
+        await this.stop();
+        await this.start();
+    }
 }
 
 const artifacts: { [key: string]: any } = {

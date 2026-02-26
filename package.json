@@ -82,6 +82,10 @@
         "title": "ECA: Stop server process"
       },
       {
+        "command": "eca.restart",
+        "title": "ECA: Restart server process"
+      },
+      {
         "command": "eca.chat.focus",
         "title": "ECA: Open chat"
       },
