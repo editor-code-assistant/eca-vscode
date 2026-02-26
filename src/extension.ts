@@ -42,6 +42,39 @@ async function activate(context: vscode.ExtensionContext) {
 				webviewProvider.configUpdated(params);
 			});
 
+			connection.onRequest(ecaApi.editorGetDiagnostics, (params: protocol.EditorGetDiagnosticsParams): protocol.EditorGetDiagnosticsResult => {
+				const severityMap: Record<number, string> = {
+					[vscode.DiagnosticSeverity.Error]: 'error',
+					[vscode.DiagnosticSeverity.Warning]: 'warning',
+					[vscode.DiagnosticSeverity.Information]: 'info',
+					[vscode.DiagnosticSeverity.Hint]: 'hint',
+				};
+
+				function mapDiagnostics(uri: vscode.Uri, diagnostics: vscode.Diagnostic[]): protocol.EditorDiagnostic[] {
+					return diagnostics.map(d => ({
+						uri: uri.toString(),
+						severity: severityMap[d.severity] ?? 'unknown',
+						code: d.code != null ? (typeof d.code === 'object' ? String(d.code.value) : String(d.code)) : null,
+						range: {
+							start: { line: d.range.start.line, character: d.range.start.character },
+							end: { line: d.range.end.line, character: d.range.end.character },
+						},
+						source: d.source ?? null,
+						message: d.message,
+					}));
+				}
+
+				if (params.uri) {
+					const uri = vscode.Uri.parse(params.uri);
+					const diagnostics = vscode.languages.getDiagnostics(uri);
+					return { diagnostics: mapDiagnostics(uri, diagnostics) };
+				} else {
+					const all = vscode.languages.getDiagnostics();
+					const diagnostics = all.flatMap(([uri, diags]) => mapDiagnostics(uri, diags));
+					return { diagnostics };
+				}
+			});
+
 			rewrite.attach(connection);
 
 			webviewProvider.sessionChanged(session);

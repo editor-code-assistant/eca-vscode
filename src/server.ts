@@ -124,7 +124,8 @@ class EcaServer {
                 capabilities: {
                     codeAssistant: {
                         chat: true,
-                        rewrite: true
+                        rewrite: true,
+                        editor: { diagnostics: true }
                     }
                 },
                 initializationOptions: {

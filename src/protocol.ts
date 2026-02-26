@@ -230,6 +230,25 @@ export interface McpStopServerParams {
     name: string;
 }
 
+// === Editor Diagnostics ===
+
+export interface EditorGetDiagnosticsParams {
+    uri?: string;
+}
+
+export interface EditorDiagnostic {
+    uri: string;
+    severity: string;
+    code: string | null;
+    range: Range;
+    source: string | null;
+    message: string;
+}
+
+export interface EditorGetDiagnosticsResult {
+    diagnostics: EditorDiagnostic[];
+}
+
 // === Rewrite ===
 
 export interface RewritePromptParams {

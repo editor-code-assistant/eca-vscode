@@ -21,6 +21,9 @@ export const chatSelectedModelChanged = new rpc.NotificationType<p.ChatSelectedM
 export const mcpStartServer = new rpc.NotificationType<p.McpStartServerParams>('mcp/startServer');
 export const mcpStopServer = new rpc.NotificationType<p.McpStopServerParams>('mcp/stopServer');
 
+// Editor
+export const editorGetDiagnostics = new rpc.RequestType<p.EditorGetDiagnosticsParams, p.EditorGetDiagnosticsResult, void>('editor/getDiagnostics');
+
 // Rewrite
 export const rewritePrompt = new rpc.RequestType<p.RewritePromptParams, p.RewritePromptResponse, void>('rewrite/prompt');
 export const rewriteContentReceived = new rpc.NotificationType<p.RewriteContentReceivedParams>('rewrite/contentReceived');
