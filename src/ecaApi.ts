@@ -15,6 +15,7 @@ export const chatCleared = new rpc.NotificationType<p.ChatClearedParams>('chat/c
 export const chatContentReceived = new rpc.NotificationType<p.ChatContentReceivedParams>('chat/contentReceived');
 export const chatQueryContext = new rpc.RequestType<p.ChatQueryContextParams, p.ChatQueryContextResponse, void>('chat/queryContext');
 export const chatQueryCommands = new rpc.RequestType<p.ChatQueryCommandsParams, p.ChatQueryCommandsResponse, void>('chat/queryCommands');
+export const chatQueryFiles = new rpc.RequestType<p.ChatQueryFilesParams, p.ChatQueryFilesResponse, void>('chat/queryFiles');
 export const toolServerUpdated = new rpc.NotificationType<p.ToolServerUpdatedParams>('tool/serverUpdated');
 export const configUpdated = new rpc.NotificationType<p.ConfigUpdatedParams>('config/updated');
 export const chatSelectedModelChanged = new rpc.NotificationType<p.ChatSelectedModelChangedParams>('chat/selectedModelChanged');
