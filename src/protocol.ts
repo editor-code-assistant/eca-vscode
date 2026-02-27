@@ -51,6 +51,10 @@ export interface ChatSelectedModelChangedParams {
     variant?: string;
 }
 
+export interface ChatSelectedAgentChangedParams {
+    agent: ChatAgent;
+}
+
 interface FileContext {
     type: 'file';
     path: string;

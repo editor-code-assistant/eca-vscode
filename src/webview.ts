@@ -83,6 +83,13 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     });
                     return;
                 }
+                case 'chat/selectedAgentChanged': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendNotification(ecaApi.chatSelectedAgentChanged, {
+                        agent: message.data.agent,
+                    });
+                    return;
+                }
                 case 'chat/toolCallApprove': {
                     let session = s.getSession()!;
                     session.server.connection.sendNotification(ecaApi.chatToolCallApprove, {
@@ -208,6 +215,47 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 case 'editor/openFile': {
                     const fileUri = vscode.Uri.file(message.data.path);
                     vscode.window.showTextDocument(fileUri);
+                    return;
+                }
+                case 'editor/saveFile': {
+                    const defaultName = message.data.defaultName || 'chat-export.md';
+                    const workspaceUri = vscode.workspace.workspaceFolders?.[0]?.uri;
+                    const defaultUri = workspaceUri
+                        ? vscode.Uri.joinPath(workspaceUri, defaultName)
+                        : vscode.Uri.file(path.join(os.homedir(), defaultName));
+                    vscode.window.showSaveDialog({
+                        defaultUri,
+                        filters: { 'Markdown': ['md'], 'All Files': ['*'] },
+                    }).then((uri) => {
+                        if (uri) {
+                            vscode.workspace.fs.writeFile(uri, Buffer.from(message.data.content, 'utf-8'));
+                        }
+                    });
+                    return;
+                }
+                case 'editor/saveClipboardImage': {
+                    const { base64Data, mimeType, requestId } = message.data;
+                    const extMap: { [key: string]: string } = {
+                        'image/png': 'png',
+                        'image/jpeg': 'jpg',
+                        'image/jpg': 'jpg',
+                        'image/gif': 'gif',
+                        'image/webp': 'webp',
+                        'image/svg+xml': 'svg',
+                    };
+                    const ext = extMap[mimeType] || 'png';
+                    const tmpPath = path.join(os.tmpdir(), `eca-screenshot-${Date.now()}.${ext}`);
+                    try {
+                        const buffer = Buffer.from(base64Data, 'base64');
+                        fs.writeFileSync(tmpPath, buffer);
+                        this._webview?.postMessage({
+                            type: 'editor/saveClipboardImage',
+                            data: { requestId, path: tmpPath },
+                        });
+                    } catch (error) {
+                        const msg = error instanceof Error ? error.message : String(error);
+                        vscode.window.showErrorMessage(`Failed to save clipboard image: ${msg}`);
+                    }
                     return;
                 }
                 case 'editor/openUrl': {
