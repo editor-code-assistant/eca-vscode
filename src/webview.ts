@@ -31,8 +31,6 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
 
         const extensionUri = util.getExtensionUri();
 
-        this._webview.html = this.getWebviewContent(this._webview, extensionUri);
-
         this._webview.options = {
             enableScripts: true,
             localResourceRoots: [
@@ -41,6 +39,8 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             ],
             enableCommandUris: true,
         };
+
+        this._webview.html = this.getWebviewContent(this._webview, extensionUri);
 
         this._webview.onDidReceiveMessage(message => {
             switch (message.type) {
@@ -320,20 +320,23 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             styleMainUri = "http://localhost:5173/src/index.css";
         }
 
+        const cspSource = webview.cspSource;
+
         return `<!DOCTYPE html>
         <html lang="en">
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <script>const vscode = acquireVsCodeApi();</script>
-            <script>window.mediaUrl = "${mediaUrl}"</script>
+            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${cspSource} 'unsafe-inline' ${isDev ? "http://localhost:5173" : ""}; script-src 'nonce-${nonce}' ${isDev ? "'unsafe-eval' http://localhost:5173" : ""}; img-src ${cspSource} data:; font-src ${cspSource} ${isDev ? "http://localhost:5173" : ""}; connect-src ${isDev ? "ws://localhost:5173 http://localhost:5173" : ""};">
+            <script nonce="${nonce}">const vscode = acquireVsCodeApi();</script>
+            <script nonce="${nonce}">window.mediaUrl = "${mediaUrl}"</script>
             <title>ECA</title>
             <link href="${styleMainUri}" rel="stylesheet">
         </head>
         <body>
             <div id="root"></div>
 
-            ${isDev ? `<script type="module">
+            ${isDev ? `<script type="module" nonce="${nonce}">
                 import RefreshRuntime from "http://localhost:5173/@react-refresh"
                 RefreshRuntime.injectIntoGlobalHook(window)
                 window.$RefreshReg$ = () => {}
@@ -344,7 +347,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             }
 
             <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
-            <script>
+            <script nonce="${nonce}">
               localStorage.setItem("editor", '"vscode"');
             </script>
         </body>
