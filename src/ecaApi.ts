@@ -22,6 +22,8 @@ export const chatSelectedModelChanged = new rpc.NotificationType<p.ChatSelectedM
 export const chatSelectedAgentChanged = new rpc.NotificationType<p.ChatSelectedAgentChangedParams>('chat/selectedAgentChanged');
 export const mcpStartServer = new rpc.NotificationType<p.McpStartServerParams>('mcp/startServer');
 export const mcpStopServer = new rpc.NotificationType<p.McpStopServerParams>('mcp/stopServer');
+export const mcpConnectServer = new rpc.NotificationType<p.McpConnectServerParams>('mcp/connectServer');
+export const mcpLogoutServer = new rpc.NotificationType<p.McpLogoutServerParams>('mcp/logoutServer');
 
 // Editor
 export const editorGetDiagnostics = new rpc.RequestType<p.EditorGetDiagnosticsParams, p.EditorGetDiagnosticsResult, void>('editor/getDiagnostics');

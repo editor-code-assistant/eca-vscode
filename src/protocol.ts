@@ -208,7 +208,7 @@ export interface ConfigUpdatedParams {
     }
 }
 
-export type ToolServerStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled';
+export type ToolServerStatus = 'running' | 'starting' | 'stopped' | 'failed' | 'disabled' | 'requires-auth';
 
 interface MCPServerUpdatedParams {
     type: 'mcp';
@@ -217,6 +217,7 @@ interface MCPServerUpdatedParams {
     args: string[];
     status: ToolServerStatus;
     tools?: ServerTool[];
+    hasAuth?: boolean;
 }
 
 interface EcaServerUpdatedParams {
@@ -245,6 +246,14 @@ export interface McpStartServerParams {
 }
 
 export interface McpStopServerParams {
+    name: string;
+}
+
+export interface McpConnectServerParams {
+    name: string;
+}
+
+export interface McpLogoutServerParams {
     name: string;
 }
 
