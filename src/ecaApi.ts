@@ -24,6 +24,7 @@ export const mcpStartServer = new rpc.NotificationType<p.McpStartServerParams>('
 export const mcpStopServer = new rpc.NotificationType<p.McpStopServerParams>('mcp/stopServer');
 export const mcpConnectServer = new rpc.NotificationType<p.McpConnectServerParams>('mcp/connectServer');
 export const mcpLogoutServer = new rpc.NotificationType<p.McpLogoutServerParams>('mcp/logoutServer');
+export const mcpUpdateServer = new rpc.RequestType<p.McpUpdateServerParams, object, void>('mcp/updateServer');
 
 // Editor
 export const editorGetDiagnostics = new rpc.RequestType<p.EditorGetDiagnosticsParams, p.EditorGetDiagnosticsResult, void>('editor/getDiagnostics');

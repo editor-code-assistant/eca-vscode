@@ -257,6 +257,13 @@ export interface McpLogoutServerParams {
     name: string;
 }
 
+export interface McpUpdateServerParams {
+    name: string;
+    command?: string;
+    args?: string[];
+    url?: string;
+}
+
 // === Editor Diagnostics ===
 
 export interface EditorGetDiagnosticsParams {
