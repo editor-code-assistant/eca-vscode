@@ -64,6 +64,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                         model: message.data.model,
                         agent: message.data.agent,
                         variant: message.data.variant,
+                        trust: message.data.trust,
                         requestId: message.data.requestId.toString(),
                         contexts: message.data.contexts,
                     }).then((result) => {

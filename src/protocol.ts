@@ -43,6 +43,7 @@ export interface ChatPromptParams {
     model?: string;
     agent?: ChatAgent;
     variant?: string;
+    trust?: boolean;
     contexts?: ChatContext[];
 }
 
