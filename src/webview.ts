@@ -398,6 +398,20 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         });
     }
 
+    chatDeleted(params: protocol.ChatDeletedParams) {
+        this._webview?.postMessage({
+            type: 'chat/deleted',
+            data: params.chatId
+        });
+    }
+
+    chatStatusChanged(params: protocol.ChatStatusChangedParams) {
+        this._webview?.postMessage({
+            type: 'chat/statusChanged',
+            data: params
+        });
+    }
+
     toolServerUpdated(params: protocol.ToolServerUpdatedParams) {
         let session = s.getSession();
 

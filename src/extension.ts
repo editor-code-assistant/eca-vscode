@@ -34,6 +34,14 @@ async function activate(context: vscode.ExtensionContext) {
 				webviewProvider.chatCleared(params);
 			});
 
+			connection.onNotification(ecaApi.chatDeleted, (params: protocol.ChatDeletedParams) => {
+				webviewProvider.chatDeleted(params);
+			});
+
+			connection.onNotification(ecaApi.chatStatusChanged, (params: protocol.ChatStatusChangedParams) => {
+				webviewProvider.chatStatusChanged(params);
+			});
+
 			connection.onNotification(ecaApi.toolServerUpdated, (params: protocol.ToolServerUpdatedParams) => {
 				webviewProvider.toolServerUpdated(params);
 			});

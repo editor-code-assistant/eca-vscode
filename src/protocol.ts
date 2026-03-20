@@ -125,6 +125,15 @@ export interface ChatRollbackParams {
     include: string[];
 }
 
+export interface ChatDeletedParams {
+    chatId: string;
+}
+
+export interface ChatStatusChangedParams {
+    chatId: string;
+    status: string;
+}
+
 export interface ChatContentReceivedParams {}
 
 export type ChatContentRole = 'user' | 'system' | 'assistant';
