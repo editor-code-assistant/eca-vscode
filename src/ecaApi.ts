@@ -27,6 +27,8 @@ export const mcpStartServer = new rpc.NotificationType<p.McpStartServerParams>('
 export const mcpStopServer = new rpc.NotificationType<p.McpStopServerParams>('mcp/stopServer');
 export const mcpConnectServer = new rpc.NotificationType<p.McpConnectServerParams>('mcp/connectServer');
 export const mcpLogoutServer = new rpc.NotificationType<p.McpLogoutServerParams>('mcp/logoutServer');
+export const mcpDisableServer = new rpc.NotificationType<p.McpDisableServerParams>('mcp/disableServer');
+export const mcpEnableServer = new rpc.NotificationType<p.McpEnableServerParams>('mcp/enableServer');
 export const mcpUpdateServer = new rpc.RequestType<p.McpUpdateServerParams, object, void>('mcp/updateServer');
 
 // Editor

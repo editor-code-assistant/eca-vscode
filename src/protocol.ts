@@ -272,6 +272,14 @@ export interface McpLogoutServerParams {
     name: string;
 }
 
+export interface McpDisableServerParams {
+    name: string;
+}
+
+export interface McpEnableServerParams {
+    name: string;
+}
+
 export interface McpUpdateServerParams {
     name: string;
     command?: string;
