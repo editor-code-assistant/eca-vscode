@@ -129,6 +129,11 @@ export interface ChatDeletedParams {
     chatId: string;
 }
 
+export interface ChatOpenedParams {
+    chatId: string;
+    title?: string;
+}
+
 export interface ChatStatusChangedParams {
     chatId: string;
     status: string;

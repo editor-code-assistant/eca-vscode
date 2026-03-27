@@ -38,6 +38,10 @@ async function activate(context: vscode.ExtensionContext) {
 				webviewProvider.chatDeleted(params);
 			});
 
+			connection.onNotification(ecaApi.chatOpened, (params: protocol.ChatOpenedParams) => {
+				webviewProvider.chatOpened(params);
+			});
+
 			connection.onNotification(ecaApi.chatStatusChanged, (params: protocol.ChatStatusChangedParams) => {
 				webviewProvider.chatStatusChanged(params);
 			});

@@ -405,6 +405,13 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         });
     }
 
+    chatOpened(params: protocol.ChatOpenedParams) {
+        this._webview?.postMessage({
+            type: 'chat/opened',
+            data: params
+        });
+    }
+
     chatStatusChanged(params: protocol.ChatStatusChangedParams) {
         this._webview?.postMessage({
             type: 'chat/statusChanged',

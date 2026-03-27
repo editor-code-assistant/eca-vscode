@@ -13,6 +13,7 @@ export const chatDelete = new rpc.RequestType<p.ChatDeleteParams, {}, void>('cha
 export const chatRollback = new rpc.RequestType<p.ChatRollbackParams, {}, void>('chat/rollback');
 export const chatCleared = new rpc.NotificationType<p.ChatClearedParams>('chat/cleared');
 export const chatDeleted = new rpc.NotificationType<p.ChatDeletedParams>('chat/deleted');
+export const chatOpened = new rpc.NotificationType<p.ChatOpenedParams>('chat/opened');
 export const chatStatusChanged = new rpc.NotificationType<p.ChatStatusChangedParams>('chat/statusChanged');
 export const chatContentReceived = new rpc.NotificationType<p.ChatContentReceivedParams>('chat/contentReceived');
 export const chatQueryContext = new rpc.RequestType<p.ChatQueryContextParams, p.ChatQueryContextResponse, void>('chat/queryContext');
