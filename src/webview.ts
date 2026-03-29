@@ -42,7 +42,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
 
         this._webview.html = this.getWebviewContent(this._webview, extensionUri);
 
-        this._webview.onDidReceiveMessage(message => {
+        this._webview.onDidReceiveMessage(async message => {
             switch (message.type) {
                 case 'webview/ready': {
                     let session = s.getSession()!;
@@ -241,6 +241,30 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     });
                     return;
                 }
+                case 'providers/list': {
+                    let session = s.getSession()!;
+                    const provListResult = await session.server.connection.sendRequest(ecaApi.providersList, message.data);
+                    this._webview?.postMessage({ type: 'providers/list', data: { ...provListResult, requestId: message.data.requestId } });
+                    return;
+                }
+                case 'providers/login': {
+                    let session = s.getSession()!;
+                    const provLoginResult = await session.server.connection.sendRequest(ecaApi.providersLogin, message.data);
+                    this._webview?.postMessage({ type: 'providers/login', data: { ...provLoginResult, requestId: message.data.requestId } });
+                    return;
+                }
+                case 'providers/loginInput': {
+                    let session = s.getSession()!;
+                    const provLoginInputResult = await session.server.connection.sendRequest(ecaApi.providersLoginInput, message.data);
+                    this._webview?.postMessage({ type: 'providers/loginInput', data: { ...provLoginInputResult, requestId: message.data.requestId } });
+                    return;
+                }
+                case 'providers/logout': {
+                    let session = s.getSession()!;
+                    const provLogoutResult = await session.server.connection.sendRequest(ecaApi.providersLogout, message.data);
+                    this._webview?.postMessage({ type: 'providers/logout', data: { ...provLogoutResult, requestId: message.data.requestId } });
+                    return;
+                }
                 case 'editor/readInput': {
                     vscode.window.showInputBox({
                         prompt: message.data.message,
@@ -431,6 +455,10 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             type: 'chat/statusChanged',
             data: params
         });
+    }
+
+    providersUpdated(params: any) {
+        this._webview?.postMessage({ type: 'providers/updated', data: params });
     }
 
     toolServerUpdated(params: protocol.ToolServerUpdatedParams) {

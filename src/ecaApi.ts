@@ -31,6 +31,13 @@ export const mcpDisableServer = new rpc.NotificationType<p.McpDisableServerParam
 export const mcpEnableServer = new rpc.NotificationType<p.McpEnableServerParams>('mcp/enableServer');
 export const mcpUpdateServer = new rpc.RequestType<p.McpUpdateServerParams, object, void>('mcp/updateServer');
 
+// Providers
+export const providersList = new rpc.RequestType<{ requestId?: string }, any, void>('providers/list');
+export const providersLogin = new rpc.RequestType<{ provider: string; method?: string; requestId?: string }, any, void>('providers/login');
+export const providersLoginInput = new rpc.RequestType<{ provider: string; data: Record<string, string>; requestId?: string }, any, void>('providers/loginInput');
+export const providersLogout = new rpc.RequestType<{ provider: string; requestId?: string }, any, void>('providers/logout');
+export const providersUpdated = new rpc.NotificationType<any>('providers/updated');
+
 // Editor
 export const editorGetDiagnostics = new rpc.RequestType<p.EditorGetDiagnosticsParams, p.EditorGetDiagnosticsResult, void>('editor/getDiagnostics');
 

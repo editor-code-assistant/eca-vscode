@@ -54,6 +54,10 @@ async function activate(context: vscode.ExtensionContext) {
 				webviewProvider.configUpdated(params);
 			});
 
+			connection.onNotification(ecaApi.providersUpdated, (params) => {
+				webviewProvider.providersUpdated(params);
+			});
+
 			connection.onRequest(ecaApi.editorGetDiagnostics, (params: protocol.EditorGetDiagnosticsParams): protocol.EditorGetDiagnosticsResult => {
 				const severityMap: Record<number, string> = {
 					[vscode.DiagnosticSeverity.Error]: 'error',

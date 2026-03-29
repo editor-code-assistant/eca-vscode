@@ -105,6 +105,9 @@ export const registerVSCodeCommands = (params: RegisterCommandsParams) => {
         vscode.commands.registerCommand('eca.mcp-details.focus', () => {
             params.webviewProvider.focus('/mcp-details');
         }),
+        vscode.commands.registerCommand('eca.settings.focus', () => {
+            params.webviewProvider.focus('/settings');
+        }),
         vscode.commands.registerCommand('eca.chat.addContextToSystemPrompt', async () => {
             const context = await getContextAtCursor();
             if (context) {

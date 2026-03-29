@@ -94,6 +94,10 @@
         "title": "ECA: Open MCP Details"
       },
       {
+        "command": "eca.settings.focus",
+        "title": "ECA: Open Settings"
+      },
+      {
         "command": "eca.chat.addContextToSystemPrompt",
         "title": "ECA: Add context to system prompt"
       },
