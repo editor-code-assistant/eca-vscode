@@ -110,6 +110,11 @@ export interface ChatPromptStopParams {
     chatId: string;
 }
 
+export interface ChatPromptSteerParams {
+    chatId: string;
+    message: string;
+}
+
 export interface ChatDeleteParams {
     chatId: string;
 }

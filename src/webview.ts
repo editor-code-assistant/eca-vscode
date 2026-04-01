@@ -115,6 +115,14 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     });
                     return;
                 }
+                case 'chat/promptSteer': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendNotification(ecaApi.chatPromptSteer, {
+                        chatId: message.data.chatId,
+                        message: message.data.message,
+                    });
+                    return;
+                }
                 case 'chat/queryContext': {
                     let session = s.getSession()!;
                     session.server.connection.sendRequest(ecaApi.chatQueryContext, message.data)

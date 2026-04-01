@@ -9,6 +9,7 @@ export const chatPrompt = new rpc.RequestType<p.ChatPromptParams, p.ChatPromptRe
 export const chatToolCallApprove = new rpc.NotificationType<p.ChatToolCallApproveParams>('chat/toolCallApprove');
 export const chatToolCallReject = new rpc.NotificationType<p.ChatToolCallRejectParams>('chat/toolCallReject');
 export const chatPromptStop = new rpc.NotificationType<p.ChatPromptStopParams>('chat/promptStop');
+export const chatPromptSteer = new rpc.NotificationType<p.ChatPromptSteerParams>('chat/promptSteer');
 export const chatDelete = new rpc.RequestType<p.ChatDeleteParams, {}, void>('chat/delete');
 export const chatRollback = new rpc.RequestType<p.ChatRollbackParams, {}, void>('chat/rollback');
 export const chatCleared = new rpc.NotificationType<p.ChatClearedParams>('chat/cleared');
