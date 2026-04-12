@@ -130,6 +130,22 @@ export interface ChatRollbackParams {
     include: string[];
 }
 
+export interface ChatAddFlagParams {
+    chatId: string;
+    contentId: string;
+    text: string;
+}
+
+export interface ChatRemoveFlagParams {
+    chatId: string;
+    contentId: string;
+}
+
+export interface ChatForkParams {
+    chatId: string;
+    contentId: string;
+}
+
 export interface ChatDeletedParams {
     chatId: string;
 }

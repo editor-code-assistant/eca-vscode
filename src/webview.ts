@@ -192,6 +192,38 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     });
                     return;
                 }
+                case 'chat/addFlag': {
+                    let session = s.getSession()!;
+                    vscode.window.showInputBox({
+                        prompt: 'Enter flag name',
+                        placeHolder: 'e.g., auth implemented',
+                    }).then((text) => {
+                        if (text) {
+                            session.server.connection.sendRequest(ecaApi.chatAddFlag, {
+                                chatId: message.data.chatId,
+                                contentId: message.data.contentId,
+                                text,
+                            });
+                        }
+                    });
+                    return;
+                }
+                case 'chat/removeFlag': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendRequest(ecaApi.chatRemoveFlag, {
+                        chatId: message.data.chatId,
+                        contentId: message.data.contentId,
+                    });
+                    return;
+                }
+                case 'chat/fork': {
+                    let session = s.getSession()!;
+                    session.server.connection.sendRequest(ecaApi.chatFork, {
+                        chatId: message.data.chatId,
+                        contentId: message.data.contentId,
+                    });
+                    return;
+                }
                 case 'mcp/startServer': {
                     let session = s.getSession()!;
                     session.server.connection.sendNotification(ecaApi.mcpStartServer, {
