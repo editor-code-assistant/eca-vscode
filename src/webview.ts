@@ -371,6 +371,24 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     vscode.env.openExternal(url);
                     return;
                 }
+                case 'jobs/list': {
+                    let session = s.getSession()!;
+                    const jobsListResult = await session.server.connection.sendRequest(ecaApi.jobsList, {});
+                    this._webview?.postMessage({ type: 'jobs/list', data: { ...jobsListResult, requestId: message.data.requestId } });
+                    return;
+                }
+                case 'jobs/readOutput': {
+                    let session = s.getSession()!;
+                    const jobsReadOutputResult = await session.server.connection.sendRequest(ecaApi.jobsReadOutput, { jobId: message.data.jobId });
+                    this._webview?.postMessage({ type: 'jobs/readOutput', data: { ...jobsReadOutputResult, requestId: message.data.requestId } });
+                    return;
+                }
+                case 'jobs/kill': {
+                    let session = s.getSession()!;
+                    const jobsKillResult = await session.server.connection.sendRequest(ecaApi.jobsKill, { jobId: message.data.jobId });
+                    this._webview?.postMessage({ type: 'jobs/kill', data: { ...jobsKillResult, requestId: message.data.requestId } });
+                    return;
+                }
                 case 'editor/openServerLogs': {
                     this._channel.show();
                     return;
@@ -499,6 +517,10 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
 
     providersUpdated(params: any) {
         this._webview?.postMessage({ type: 'providers/updated', data: params });
+    }
+
+    jobsUpdated(params: protocol.JobsUpdatedParams) {
+        this._webview?.postMessage({ type: 'jobs/updated', data: params });
     }
 
     toolServerUpdated(params: protocol.ToolServerUpdatedParams) {

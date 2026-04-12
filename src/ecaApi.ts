@@ -48,3 +48,9 @@ export const editorGetDiagnostics = new rpc.RequestType<p.EditorGetDiagnosticsPa
 // Rewrite
 export const rewritePrompt = new rpc.RequestType<p.RewritePromptParams, p.RewritePromptResponse, void>('rewrite/prompt');
 export const rewriteContentReceived = new rpc.NotificationType<p.RewriteContentReceivedParams>('rewrite/contentReceived');
+
+// Background Jobs
+export const jobsUpdated = new rpc.NotificationType<p.JobsUpdatedParams>('jobs/updated');
+export const jobsList = new rpc.RequestType<{}, p.JobsListResult, void>('jobs/list');
+export const jobsReadOutput = new rpc.RequestType<p.JobsReadOutputParams, p.JobsReadOutputResult, void>('jobs/readOutput');
+export const jobsKill = new rpc.RequestType<p.JobsKillParams, p.JobsKillResult, void>('jobs/kill');

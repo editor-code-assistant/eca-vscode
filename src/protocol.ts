@@ -353,3 +353,51 @@ export interface RewriteContentReceivedParams {
     rewriteId: string;
     content: RewriteContent;
 }
+
+// === Background Jobs ===
+
+export type JobStatus = 'running' | 'completed' | 'failed' | 'killed';
+
+export interface Job {
+    id: string;
+    status: JobStatus;
+    label: string;
+    summary?: string;
+    startedAt: string;
+    elapsed: string;
+    exitCode?: number | null;
+    chatId: string;
+    chatLabel?: string;
+    toolCallId?: string;
+}
+
+export interface JobsUpdatedParams {
+    jobs: Job[];
+}
+
+export interface JobsListResult {
+    jobs: Job[];
+}
+
+export interface JobsReadOutputParams {
+    jobId: string;
+}
+
+export interface JobOutputLine {
+    text: string;
+    stream: 'stdout' | 'stderr';
+}
+
+export interface JobsReadOutputResult {
+    lines: JobOutputLine[];
+    status: string;
+    exitCode?: number | null;
+}
+
+export interface JobsKillParams {
+    jobId: string;
+}
+
+export interface JobsKillResult {
+    killed: boolean;
+}
