@@ -146,6 +146,12 @@ export interface ChatForkParams {
     contentId: string;
 }
 
+export interface ChatUpdateParams {
+    chatId: string;
+    title?: string;
+    trust?: boolean;
+}
+
 export interface ChatDeletedParams {
     chatId: string;
 }

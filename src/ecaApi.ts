@@ -15,6 +15,7 @@ export const chatRollback = new rpc.RequestType<p.ChatRollbackParams, {}, void>(
 export const chatAddFlag = new rpc.RequestType<p.ChatAddFlagParams, {}, void>('chat/addFlag');
 export const chatRemoveFlag = new rpc.RequestType<p.ChatRemoveFlagParams, {}, void>('chat/removeFlag');
 export const chatFork = new rpc.RequestType<p.ChatForkParams, {}, void>('chat/fork');
+export const chatUpdate = new rpc.RequestType<p.ChatUpdateParams, {}, void>('chat/update');
 export const chatCleared = new rpc.NotificationType<p.ChatClearedParams>('chat/cleared');
 export const chatDeleted = new rpc.NotificationType<p.ChatDeletedParams>('chat/deleted');
 export const chatOpened = new rpc.NotificationType<p.ChatOpenedParams>('chat/opened');
