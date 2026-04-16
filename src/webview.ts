@@ -12,6 +12,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
     public providerId = 'eca.webview';
     private _webview?: vscode.Webview;
     private _webviewView?: vscode.WebviewView;
+    private _pendingQuestions: Map<string, { resolve: (result: protocol.AskQuestionResult) => void }> = new Map();
 
     constructor(
         private readonly context: vscode.ExtensionContext,
@@ -314,6 +315,15 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     this._webview?.postMessage({ type: 'providers/logout', data: { ...provLogoutResult, requestId: message.data.requestId } });
                     return;
                 }
+                case 'chat/answerQuestion': {
+                    const { requestId, answer, cancelled } = message.data;
+                    const pending = this._pendingQuestions.get(requestId);
+                    if (pending) {
+                        pending.resolve({ answer: answer ?? null, cancelled: !!cancelled });
+                        this._pendingQuestions.delete(requestId);
+                    }
+                    return;
+                }
                 case 'editor/readInput': {
                     vscode.window.showInputBox({
                         prompt: message.data.message,
@@ -487,6 +497,17 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
             </script>
         </body>
         </html>`;
+    }
+
+    askQuestion(params: protocol.AskQuestionParams): Promise<protocol.AskQuestionResult> {
+        const requestId = `ask-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        return new Promise<protocol.AskQuestionResult>((resolve) => {
+            this._pendingQuestions.set(requestId, { resolve });
+            this._webview?.postMessage({
+                type: 'chat/askQuestion',
+                data: { ...params, requestId },
+            });
+        });
     }
 
     chatContentReceived(params: protocol.ChatContentReceivedParams) {

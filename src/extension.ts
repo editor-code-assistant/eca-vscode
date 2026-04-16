@@ -95,6 +95,10 @@ async function activate(context: vscode.ExtensionContext) {
 				}
 			});
 
+			connection.onRequest(ecaApi.chatAskQuestion, async (params: protocol.AskQuestionParams): Promise<protocol.AskQuestionResult> => {
+				return webviewProvider.askQuestion(params);
+			});
+
 			rewrite.attach(connection);
 
 			webviewProvider.sessionChanged(session);

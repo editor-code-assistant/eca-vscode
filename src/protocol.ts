@@ -10,7 +10,10 @@ export interface InitializeParams {
             rewrite?: boolean;
             editor?: {
                 diagnostics?: boolean;
-            }
+            };
+            chatCapabilities?: {
+                askQuestion?: boolean;
+            };
         };
     };
     initializationOptions?: any;
@@ -312,6 +315,26 @@ export interface McpUpdateServerParams {
     command?: string;
     args?: string[];
     url?: string;
+}
+
+// === Ask Question ===
+
+export interface AskQuestionOption {
+    label: string;
+    description?: string;
+}
+
+export interface AskQuestionParams {
+    chatId: string;
+    question: string;
+    options: AskQuestionOption[];
+    toolCallId?: string;
+    allowFreeform?: boolean;
+}
+
+export interface AskQuestionResult {
+    answer: string | null;
+    cancelled: boolean;
 }
 
 // === Editor Diagnostics ===
