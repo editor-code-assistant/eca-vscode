@@ -9,6 +9,20 @@ import * as ecaApi from './ecaApi';
 import * as s from './session';
 import * as util from './util';
 
+const SHUTDOWN_REQUEST_TIMEOUT_MS = 5000;
+const SIGTERM_GRACE_PERIOD_MS = 3000;
+const KILL_SAFETY_NET_TIMEOUT_MS = 5000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+        promise.then(
+            (val) => { clearTimeout(timer); resolve(val); },
+            (err) => { clearTimeout(timer); reject(err); },
+        );
+    });
+}
+
 export enum EcaServerStatus {
     Stopped = 'Stopped',
     Starting = 'Starting',
@@ -31,6 +45,7 @@ interface EcaServerArgs {
 class EcaServer {
     private _proc?: cp.ChildProcessWithoutNullStreams;
     private _connection?: rpc.MessageConnection;
+    private _stopping = false;
 
     private _serverPathFinder: EcaServerPathFinder;
     private _channel: vscode.OutputChannel;
@@ -148,13 +163,74 @@ class EcaServer {
         );
     }
 
-    async stop() {
-        if (isClosable(this._status)) {
-            await this.connection.sendRequest(ecaApi.shutdown, {});
-            this.connection.sendNotification(ecaApi.exit, {});
-            this.connection.dispose();
+    private async killProcess(): Promise<void> {
+        const proc = this._proc;
+        if (!proc || proc.killed) {
+            return;
         }
-        this.changeStatus(EcaServerStatus.Stopped);
+
+        return new Promise<void>((resolve) => {
+            let exited = false;
+            let escalationTimer: NodeJS.Timeout;
+            let safetyTimer: NodeJS.Timeout;
+            const cleanup = () => {
+                clearTimeout(escalationTimer);
+                clearTimeout(safetyTimer);
+            };
+
+            proc.once('close', () => { exited = true; cleanup(); resolve(); });
+
+            this._channel.appendLine('[VSCODE] Sending SIGTERM to server process');
+            proc.kill('SIGTERM');
+
+            escalationTimer = setTimeout(() => {
+                if (!exited) {
+                    this._channel.appendLine('[VSCODE] SIGTERM did not stop the process, sending SIGKILL');
+                    proc.kill('SIGKILL');
+                }
+            }, SIGTERM_GRACE_PERIOD_MS);
+
+            safetyTimer = setTimeout(() => { cleanup(); resolve(); }, KILL_SAFETY_NET_TIMEOUT_MS);
+        });
+    }
+
+    async stop() {
+        if (this._stopping) {
+            return;
+        }
+        this._stopping = true;
+
+        try {
+            if (!isClosable(this._status)) {
+                return;
+            }
+
+            if (this._connection) {
+                try {
+                    await withTimeout(
+                        this._connection.sendRequest(ecaApi.shutdown, {}),
+                        SHUTDOWN_REQUEST_TIMEOUT_MS,
+                        'shutdown request',
+                    );
+                    this._connection.sendNotification(ecaApi.exit, {});
+                } catch (err) {
+                    this._channel.appendLine(`[VSCODE] Graceful shutdown failed: ${err}`);
+                }
+
+                try {
+                    this._connection.dispose();
+                } catch (_) { /* ignore dispose errors */ }
+            }
+
+            this._proc?.removeAllListeners('close');
+            this._proc?.removeAllListeners('error');
+            await this.killProcess();
+        } finally {
+            this._proc = undefined;
+            this._connection = undefined;
+            this._stopping = false;
+            this.changeStatus(EcaServerStatus.Stopped);
+        }
     }
 
     async restart() {
