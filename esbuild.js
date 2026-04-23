@@ -34,6 +34,13 @@ async function main() {
 		sourcemap: !production,
 		sourcesContent: false,
 		platform: 'node',
+		// Prefer ESM entries when packages ship both (e.g. `jsonc-parser`
+		// exposes a UMD `main` whose factory does runtime `require('./impl/format')`
+		// calls that esbuild can't statically follow — the result is a
+		// successful build that throws `Cannot find module './impl/format'`
+		// the moment the extension loads. The ESM entry point at `module`
+		// is free of dynamic requires and bundles cleanly.
+		mainFields: ['module', 'main'],
 		outfile: 'dist/extension.js',
 		external: ['vscode'],
 		logLevel: 'silent',

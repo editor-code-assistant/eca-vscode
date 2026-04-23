@@ -192,6 +192,7 @@
   "dependencies": {
     "extract-zip": "^2.0.1",
     "follow-redirects": "^1.15.9",
+    "jsonc-parser": "^3.3.1",
     "ovsx": "^0.10.5",
     "sass": "^1.89.2",
     "vscode-jsonrpc": "^8.2.1"

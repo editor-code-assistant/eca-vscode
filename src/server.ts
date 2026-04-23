@@ -38,11 +38,25 @@ class EcaServer {
     private _onStarted: (rpcConnection: rpc.MessageConnection) => void;
     private _onStatusChanged: (status: EcaServerStatus) => void;
 
+    // Optional log sink. Wired by extension.ts to the shared LogStore so
+    // server stderr + lifecycle messages also show up in the webview's
+    // Settings → Logs tab. We keep the existing OutputChannel writes
+    // unchanged (users who prefer VS Code's native Output panel still
+    // see everything) and mirror each line through `onLog` on top.
+    onLog: (msg: string) => void = () => {};
+
     constructor({ serverPathFinder, channel, onStarted, onStatusChanged }: EcaServerArgs) {
         this._serverPathFinder = serverPathFinder;
         this._channel = channel;
         this._onStarted = onStarted;
         this._onStatusChanged = onStatusChanged;
+    }
+
+    private log(msg: string) {
+        // Mirror every log line to both sinks so the Output panel and
+        // the Logs tab stay in sync even if only one is open.
+        this._channel.appendLine(msg);
+        try { this.onLog(msg); } catch { /* subscriber must not poison producers */ }
     }
 
     get connection() {
@@ -72,7 +86,7 @@ class EcaServer {
         let args = ['server', ...customServerArgs];
 
         this._serverPathFinder.find().then((serverPath) => {
-            this._channel.appendLine(`[VSCODE] spawning server: ${serverPath} with args: ${args.join(' ')}`);
+            this.log(`[VSCODE] spawning server: ${serverPath} with args: ${args.join(' ')}`);
 
             let session = s.getSession()!;
             const envAll = { ...process.env, ...userShellEnv };
@@ -91,7 +105,7 @@ class EcaServer {
 
 
             this._proc.on('close', (code, signal) => {
-                this._channel.appendLine(`[VSCODE] server process closed: code=${code} signal=${signal}`);
+                this.log(`[VSCODE] server process closed: code=${code} signal=${signal}`);
                 if (this._status !== EcaServerStatus.Stopped &&
                     this._status !== EcaServerStatus.Failed) {
                     this.changeStatus(EcaServerStatus.Failed);
@@ -99,7 +113,7 @@ class EcaServer {
             });
 
             this._proc.on('error', (err) => {
-                this._channel.appendLine(`[VSCODE] server process error: ${err}`);
+                this.log(`[VSCODE] server process error: ${err}`);
                 if (this._status !== EcaServerStatus.Stopped &&
                     this._status !== EcaServerStatus.Failed) {
                     this.changeStatus(EcaServerStatus.Failed);
@@ -107,7 +121,11 @@ class EcaServer {
             });
 
             this._proc.stderr.on('data', (data) => {
-                this._channel.appendLine(data.toString());
+                // `data` arrives as chunks, which can split mid-line. We still
+                // forward them as-is: the Logs tab and the OutputChannel both
+                // tolerate partial lines, and collapsing into lines here would
+                // buffer the very errors users most need to see in real time.
+                this.log(data.toString());
             });
             this._connection = rpc.createMessageConnection(
                 new rpc.StreamMessageReader(this._proc.stdout),
@@ -139,7 +157,7 @@ class EcaServer {
                 this._onStarted(this.connection);
             });
         }).catch((err) => {
-            this._channel.appendLine(`[VSCODE] Fail to find eca server path: ${err}`);
+            this.log(`[VSCODE] Fail to find eca server path: ${err}`);
             if (this._status !== EcaServerStatus.Stopped &&
                 this._status !== EcaServerStatus.Failed) {
                 this.changeStatus(EcaServerStatus.Failed);

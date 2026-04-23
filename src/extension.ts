@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as commands from './commands';
 import * as ecaApi from './ecaApi';
+import { initLogStore } from './log-store';
 import * as protocol from './protocol';
 import { EcaServer, EcaServerPathFinder } from './server';
 import * as s from './session';
@@ -15,8 +16,21 @@ async function activate(context: vscode.ExtensionContext) {
 	statusBar.show();
 	const ecaChannel = vscode.window.createOutputChannel('ECA stderr', 'Clojure');
 
+	// Initialize the shared LogStore BEFORE the server so the earliest
+	// lifecycle messages (spawn, path-finder errors, …) are captured.
+	// `context.logUri` is VS Code's stable per-extension log directory.
+	const logStore = initLogStore(context.logUri?.fsPath);
+
 	const webviewProvider = new EcaWebviewProvider(context, ecaChannel);
 	const serverPathFinder = new EcaServerPathFinder(context, ecaChannel);
+
+	// Stream every new log entry to the webview as a `logs/appended`
+	// message so the Settings → Logs tab renders them live. RootWrapper
+	// already listens for this type and dispatches it into the redux
+	// `logs` slice.
+	logStore.subscribe((entry) => {
+		webviewProvider.webview?.postMessage({ type: 'logs/appended', data: entry });
+	});
 
 	const rewrite = new RewriteFeature(context);
 	const rewriteDisposables = rewrite.register();
@@ -109,6 +123,12 @@ async function activate(context: vscode.ExtensionContext) {
 			webviewProvider.handleNewStatus(status);
 		}
 	});
+
+	// Mirror everything the server currently writes to the OutputChannel
+	// into the LogStore so the Logs tab sees the same stream. The server
+	// still writes to `ecaChannel` for users who prefer VS Code's native
+	// Output panel — these two sinks are complementary.
+	server.onLog = (msg) => logStore.append({ source: 'server', text: msg });
 
 	let workspaceFolders = vscode.workspace.workspaceFolders?.map(f => {
 		return {

@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 import * as ecaApi from './ecaApi';
+import * as editorActions from './editor-actions';
+import { getLogStore } from './log-store';
 import * as protocol from './protocol';
 import { EcaServerStatus } from './server';
 import * as s from './session';
@@ -413,27 +415,53 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     return;
                 }
                 case 'editor/openGlobalConfig': {
-                    const homedir = os.homedir();
-                    const configHome = process.env.XDG_CONFIG_HOME || path.join(homedir, '.config');
-                    const configFilePath = path.join(configHome, 'eca', 'config.json');
-                    const configDir = path.dirname(configFilePath);
-
-                    try {
-                        if (!fs.existsSync(configDir)) {
-                            fs.mkdirSync(configDir, { recursive: true });
-                        }
-
-                        if (!fs.existsSync(configFilePath)) {
-                            fs.writeFileSync(configFilePath, '{}');
-                        }
-                    } catch (error) {
-                        const message = error instanceof Error ? error.message : String(error);
-                        vscode.window.showErrorMessage(`Failed to prepare global config: ${message}`);
-                        return;
+                    // Delegated to editor-actions so the same resolution rules
+                    // (ECA_CONFIG_PATH > XDG_CONFIG_HOME > platform default) are
+                    // shared with readGlobalConfig / writeGlobalConfig below.
+                    editorActions.openGlobalConfig();
+                    return;
+                }
+                case 'editor/readGlobalConfig': {
+                    const result = editorActions.readGlobalConfig();
+                    this._webview?.postMessage({
+                        type: 'editor/readGlobalConfig',
+                        data: { ...result, requestId: message.data.requestId },
+                    });
+                    return;
+                }
+                case 'editor/writeGlobalConfig': {
+                    const result = editorActions.writeGlobalConfig({
+                        contents: message.data.contents ?? '',
+                    });
+                    this._webview?.postMessage({
+                        type: 'editor/writeGlobalConfig',
+                        data: { ...result, requestId: message.data.requestId },
+                    });
+                    return;
+                }
+                case 'logs/snapshot': {
+                    // Fire-and-forget; the renderer dispatches `setLogEntries`
+                    // with the full buffer when this arrives.
+                    this._webview?.postMessage({
+                        type: 'logs/snapshot',
+                        data: getLogStore().snapshot(),
+                    });
+                    return;
+                }
+                case 'logs/clear': {
+                    // Wipes the in-memory ring buffer only. The on-disk
+                    // log file is intentionally preserved for bug reports.
+                    getLogStore().clear();
+                    return;
+                }
+                case 'logs/openFolder': {
+                    const file = getLogStore().logFilePath();
+                    if (file) {
+                        // `revealFileInOS` opens the OS file manager with
+                        // the log file pre-selected on every platform —
+                        // matches desktop's `shell.showItemInFolder` UX.
+                        vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(file));
                     }
-
-                    const fileUri = vscode.Uri.file(configFilePath);
-                    vscode.window.showTextDocument(fileUri);
                     return;
                 }
             }
