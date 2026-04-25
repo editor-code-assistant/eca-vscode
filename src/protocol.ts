@@ -250,6 +250,7 @@ export interface ConfigUpdatedParams {
         welcomeMessage?: string;
         variants?: string[];
         selectVariant?: string | null;
+        selectTrust?: boolean;
     }
 }
 
