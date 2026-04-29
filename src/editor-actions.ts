@@ -47,9 +47,8 @@ export interface EditorWriteGlobalConfigResult {
  *   1. `ECA_CONFIG_PATH` environment variable (absolute path), if set.
  *   2. `$XDG_CONFIG_HOME/eca/config.json` if `XDG_CONFIG_HOME` is set.
  *   3. Platform default:
- *      - darwin:  `~/Library/Application Support/eca/config.json`
  *      - win32:   `%APPDATA%\eca\config.json` (falls back to `~/.config/eca/config.json`)
- *      - others:  `~/.config/eca/config.json`
+ *      - others (macOS, Linux):  `~/.config/eca/config.json`
  *
  * Note: this does not touch the filesystem. Creation is the caller's
  * responsibility.
@@ -63,10 +62,6 @@ export function getGlobalConfigPath(): string {
     const xdg = process.env.XDG_CONFIG_HOME;
     if (xdg && xdg.trim().length > 0) {
         return path.join(xdg, 'eca', 'config.json');
-    }
-
-    if (process.platform === 'darwin') {
-        return path.join(os.homedir(), 'Library', 'Application Support', 'eca', 'config.json');
     }
 
     if (process.platform === 'win32') {
