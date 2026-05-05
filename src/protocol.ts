@@ -234,11 +234,11 @@ export interface ChatCommand {
     name: string;
     description: string;
     type: 'mcpPrompt' | 'native';
-    arguments: [{
+    arguments?: Array<{
         name: string;
         description?: string;
         required: boolean;
-    }];
+    }> | null;
 }
 
 export interface ConfigUpdatedParams {
