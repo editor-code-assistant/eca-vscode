@@ -51,11 +51,13 @@ export interface ChatPromptParams {
 }
 
 export interface ChatSelectedModelChangedParams {
+    chatId?: string;
     model: string;
     variant?: string;
 }
 
 export interface ChatSelectedAgentChangedParams {
+    chatId?: string;
     agent: ChatAgent;
 }
 
@@ -242,6 +244,7 @@ export interface ChatCommand {
 }
 
 export interface ConfigUpdatedParams {
+    chatId?: string;
     chat?: {
         models?: string[];
         agents?: ChatAgent[];

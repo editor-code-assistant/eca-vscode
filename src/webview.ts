@@ -70,11 +70,6 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                         trust: message.data.trust,
                         requestId: message.data.requestId.toString(),
                         contexts: message.data.contexts,
-                    }).then((result) => {
-                        this._webview?.postMessage({
-                            type: 'chat/newChat',
-                            data: { id: result.chatId }
-                        });
                     });
 
                     return;
@@ -82,6 +77,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 case 'chat/selectedModelChanged': {
                     let session = s.getSession()!;
                     session.server.connection.sendNotification(ecaApi.chatSelectedModelChanged, {
+                        chatId: message.data.chatId,
                         model: message.data.model,
                         variant: message.data.variant,
                     });
@@ -90,6 +86,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                 case 'chat/selectedAgentChanged': {
                     let session = s.getSession()!;
                     session.server.connection.sendNotification(ecaApi.chatSelectedAgentChanged, {
+                        chatId: message.data.chatId,
                         agent: message.data.agent,
                     });
                     return;
