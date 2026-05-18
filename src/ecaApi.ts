@@ -35,6 +35,9 @@ export const mcpLogoutServer = new rpc.NotificationType<p.McpLogoutServerParams>
 export const mcpDisableServer = new rpc.NotificationType<p.McpDisableServerParams>('mcp/disableServer');
 export const mcpEnableServer = new rpc.NotificationType<p.McpEnableServerParams>('mcp/enableServer');
 export const mcpUpdateServer = new rpc.RequestType<p.McpUpdateServerParams, object, void>('mcp/updateServer');
+export const mcpAddServer = new rpc.RequestType<p.McpAddServerParams, p.McpAddServerResult, void>('mcp/addServer');
+export const mcpRemoveServer = new rpc.RequestType<p.McpRemoveServerParams, p.McpRemoveServerResult, void>('mcp/removeServer');
+export const toolServerRemoved = new rpc.NotificationType<p.ToolServerRemovedParams>('tool/serverRemoved');
 
 // Providers
 export const providersList = new rpc.RequestType<{ requestId?: string }, any, void>('providers/list');

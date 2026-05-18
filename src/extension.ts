@@ -64,6 +64,10 @@ async function activate(context: vscode.ExtensionContext) {
 				webviewProvider.toolServerUpdated(params);
 			});
 
+			connection.onNotification(ecaApi.toolServerRemoved, (params: protocol.ToolServerRemovedParams) => {
+				webviewProvider.toolServerRemoved(params);
+			});
+
 			connection.onNotification(ecaApi.configUpdated, (params: protocol.ConfigUpdatedParams) => {
 				webviewProvider.configUpdated(params);
 			});

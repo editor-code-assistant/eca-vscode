@@ -290,6 +290,61 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     });
                     return;
                 }
+                case 'mcp/addServer': {
+                    let session = s.getSession()!;
+                    const params: Record<string, unknown> = { name: message.data.name };
+                    // Forward only fields the caller provided; the server accepts a
+                    // stdio/HTTP union and enforces exclusivity.
+                    for (const k of ['command', 'args', 'env', 'url', 'headers',
+                                     'clientId', 'clientSecret', 'oauthPort',
+                                     'disabled', 'scope', 'workspaceUri'] as const) {
+                        if (message.data[k] !== undefined) params[k] = message.data[k];
+                    }
+                    try {
+                        // TS can't prove the union-of-transports invariant
+                        // structurally, so we go through `unknown` rather than
+                        // direct-cast from Record<string, unknown>.
+                        const result = await session.server.connection.sendRequest(
+                            ecaApi.mcpAddServer,
+                            params as unknown as protocol.McpAddServerParams,
+                        );
+                        this._webview?.postMessage({
+                            type: 'mcp/addServer',
+                            data: { requestId: message.data.requestId, ...result },
+                        });
+                    } catch (err) {
+                        this._webview?.postMessage({
+                            type: 'mcp/addServer',
+                            data: {
+                                requestId: message.data.requestId,
+                                error: { code: 'rpc_error', message: (err as Error).message ?? 'Unknown error' },
+                            },
+                        });
+                    }
+                    return;
+                }
+                case 'mcp/removeServer': {
+                    let session = s.getSession()!;
+                    try {
+                        const result = await session.server.connection.sendRequest(
+                            ecaApi.mcpRemoveServer,
+                            { name: message.data.name },
+                        );
+                        this._webview?.postMessage({
+                            type: 'mcp/removeServer',
+                            data: { requestId: message.data.requestId, ...result },
+                        });
+                    } catch (err) {
+                        this._webview?.postMessage({
+                            type: 'mcp/removeServer',
+                            data: {
+                                requestId: message.data.requestId,
+                                error: { code: 'rpc_error', message: (err as Error).message ?? 'Unknown error' },
+                            },
+                        });
+                    }
+                    return;
+                }
                 case 'providers/list': {
                     let session = s.getSession()!;
                     const provListResult = await session.server.connection.sendRequest(ecaApi.providersList, message.data);
@@ -584,6 +639,26 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         if (session) {
             session.mcpServers[params.name] = params;
 
+            this._webview?.postMessage({
+                type: 'tool/serversUpdated',
+                data: Object.values(session.mcpServers),
+            });
+        }
+    }
+
+    toolServerRemoved(params: protocol.ToolServerRemovedParams) {
+        let session = s.getSession();
+
+        if (session) {
+            // `Reflect.deleteProperty` satisfies @typescript-eslint/no-dynamic-delete.
+            Reflect.deleteProperty(session.mcpServers, params.name);
+
+            this._webview?.postMessage({
+                type: 'tool/serverRemoved',
+                data: params,
+            });
+            // Defensive re-broadcast: any consumer that only listens to
+            // 'tool/serversUpdated' still converges to the new list.
             this._webview?.postMessage({
                 type: 'tool/serversUpdated',
                 data: Object.values(session.mcpServers),

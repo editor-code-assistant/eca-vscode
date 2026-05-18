@@ -321,6 +321,43 @@ export interface McpUpdateServerParams {
     url?: string;
 }
 
+export interface ToolServerRemovedParams {
+    name: string;
+}
+
+export interface McpAddServerParams {
+    name: string;
+    // stdio transport
+    command?: string;
+    args?: string[];
+    env?: Record<string, string>;
+    // HTTP transport
+    url?: string;
+    headers?: Record<string, string>;
+    clientId?: string;
+    clientSecret?: string;
+    oauthPort?: number;
+    // shared
+    disabled?: boolean;
+    scope?: 'global' | 'workspace';
+    workspaceUri?: string;
+}
+
+export interface McpAddServerResult {
+    server?: MCPServerUpdatedParams;
+    error?: { code: string; message: string; data?: unknown };
+}
+
+export interface McpRemoveServerParams {
+    name: string;
+}
+
+export interface McpRemoveServerResult {
+    name?: string;
+    removed?: boolean;
+    error?: { code: string; message: string; data?: unknown };
+}
+
 // === Ask Question ===
 
 export interface AskQuestionOption {
