@@ -450,6 +450,63 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     this._webview?.postMessage({ type: 'jobs/list', data: { ...jobsListResult, requestId: message.data.requestId } });
                     return;
                 }
+                case 'chat/list': {
+                    // Resume-picker support. The webview asks for a list of
+                    // persisted chats; we forward to the server and echo the
+                    // result back keyed by `requestId` so `webviewSendAndGet`
+                    // can resolve the calling promise. Errors surface as an
+                    // `error` envelope (matching the mcp/addServer pattern)
+                    // instead of throwing, so the picker can render an
+                    // inline failure state.
+                    let session = s.getSession()!;
+                    try {
+                        const result = await session.server.connection.sendRequest(ecaApi.chatList, {
+                            limit: message.data.limit,
+                            sortBy: message.data.sortBy,
+                        });
+                        this._webview?.postMessage({
+                            type: 'chat/list',
+                            data: { ...result, requestId: message.data.requestId },
+                        });
+                    } catch (err) {
+                        this._webview?.postMessage({
+                            type: 'chat/list',
+                            data: {
+                                requestId: message.data.requestId,
+                                error: { code: 'rpc_error', message: (err as Error).message ?? 'Unknown error' },
+                            },
+                        });
+                    }
+                    return;
+                }
+                case 'chat/open': {
+                    // Resume a persisted chat. The server emits
+                    // `chat/cleared` → `chat/opened` → N × `chat/contentReceived`
+                    // → `config/updated` notifications BEFORE this request
+                    // resolves; those notifications take the regular path
+                    // through the bound onNotification handlers and end up
+                    // in redux via `RootWrapper`. We just round-trip the
+                    // {found, chatId, title} response back to the webview.
+                    let session = s.getSession()!;
+                    try {
+                        const result = await session.server.connection.sendRequest(ecaApi.chatOpen, {
+                            chatId: message.data.chatId,
+                        });
+                        this._webview?.postMessage({
+                            type: 'chat/open',
+                            data: { ...result, requestId: message.data.requestId },
+                        });
+                    } catch (err) {
+                        this._webview?.postMessage({
+                            type: 'chat/open',
+                            data: {
+                                requestId: message.data.requestId,
+                                error: { code: 'rpc_error', message: (err as Error).message ?? 'Unknown error' },
+                            },
+                        });
+                    }
+                    return;
+                }
                 case 'jobs/readOutput': {
                     let session = s.getSession()!;
                     const jobsReadOutputResult = await session.server.connection.sendRequest(ecaApi.jobsReadOutput, { jobId: message.data.jobId });

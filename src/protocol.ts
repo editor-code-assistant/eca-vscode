@@ -166,6 +166,52 @@ export interface ChatOpenedParams {
     title?: string;
 }
 
+// ── chat/list (request → response) ──
+//
+// `chat/list` returns summary entries for every non-subagent chat the
+// server has persisted, sorted descending by the chosen timestamp (the
+// server default is `updatedAt`). Used by the in-webview resume picker
+// to populate the list of resumable conversations. The server-side
+// projection guarantees a non-nil `id` per entry (the chat-map key).
+export interface ChatListParams {
+    /** Optional cap on the number of summaries returned. */
+    limit?: number;
+    /** Sort key; the server defaults to "updatedAt" when omitted. */
+    sortBy?: 'updatedAt' | 'createdAt';
+}
+
+export interface ChatSummary {
+    id: string;
+    title?: string;
+    status: string;
+    messageCount: number;
+    createdAt?: number;
+    updatedAt?: number;
+    model?: string;
+}
+
+export interface ChatListResponse {
+    chats: ChatSummary[];
+}
+
+// ── chat/open (request → response) ──
+//
+// Asks the server to replay a persisted chat onto the wire so the
+// client can render it. The server emits `chat/cleared` + `chat/opened`
+// + N × `chat/contentReceived` + `config/updated` notifications BEFORE
+// returning this response. `found: false` is returned when the chat
+// does not exist or is a subagent (no notifications are emitted in
+// that case).
+export interface ChatOpenParams {
+    chatId: string;
+}
+
+export interface ChatOpenResponse {
+    found: boolean;
+    chatId?: string;
+    title?: string;
+}
+
 export interface ChatStatusChangedParams {
     chatId: string;
     status: string;
