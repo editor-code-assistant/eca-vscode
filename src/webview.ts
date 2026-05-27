@@ -15,6 +15,9 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
     private _webview?: vscode.Webview;
     private _webviewView?: vscode.WebviewView;
     private _pendingQuestions: Map<string, { resolve: (result: protocol.AskQuestionResult) => void }> = new Map();
+    // Cache so a webview that mounts after the server already pushed
+    // config/updated still gets the model/agent list on replay.
+    private _lastConfigParams?: protocol.ConfigUpdatedParams;
 
     constructor(
         private readonly context: vscode.ExtensionContext,
@@ -51,7 +54,7 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
                     let session = s.getSession()!;
                     this.sessionChanged(session);
                     this.handleNewStatus(session.server.status);
-                    this.configUpdated(undefined);
+                    this.configUpdated(this._lastConfigParams);
                     // get opened editor file path
                     const editor = vscode.window.activeTextEditor;
                     if (editor) {
@@ -731,6 +734,9 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     configUpdated(params?: protocol.ConfigUpdatedParams) {
+        if (params) {
+            this._lastConfigParams = params;
+        }
         const config = vscode.workspace.getConfiguration('eca');
         this._webview?.postMessage({
             type: 'config/updated',
