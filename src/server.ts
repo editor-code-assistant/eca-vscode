@@ -370,6 +370,120 @@ class EcaServerPathFinder {
         return hash.digest('hex');
     }
 
+    // Extraction can hang or silently truncate on rare setups: seen in the
+    // wild on macOS aarch64, where the trailing ~13KB of the binary (the
+    // Mach-O code signature, which sits at the end of the file) never got
+    // written even though the zip on disk was checksum-verified, so the
+    // kernel SIGKILLed the binary on spawn. Extract into a staging dir,
+    // enforce a timeout, and record the sizes the zip declares per entry so
+    // the result can be verified before install.
+    private async extractToStage(zipPath: string, stageDir: string, entrySizes: Map<string, number>): Promise<void> {
+        let timer: NodeJS.Timeout | undefined;
+        const timeout = new Promise<never>((_, reject) => {
+            timer = setTimeout(() => reject(new Error('zip extraction timed out after 120s')), 120000);
+        });
+        try {
+            await Promise.race([
+                extractZip.default(zipPath, {
+                    dir: stageDir,
+                    onEntry: (entry) => {
+                        if (!entry.fileName.endsWith('/')) {
+                            entrySizes.set(entry.fileName, entry.uncompressedSize);
+                        }
+                    },
+                }),
+                timeout,
+            ]);
+        } finally {
+            if (timer) {
+                clearTimeout(timer);
+            }
+        }
+    }
+
+    private async extractedBinaryOk(binaryPath: string, expectedSize?: number): Promise<boolean> {
+        try {
+            const stat = await fs.promises.stat(binaryPath);
+            if (expectedSize !== undefined && stat.size !== expectedSize) {
+                this._channel.appendLine(`Extracted ${path.basename(binaryPath)} has ${stat.size} bytes but the zip declares ${expectedSize} bytes`);
+                return false;
+            }
+            return stat.size > 0;
+        } catch {
+            return false;
+        }
+    }
+
+    private systemUnzip(zipPath: string, destDir: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            cp.execFile('unzip', ['-o', '-q', zipPath, '-d', destDir], { timeout: 120000 }, (err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    private async installServerBinary(downloadPath: string, serverPath: string): Promise<void> {
+        const extensionPath = this._context.extensionPath;
+        const binaryName = path.basename(serverPath);
+        const stageDir = path.join(extensionPath, `.eca-stage-${process.pid}-${Date.now()}`);
+        const stagedBinary = path.join(stageDir, binaryName);
+        const entrySizes = new Map<string, number>();
+        const canFallback = process.platform !== 'win32';
+        let usedFallback = false;
+        try {
+            try {
+                await this.extractToStage(downloadPath, stageDir, entrySizes);
+            } catch (err) {
+                if (!canFallback) {
+                    throw err;
+                }
+                this._channel.appendLine(`Extraction failed (${err}), retrying with system unzip...`);
+                await this.systemUnzip(downloadPath, stageDir);
+                usedFallback = true;
+            }
+            let ok = await this.extractedBinaryOk(stagedBinary, entrySizes.get(binaryName));
+            if (!ok && canFallback && !usedFallback) {
+                this._channel.appendLine('Extracted binary looks corrupted, retrying with system unzip...');
+                await fs.promises.rm(stagedBinary, { force: true });
+                await this.systemUnzip(downloadPath, stageDir);
+                ok = await this.extractedBinaryOk(stagedBinary, entrySizes.get(binaryName));
+            }
+            if (!ok) {
+                throw new Error(`Extracted ${binaryName} is corrupted or missing (does not match the size declared by the zip)`);
+            }
+            if (path.extname(serverPath) === '') {
+                await fs.promises.chmod(stagedBinary, 0o775);
+            }
+            // Atomic install: rename swaps the directory entry in one step, so
+            // nothing can ever observe a partially written binary and the
+            // previous binary stays intact until the swap.
+            try {
+                await fs.promises.rename(stagedBinary, serverPath);
+            } catch {
+                // Windows can refuse to rename over an existing/locked exe.
+                await fs.promises.rm(serverPath, { force: true });
+                await fs.promises.rename(stagedBinary, serverPath);
+            }
+            this._channel.appendLine(`ECA server binary installed at ${serverPath}`);
+        } finally {
+            await fs.promises.rm(stageDir, { recursive: true, force: true }).catch(() => { });
+        }
+    }
+
+    private async cleanupStaleStageDirs(extensionPath: string): Promise<void> {
+        try {
+            for (const entry of await fs.promises.readdir(extensionPath)) {
+                if (entry.startsWith('.eca-stage-')) {
+                    await fs.promises.rm(path.join(extensionPath, entry), { recursive: true, force: true });
+                }
+            }
+        } catch { /* best-effort */ }
+    }
+
     private async downloadAndVerify(url: string, downloadPath: string): Promise<void> {
         await this.downloadFile(url, downloadPath);
         this._channel.appendLine(`ECA artifact downloaded to ${downloadPath}`);
@@ -396,6 +510,7 @@ class EcaServerPathFinder {
         this._channel.appendLine(`Downloading eca from ${url} to ${downloadPath}`);
 
         try {
+            await this.cleanupStaleStageDirs(extensionPath);
             try {
                 await this.downloadAndVerify(url, downloadPath);
             } catch (e) {
@@ -404,14 +519,12 @@ class EcaServerPathFinder {
                 await this.downloadAndVerify(url, downloadPath);
             }
 
-            if (fs.existsSync(serverPath)) {
-                await fs.promises.rm(serverPath, { force: true });
-            }
-
             if (path.extname(downloadPath) === '.zip') {
-                await extractZip.default(downloadPath, { dir: extensionPath });
-            }
-            if (path.extname(serverPath) === '') {
+                // Staged extraction + verification + atomic swap; the old
+                // binary is only replaced by a fully verified new one.
+                await this.installServerBinary(downloadPath, serverPath);
+            } else if (path.extname(serverPath) === '') {
+                // Non-zip artifact: the downloaded file is the server itself.
                 await fs.promises.chmod(serverPath, 0o775);
             }
             // Cache the version only after download, verification and
@@ -419,10 +532,10 @@ class EcaServerPathFinder {
             // reused forever instead of re-downloaded on the next start.
             this.writeVersionFile(version);
         } catch (e) {
-            // Remove partial leftovers so the next start re-downloads instead
-            // of spawning a corrupted binary.
+            // Remove the zip so the next start re-downloads. The server
+            // binary itself is never partial anymore (staged + atomic
+            // rename), so an intact previous binary is left alone.
             await fs.promises.rm(downloadPath, { force: true }).catch(() => { });
-            await fs.promises.rm(serverPath, { force: true }).catch(() => { });
             throw new Error(`Error downloading eca from ${url}: ${e}`);
         }
     }
