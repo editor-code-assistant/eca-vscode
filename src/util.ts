@@ -20,7 +20,9 @@ export async function getUserShellEnv(): Promise<{ [key: string]: string }> {
         : ['-ilc', 'env']; // Unix: login + interactive, dump env
 
     return new Promise((resolve, reject) => {
-        cp.execFile(shell, shellArgs, { encoding: 'utf8' }, (err, stdout) => {
+        // timeout: a broken/interactive shell rc file must not block the
+        // extension forever on "Starting ECA server".
+        cp.execFile(shell, shellArgs, { encoding: 'utf8', timeout: 10000 }, (err, stdout) => {
             if (err) { return reject(err); };
             const env: { [key: string]: string } = {};
             stdout.split('\n').forEach((line) => {

@@ -143,7 +143,9 @@ async function activate(context: vscode.ExtensionContext) {
 
 	s.initSession(server, workspaceFolders);
 
-	server.start();
+	server.start().catch((err) => {
+		vscode.window.showErrorMessage(`ECA server failed to start: ${err}`);
+	});
 
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(webviewProvider.providerId, webviewProvider, {

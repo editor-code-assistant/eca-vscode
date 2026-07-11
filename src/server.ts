@@ -1,8 +1,10 @@
 import * as cp from 'child_process';
 import * as extractZip from 'extract-zip';
 import { https } from 'follow-redirects';
+import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { pipeline } from 'node:stream/promises';
 import * as vscode from 'vscode';
 import * as rpc from 'vscode-jsonrpc/node';
 import * as ecaApi from './ecaApi';
@@ -31,6 +33,7 @@ interface EcaServerArgs {
 class EcaServer {
     private _proc?: cp.ChildProcessWithoutNullStreams;
     private _connection?: rpc.MessageConnection;
+    private _startCounter = 0;
 
     private _serverPathFinder: EcaServerPathFinder;
     private _channel: vscode.OutputChannel;
@@ -73,9 +76,24 @@ class EcaServer {
     }
 
     async start() {
-        this.changeStatus(EcaServerStatus.Starting);
+        if (this._status === EcaServerStatus.Starting ||
+            this._status === EcaServerStatus.Running) {
+            this.log(`[VSCODE] server already ${this._status}, ignoring start request`);
+            return;
+        }
 
-        const userShellEnv = await util.getUserShellEnv();
+        this.changeStatus(EcaServerStatus.Starting);
+        // Identifies this start attempt so async continuations (download,
+        // spawn, initialize) can bail out when a stop/restart superseded them
+        // in the meantime, instead of spawning a zombie process.
+        const startId = ++this._startCounter;
+
+        // Shell env is a nice-to-have; a broken user shell must not prevent
+        // the server from starting with the plain process env.
+        const userShellEnv = await util.getUserShellEnv().catch((err) => {
+            this.log(`[VSCODE] could not load user shell env (${err}), continuing with process env`);
+            return {};
+        });
 
         const config = vscode.workspace.getConfiguration('eca');
         const customServerArgsStr = config.get<string>('serverArgs');
@@ -86,41 +104,62 @@ class EcaServer {
         let args = ['server', ...customServerArgs];
 
         this._serverPathFinder.find().then((serverPath) => {
+            if (startId !== this._startCounter || this._status !== EcaServerStatus.Starting) {
+                this.log('[VSCODE] server start superseded, not spawning');
+                return;
+            }
+
             this.log(`[VSCODE] spawning server: ${serverPath} with args: ${args.join(' ')}`);
 
             let session = s.getSession()!;
             const envAll = { ...process.env, ...userShellEnv };
 
+            let proc: cp.ChildProcessWithoutNullStreams;
             if (process.platform === 'win32' && serverPath.endsWith('.bat')) {
-                this._proc = cp.spawn('cmd.exe', ['/s', '/c', 'call', serverPath, ...args], {
+                proc = cp.spawn('cmd.exe', ['/s', '/c', 'call', serverPath, ...args], {
                     cwd: path.dirname(serverPath),
                     env: envAll,
                 });
             } else {
-                this._proc = cp.spawn(serverPath, args, {
+                proc = cp.spawn(serverPath, args, {
                     cwd: path.dirname(serverPath),
                     env: envAll,
                 });
             }
+            this._proc = proc;
 
-
-            this._proc.on('close', (code, signal) => {
+            proc.on('close', (code, signal) => {
                 this.log(`[VSCODE] server process closed: code=${code} signal=${signal}`);
+                // Only react if this is still the current process; a close
+                // event from a previous (stopped/restarted) process must not
+                // flip the status of the current one.
+                if (this._proc !== proc) {
+                    return;
+                }
                 if (this._status !== EcaServerStatus.Stopped &&
                     this._status !== EcaServerStatus.Failed) {
+                    if (process.platform === 'darwin' && (signal === 'SIGKILL' || code === 137)) {
+                        // macOS SIGKILLs binaries whose code signature fails
+                        // validation (e.g. corrupted download). Drop the
+                        // version cache so the next start re-downloads a fresh
+                        // binary instead of reusing the broken one forever.
+                        this.log('[VSCODE] server killed with SIGKILL, likely macOS code signature validation, invalidating downloaded server so the next start fetches a fresh one');
+                        this._serverPathFinder.invalidateCache();
+                    }
                     this.changeStatus(EcaServerStatus.Failed);
                 }
             });
 
-            this._proc.on('error', (err) => {
+            proc.on('error', (err) => {
                 this.log(`[VSCODE] server process error: ${err}`);
-                if (this._status !== EcaServerStatus.Stopped &&
+                if (this._proc === proc &&
+                    this._status !== EcaServerStatus.Stopped &&
                     this._status !== EcaServerStatus.Failed) {
                     this.changeStatus(EcaServerStatus.Failed);
                 }
             });
 
-            this._proc.stderr.on('data', (data) => {
+            proc.stderr.on('data', (data) => {
                 // `data` arrives as chunks, which can split mid-line. We still
                 // forward them as-is: the Logs tab and the OutputChannel both
                 // tolerate partial lines, and collapsing into lines here would
@@ -128,36 +167,63 @@ class EcaServer {
                 this.log(data.toString());
             });
             this._connection = rpc.createMessageConnection(
-                new rpc.StreamMessageReader(this._proc.stdout),
-                new rpc.StreamMessageWriter(this._proc.stdin));
+                new rpc.StreamMessageReader(proc.stdout),
+                new rpc.StreamMessageWriter(proc.stdin));
 
             this.connection.listen();
 
-            this.connection.sendRequest(ecaApi.initialize, {
-                processId: process.pid,
-                clientInfo: {
-                    name: 'VsCode',
-                    version: 'XXX'
-                },
-                capabilities: {
-                    codeAssistant: {
-                        chat: true,
-                        rewrite: true,
-                        editor: { diagnostics: true },
-                        chatCapabilities: { askQuestion: true }
-                    }
-                },
-                initializationOptions: {
-                    // TODO custom setting chatAgent
-                },
-                workspaceFolders: session.workspaceFolders,
-            }).then((_) => {
+            // Fail loudly if the server never answers initialize (e.g. the
+            // process died before jsonrpc noticed, or hung) instead of staying
+            // on Starting forever with no way out.
+            let initTimer: NodeJS.Timeout | undefined;
+            const initTimeout = new Promise<never>((_, reject) => {
+                initTimer = setTimeout(
+                    () => reject(new Error('timed out after 60s waiting for the initialize response')),
+                    60000);
+            });
+
+            Promise.race([
+                this.connection.sendRequest(ecaApi.initialize, {
+                    processId: process.pid,
+                    clientInfo: {
+                        name: 'VsCode',
+                        version: 'XXX'
+                    },
+                    capabilities: {
+                        codeAssistant: {
+                            chat: true,
+                            rewrite: true,
+                            editor: { diagnostics: true },
+                            chatCapabilities: { askQuestion: true }
+                        }
+                    },
+                    initializationOptions: {
+                        // TODO custom setting chatAgent
+                    },
+                    workspaceFolders: session.workspaceFolders,
+                }),
+                initTimeout,
+            ]).then((_) => {
+                if (this._proc !== proc || this._status !== EcaServerStatus.Starting) {
+                    return;
+                }
                 this.changeStatus(EcaServerStatus.Running);
                 this.connection.sendNotification(ecaApi.initialized, {});
                 this._onStarted(this.connection);
+            }).catch((err) => {
+                this.log(`[VSCODE] server initialize failed: ${err}`);
+                if (this._proc === proc && this._status === EcaServerStatus.Starting) {
+                    this.changeStatus(EcaServerStatus.Failed);
+                    this.killProcess();
+                }
+            }).finally(() => {
+                if (initTimer) {
+                    clearTimeout(initTimer);
+                }
             });
         }).catch((err) => {
             this.log(`[VSCODE] Fail to find eca server path: ${err}`);
+            vscode.window.showErrorMessage(`ECA server failed to start: ${err}`);
             if (this._status !== EcaServerStatus.Stopped &&
                 this._status !== EcaServerStatus.Failed) {
                 this.changeStatus(EcaServerStatus.Failed);
@@ -166,13 +232,48 @@ class EcaServer {
         );
     }
 
-    async stop() {
-        if (isClosable(this._status)) {
-            await this.connection.sendRequest(ecaApi.shutdown, {});
-            this.connection.sendNotification(ecaApi.exit, {});
-            this.connection.dispose();
+    private killProcess() {
+        const proc = this._proc;
+        if (proc && proc.exitCode === null && proc.signalCode === null && !proc.killed) {
+            try {
+                proc.kill();
+            } catch (err) {
+                this.log(`[VSCODE] failed to kill server process: ${err}`);
+            }
         }
-        this.changeStatus(EcaServerStatus.Stopped);
+    }
+
+    async stop() {
+        const connection = this._connection;
+        try {
+            if (isClosable(this._status) && connection) {
+                // Ask for a graceful shutdown, but don't hang forever when the
+                // process is dead or unresponsive: a request written to a dead
+                // pipe never settles, which used to make this command a no-op
+                // exactly when users most need it.
+                const graceful = (async () => {
+                    await connection.sendRequest(ecaApi.shutdown, {});
+                    connection.sendNotification(ecaApi.exit, {});
+                })();
+                // Settled via the race below; without this a late rejection
+                // (e.g. connection disposed) becomes an unhandled rejection.
+                graceful.catch(() => { });
+                await Promise.race([
+                    graceful,
+                    new Promise<void>((resolve) => setTimeout(resolve, 3000)),
+                ]);
+            }
+        } catch (err) {
+            this.log(`[VSCODE] error on server shutdown request: ${err}`);
+        } finally {
+            try {
+                connection?.dispose();
+            } catch { /* may already be disposed */ }
+            this._connection = undefined;
+            this.killProcess();
+            this._proc = undefined;
+            this.changeStatus(EcaServerStatus.Stopped);
+        }
     }
 
     async restart() {
@@ -223,6 +324,68 @@ class EcaServerPathFinder {
         return path.join(this._context.extensionPath, name);
     }
 
+    private downloadFile(url: string, destPath: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const request = https.get(url, (response) => {
+                if (response.statusCode !== 200) {
+                    response.resume(); // Consume response to free up memory
+                    reject(new Error(`HTTP ${response.statusCode}: ${response.statusMessage}`));
+                    return;
+                }
+                // pipeline only settles after the write stream fully flushed
+                // and closed (or either side errored). Resolving earlier, e.g.
+                // on the response 'end' event, can leave a truncated artifact
+                // behind, which corrupts the macOS code signature and gets the
+                // binary SIGKILLed on spawn.
+                pipeline(response, fs.createWriteStream(destPath))
+                    .then(() => resolve())
+                    .catch(reject);
+            });
+            request.on('error', reject);
+            // Inactivity timeout so a stalled connection fails loudly instead
+            // of leaving the server status on Starting forever.
+            request.setTimeout(60000, () => {
+                request.destroy(new Error(`Download timed out: ${url}`));
+            });
+        });
+    }
+
+    private async fetchExpectedSha256(artifactUrl: string): Promise<string | undefined> {
+        try {
+            const content = await util.fetchFromUrl(`${artifactUrl}.sha256`);
+            const sha256 = content.trim().split(/\s+/)[0]?.toLowerCase();
+            if (sha256 && /^[0-9a-f]{64}$/.test(sha256)) {
+                return sha256;
+            }
+            this._channel.appendLine(`Unexpected content in ${artifactUrl}.sha256, skipping integrity check`);
+        } catch (e) {
+            this._channel.appendLine(`Could not fetch ${artifactUrl}.sha256 (${e}), skipping integrity check`);
+        }
+        return undefined;
+    }
+
+    private async sha256sum(filePath: string): Promise<string> {
+        const hash = crypto.createHash('sha256');
+        await pipeline(fs.createReadStream(filePath), hash);
+        return hash.digest('hex');
+    }
+
+    private async downloadAndVerify(url: string, downloadPath: string): Promise<void> {
+        await this.downloadFile(url, downloadPath);
+        this._channel.appendLine(`ECA artifact downloaded to ${downloadPath}`);
+
+        const expectedSha256 = await this.fetchExpectedSha256(url);
+        if (!expectedSha256) {
+            return;
+        }
+        const actualSha256 = await this.sha256sum(downloadPath);
+        if (actualSha256 !== expectedSha256) {
+            await fs.promises.rm(downloadPath, { force: true });
+            throw new Error(`Checksum mismatch (expected ${expectedSha256}, got ${actualSha256}), download is corrupted`);
+        }
+        this._channel.appendLine(`Checksum OK (sha256 ${actualSha256})`);
+    }
+
     private async downloadLatestServer(serverPath: string, version: string) {
         const extensionPath = this._context.extensionPath;
         const artifactName = this.getArtifactName();
@@ -233,25 +396,13 @@ class EcaServerPathFinder {
         this._channel.appendLine(`Downloading eca from ${url} to ${downloadPath}`);
 
         try {
-            await new Promise((resolve, reject) => {
-                https
-                    .get(url, (response) => {
-                        if (response.statusCode === 200) {
-                            const writeStream = fs.createWriteStream(downloadPath);
-                            response
-                                .on('end', () => {
-                                    writeStream.close();
-                                    this._channel.appendLine(`ECA artifact downloaded to ${downloadPath}`);
-                                    resolve(true);
-                                })
-                                .pipe(writeStream);
-                        } else {
-                            response.resume(); // Consume response to free up memory
-                            reject(new Error(response.statusMessage));
-                        }
-                    })
-                    .on('error', reject);
-            });
+            try {
+                await this.downloadAndVerify(url, downloadPath);
+            } catch (e) {
+                this._channel.appendLine(`Download failed (${e}), retrying once...`);
+                await fs.promises.rm(downloadPath, { force: true });
+                await this.downloadAndVerify(url, downloadPath);
+            }
 
             if (fs.existsSync(serverPath)) {
                 await fs.promises.rm(serverPath, { force: true });
@@ -263,11 +414,17 @@ class EcaServerPathFinder {
             if (path.extname(serverPath) === '') {
                 await fs.promises.chmod(serverPath, 0o775);
             }
+            // Cache the version only after download, verification and
+            // extraction all succeeded, otherwise a broken attempt would be
+            // reused forever instead of re-downloaded on the next start.
             this.writeVersionFile(version);
         } catch (e) {
-            throw new Error(`Error downloading eca, from ${url}`);
+            // Remove partial leftovers so the next start re-downloads instead
+            // of spawning a corrupted binary.
+            await fs.promises.rm(downloadPath, { force: true }).catch(() => { });
+            await fs.promises.rm(serverPath, { force: true }).catch(() => { });
+            throw new Error(`Error downloading eca from ${url}: ${e}`);
         }
-
     }
 
     private async getLatestVersion(): Promise<string> {
@@ -304,6 +461,19 @@ class EcaServerPathFinder {
             console.error('Could not write eca version file.', e);
         }
 
+    }
+
+    // Drops the cached version marker so the next find() re-downloads the
+    // server even if the binary file still exists. Used when the downloaded
+    // binary proves unusable at runtime (e.g. SIGKILLed by macOS for a broken
+    // code signature).
+    invalidateCache() {
+        try {
+            fs.rmSync(this.getVersionFilePath(), { force: true });
+            fs.rmSync(this.getExtensionServerPath(), { force: true });
+        } catch (e) {
+            console.error('Could not invalidate eca server cache.', e);
+        }
     }
 
     async find() {

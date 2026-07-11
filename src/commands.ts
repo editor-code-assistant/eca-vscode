@@ -36,15 +36,15 @@ const manageHandler = async (
 
     switch (choice.value) {
         case '::start': {
-            server.start();
+            await server.start();
             return;
         }
         case '::restart': {
-            server.restart();
+            await server.restart();
             return;
         }
         case '::stop': {
-            server.stop();
+            await server.stop();
             return;
         }
     }
@@ -83,16 +83,25 @@ export const registerVSCodeCommands = (params: RegisterCommandsParams) => {
     return [
         vscode.commands.registerCommand('eca.manage', () => {
             manageHandler(params.server, params.context)
-                .catch((err) => console.error('Failed to run manage command', err));
+                .catch((err) => {
+                    console.error('Failed to run manage command', err);
+                    vscode.window.showErrorMessage(`ECA: ${err}`);
+                });
         }),
         vscode.commands.registerCommand('eca.start', () => {
-            params.server.start();
+            params.server.start().catch((err) => {
+                vscode.window.showErrorMessage(`Failed to start ECA server: ${err}`);
+            });
         }),
         vscode.commands.registerCommand('eca.stop', () => {
-            params.server.stop();
+            params.server.stop().catch((err) => {
+                vscode.window.showErrorMessage(`Failed to stop ECA server: ${err}`);
+            });
         }),
         vscode.commands.registerCommand('eca.restart', () => {
-            params.server.restart();
+            params.server.restart().catch((err) => {
+                vscode.window.showErrorMessage(`Failed to restart ECA server: ${err}`);
+            });
         }),
         vscode.commands.registerCommand('eca.chat.focus', () => {
             params.webviewProvider.focus('/');
