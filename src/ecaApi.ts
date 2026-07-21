@@ -10,6 +10,7 @@ export const chatToolCallApprove = new rpc.NotificationType<p.ChatToolCallApprov
 export const chatToolCallReject = new rpc.NotificationType<p.ChatToolCallRejectParams>('chat/toolCallReject');
 export const chatPromptStop = new rpc.NotificationType<p.ChatPromptStopParams>('chat/promptStop');
 export const chatPromptSteer = new rpc.NotificationType<p.ChatPromptSteerParams>('chat/promptSteer');
+export const chatPromptSteerRemove = new rpc.NotificationType<p.ChatPromptStopParams>('chat/promptSteerRemove');
 export const chatDelete = new rpc.RequestType<p.ChatDeleteParams, {}, void>('chat/delete');
 export const chatRollback = new rpc.RequestType<p.ChatRollbackParams, {}, void>('chat/rollback');
 export const chatAddFlag = new rpc.RequestType<p.ChatAddFlagParams, {}, void>('chat/addFlag');
