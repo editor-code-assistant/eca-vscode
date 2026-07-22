@@ -146,5 +146,14 @@ export const registerVSCodeCommands = (params: RegisterCommandsParams) => {
                 params.webviewProvider.sendPromptToCurrentChat(prompt);
             }
         }),
+        vscode.commands.registerCommand('eca.chat.increaseFontSize', () => {
+            params.webviewProvider.changeFontSize('increase');
+        }),
+        vscode.commands.registerCommand('eca.chat.decreaseFontSize', () => {
+            params.webviewProvider.changeFontSize('decrease');
+        }),
+        vscode.commands.registerCommand('eca.chat.resetFontSize', () => {
+            params.webviewProvider.changeFontSize('reset');
+        }),
     ];
 };

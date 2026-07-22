@@ -782,6 +782,13 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         });
     }
 
+    changeFontSize(action: 'increase' | 'decrease' | 'reset') {
+        this._webview?.postMessage({
+            type: 'editor/changeFontSize',
+            data: { action },
+        });
+    }
+
     createNewChat() {
         this._webview?.postMessage({
             type: 'chat/createNewChat',

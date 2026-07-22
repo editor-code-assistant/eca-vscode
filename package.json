@@ -120,6 +120,35 @@
       {
         "command": "eca.rewrite.reject",
         "title": "ECA: Rewrite Reject"
+      },
+      {
+        "command": "eca.chat.increaseFontSize",
+        "title": "ECA: Increase chat font size"
+      },
+      {
+        "command": "eca.chat.decreaseFontSize",
+        "title": "ECA: Decrease chat font size"
+      },
+      {
+        "command": "eca.chat.resetFontSize",
+        "title": "ECA: Reset chat font size"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "eca.chat.increaseFontSize",
+        "key": "alt+shift+=",
+        "when": "focusedView != 'eca.webview'"
+      },
+      {
+        "command": "eca.chat.decreaseFontSize",
+        "key": "alt+shift+-",
+        "when": "focusedView != 'eca.webview'"
+      },
+      {
+        "command": "eca.chat.resetFontSize",
+        "key": "alt+shift+0",
+        "when": "focusedView != 'eca.webview'"
       }
     ],
     "submenus": [
