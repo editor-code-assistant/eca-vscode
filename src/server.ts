@@ -193,7 +193,7 @@ class EcaServer {
                         codeAssistant: {
                             chat: true,
                             rewrite: true,
-                            editor: { diagnostics: true },
+                            editor: { diagnostics: true, definition: true, references: true },
                             chatCapabilities: { askQuestion: true }
                         }
                     },

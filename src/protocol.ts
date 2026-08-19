@@ -10,6 +10,8 @@ export interface InitializeParams {
             rewrite?: boolean;
             editor?: {
                 diagnostics?: boolean;
+                definition?: boolean;
+                references?: boolean;
             };
             chatCapabilities?: {
                 askQuestion?: boolean;
@@ -442,6 +444,48 @@ export interface EditorDiagnostic {
 export interface EditorGetDiagnosticsResult {
     diagnostics: EditorDiagnostic[];
 }
+
+// === Editor Definition / References ===
+//
+// Positions on the wire are 1-based (both request and response) and
+// `character` counts UTF-16 code units, matching VS Code's native
+// encoding. VS Code positions are 0-based, so handlers convert at the
+// boundary.
+
+export interface EditorGetDefinitionParams {
+    uri: string;
+    position: Position;
+}
+
+export interface EditorGetReferencesParams {
+    uri: string;
+    position: Position;
+    /** Whether to include the symbol declaration. Defaults to true when absent. */
+    includeDeclaration?: boolean;
+}
+
+/**
+ * - 'success': locations contain the results (may be empty when the symbol has none).
+ * - 'starting': a language server is likely still initializing; the server re-polls.
+ * - 'no-server': no language server can be provided for this file at all.
+ * - 'error': failed to compute the result; message explains why.
+ */
+export type EditorNavStatus = 'success' | 'starting' | 'no-server' | 'error';
+
+export interface EditorLocation {
+    uri: string;
+    /** The location range (1-based). */
+    range: Range;
+}
+
+export interface EditorNavResult {
+    status: EditorNavStatus;
+    locations?: EditorLocation[];
+    message?: string;
+}
+
+export type EditorGetDefinitionResult = EditorNavResult;
+export type EditorGetReferencesResult = EditorNavResult;
 
 // === Rewrite ===
 

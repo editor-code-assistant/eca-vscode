@@ -8,6 +8,7 @@ import * as s from './session';
 import * as statusbar from './status-bar';
 import { EcaWebviewProvider } from './webview';
 import { RewriteFeature } from './rewrite';
+import { EditorNav } from './editor-nav';
 
 async function activate(context: vscode.ExtensionContext) {
 
@@ -34,6 +35,7 @@ async function activate(context: vscode.ExtensionContext) {
 
 	const rewrite = new RewriteFeature(context);
 	const rewriteDisposables = rewrite.register();
+	const editorNav = new EditorNav();
 
 	const server = new EcaServer({
 		serverPathFinder: serverPathFinder,
@@ -118,6 +120,7 @@ async function activate(context: vscode.ExtensionContext) {
 			});
 
 			rewrite.attach(connection);
+			editorNav.attach(connection);
 
 			webviewProvider.sessionChanged(session);
 			webviewProvider.focus();

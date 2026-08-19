@@ -51,6 +51,8 @@ export const providersUpdated = new rpc.NotificationType<any>('providers/updated
 
 // Editor
 export const editorGetDiagnostics = new rpc.RequestType<p.EditorGetDiagnosticsParams, p.EditorGetDiagnosticsResult, void>('editor/getDiagnostics');
+export const editorGetDefinition = new rpc.RequestType<p.EditorGetDefinitionParams, p.EditorGetDefinitionResult, void>('editor/getDefinition');
+export const editorGetReferences = new rpc.RequestType<p.EditorGetReferencesParams, p.EditorGetReferencesResult, void>('editor/getReferences');
 
 // Chat Ask Question (backend → extension)
 export const chatAskQuestion = new rpc.RequestType<p.AskQuestionParams, p.AskQuestionResult, void>('chat/askQuestion');
