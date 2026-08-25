@@ -64,6 +64,21 @@
             ],
             "default": "showActions",
             "markdownDescription": "What to do when streaming finishes. 'accept' auto-dismisses the green highlight; 'showActions' keeps Accept/Reject lens visible."
+          },
+          "eca.inlineChat.model": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "Model for inline chat prompts. Empty uses the server `chatInline` config or the chat defaults."
+          },
+          "eca.inlineChat.agent": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "Agent for inline chat prompts (e.g. `agent`, `plan`). Empty uses the server `chatInline` config or the chat defaults."
+          },
+          "eca.inlineChat.variant": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "Model variant for inline chat prompts. Empty uses the server `chatInline` config or the chat defaults."
           }
         }
       }
@@ -112,6 +127,44 @@
       {
         "command": "eca.rewrite",
         "title": "ECA: Rewrite"
+      },
+      {
+        "command": "eca.inlineChat.prompt",
+        "title": "ECA: Inline prompt"
+      },
+      {
+        "command": "eca.inlineChat.promptSelecting",
+        "title": "ECA: Inline prompt (pick chat)"
+      },
+      {
+        "command": "eca.inlineChat.reply",
+        "title": "Follow-up",
+        "icon": "$(reply)"
+      },
+      {
+        "command": "eca.inlineChat.stop",
+        "title": "Stop",
+        "icon": "$(stop-circle)"
+      },
+      {
+        "command": "eca.inlineChat.approveAll",
+        "title": "Approve tool calls",
+        "icon": "$(check)"
+      },
+      {
+        "command": "eca.inlineChat.rejectAll",
+        "title": "Reject tool calls",
+        "icon": "$(close)"
+      },
+      {
+        "command": "eca.inlineChat.openChat",
+        "title": "Open backing chat",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "eca.inlineChat.dismiss",
+        "title": "Dismiss",
+        "icon": "$(trash)"
       },
       {
         "command": "eca.rewrite.accept",
@@ -167,6 +220,10 @@
       ],
       "eca.menu": [
         {
+          "command": "eca.inlineChat.prompt",
+          "group": "0_inline"
+        },
+        {
           "command": "eca.rewrite",
           "group": "0_rewrite",
           "when": "editorHasSelection"
@@ -174,6 +231,64 @@
         {
           "command": "eca.chat.addContextToSystemPrompt",
           "group": "1_context"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "eca.inlineChat.reply",
+          "when": "false"
+        },
+        {
+          "command": "eca.inlineChat.stop",
+          "when": "false"
+        },
+        {
+          "command": "eca.inlineChat.approveAll",
+          "when": "false"
+        },
+        {
+          "command": "eca.inlineChat.rejectAll",
+          "when": "false"
+        },
+        {
+          "command": "eca.inlineChat.openChat",
+          "when": "false"
+        },
+        {
+          "command": "eca.inlineChat.dismiss",
+          "when": "false"
+        }
+      ],
+      "comments/commentThread/title": [
+        {
+          "command": "eca.inlineChat.reply",
+          "group": "inline@1",
+          "when": "commentController == eca-inline && commentThreadContextValue =~ /-idle/"
+        },
+        {
+          "command": "eca.inlineChat.approveAll",
+          "group": "inline@2",
+          "when": "commentController == eca-inline && commentThreadContextValue =~ /-pending/"
+        },
+        {
+          "command": "eca.inlineChat.rejectAll",
+          "group": "inline@3",
+          "when": "commentController == eca-inline && commentThreadContextValue =~ /-pending/"
+        },
+        {
+          "command": "eca.inlineChat.stop",
+          "group": "inline@4",
+          "when": "commentController == eca-inline && commentThreadContextValue =~ /-running/"
+        },
+        {
+          "command": "eca.inlineChat.openChat",
+          "group": "inline@5",
+          "when": "commentController == eca-inline"
+        },
+        {
+          "command": "eca.inlineChat.dismiss",
+          "group": "inline@6",
+          "when": "commentController == eca-inline"
         }
       ]
     },

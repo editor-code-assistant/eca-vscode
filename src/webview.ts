@@ -795,6 +795,14 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         });
     }
 
+    selectChat(chatId: string) {
+        this.focus('/');
+        this._webview?.postMessage({
+            type: 'chat/selectChat',
+            data: chatId,
+        });
+    }
+
     sendPromptToCurrentChat(prompt: string) {
         this._webview?.postMessage({
             type: 'chat/sendPromptToCurrentChat',

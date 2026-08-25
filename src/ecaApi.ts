@@ -6,6 +6,7 @@ export const initialized = new rpc.NotificationType<any>('initialized');
 export const shutdown = new rpc.RequestType<any, void, void>('shutdown');
 export const exit = new rpc.NotificationType<any>('exit');
 export const chatPrompt = new rpc.RequestType<p.ChatPromptParams, p.ChatPromptResult, void>('chat/prompt');
+export const chatInlinePrompt = new rpc.RequestType<p.ChatInlinePromptParams, p.ChatPromptResult, void>('chat/inlinePrompt');
 export const chatToolCallApprove = new rpc.NotificationType<p.ChatToolCallApproveParams>('chat/toolCallApprove');
 export const chatToolCallReject = new rpc.NotificationType<p.ChatToolCallRejectParams>('chat/toolCallReject');
 export const chatPromptStop = new rpc.NotificationType<p.ChatPromptStopParams>('chat/promptStop');

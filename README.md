@@ -17,6 +17,8 @@ This extension will auto download `eca` and manage the process.
 
 - `eca.chat.addContextToSystemPrompt`: Add context to system prompt in chat in a DWIM (do what I mean) manner.
 - `eca.chat.rewrite`: Rewrite a piece of code given a prompt.
+- `eca.inlineChat.prompt`: Ask ECA from any file, streaming the answer into a comment thread at the cursor/selection, backed by a regular chat. On first use you can fork an existing chat to reuse its history; the chat sticks to the file for follow-ups. Follow-up, stop and tool call approvals happen in the thread.
+- `eca.inlineChat.promptSelecting`: Same as above but always re-asks which chat to use.
 
 ### Settings
 

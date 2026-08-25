@@ -9,6 +9,7 @@ import * as statusbar from './status-bar';
 import { EcaWebviewProvider } from './webview';
 import { RewriteFeature } from './rewrite';
 import { EditorNav } from './editor-nav';
+import { InlineChatFeature } from './inline-chat';
 
 async function activate(context: vscode.ExtensionContext) {
 
@@ -36,14 +37,20 @@ async function activate(context: vscode.ExtensionContext) {
 	const rewrite = new RewriteFeature(context);
 	const rewriteDisposables = rewrite.register();
 	const editorNav = new EditorNav();
+	const inlineChat = new InlineChatFeature(webviewProvider);
+	const inlineChatDisposables = inlineChat.register();
 
 	const server = new EcaServer({
 		serverPathFinder: serverPathFinder,
 		channel: ecaChannel,
 		onStarted: (connection) => {
 			const session = s.getSession()!;
+			// vscode-jsonrpc allows a single handler per method, so chat
+			// notifications are fanned out to the webview and the inline
+			// chat feature from here.
 			connection.onNotification(ecaApi.chatContentReceived, (params: protocol.ChatContentReceivedParams) => {
 				webviewProvider.chatContentReceived(params);
+				inlineChat.onContentReceived(params);
 			});
 
 			connection.onNotification(ecaApi.chatCleared, (params: protocol.ChatClearedParams) => {
@@ -52,14 +59,17 @@ async function activate(context: vscode.ExtensionContext) {
 
 			connection.onNotification(ecaApi.chatDeleted, (params: protocol.ChatDeletedParams) => {
 				webviewProvider.chatDeleted(params);
+				inlineChat.onChatDeleted(params);
 			});
 
 			connection.onNotification(ecaApi.chatOpened, (params: protocol.ChatOpenedParams) => {
 				webviewProvider.chatOpened(params);
+				inlineChat.onChatOpened(params);
 			});
 
 			connection.onNotification(ecaApi.chatStatusChanged, (params: protocol.ChatStatusChangedParams) => {
 				webviewProvider.chatStatusChanged(params);
+				inlineChat.onStatusChanged(params);
 			});
 
 			connection.onNotification(ecaApi.toolServerUpdated, (params: protocol.ToolServerUpdatedParams) => {
@@ -116,11 +126,13 @@ async function activate(context: vscode.ExtensionContext) {
 			});
 
 			connection.onRequest(ecaApi.chatAskQuestion, async (params: protocol.AskQuestionParams): Promise<protocol.AskQuestionResult> => {
+				inlineChat.onAskQuestion(params);
 				return webviewProvider.askQuestion(params);
 			});
 
 			rewrite.attach(connection);
 			editorNav.attach(connection);
+			inlineChat.attach(connection);
 
 			webviewProvider.sessionChanged(session);
 			webviewProvider.focus();
@@ -160,6 +172,7 @@ async function activate(context: vscode.ExtensionContext) {
 			context: context,
 		}),
 		...rewriteDisposables,
+		...inlineChatDisposables,
 		vscode.workspace.onDidChangeConfiguration((e: vscode.ConfigurationChangeEvent) => {
 			if (e.affectsConfiguration('eca')) {
 				webviewProvider.configUpdated(undefined);

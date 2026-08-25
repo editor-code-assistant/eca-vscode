@@ -100,6 +100,27 @@ export type ChatContext = FileContext | DirectoryContext | WebContext | RepoMapC
 export interface ChatPromptResult {
     chatId: string;
     model: string;
+    status?: 'prompting' | 'login' | 'error';
+}
+
+// ── chat/inlinePrompt (request → response) ──
+//
+// Prompt whose answer is rendered inline in the editor while backed by
+// a regular chat session. `chatId` is required and client-minted (e.g.
+// a UUID); reuse it across requests for follow-ups. When the id is new
+// and `sourceChatId` is given, the server forks that chat's history
+// into the inline chat (never replayed to the client — only new turns
+// stream). Streaming happens via the usual `chat/contentReceived`
+// notifications for the given `chatId`.
+export interface ChatInlinePromptParams {
+    chatId: string;
+    sourceChatId?: string;
+    message: string;
+    model?: string;
+    agent?: ChatAgent;
+    variant?: string;
+    trust?: boolean;
+    contexts?: ChatContext[];
 }
 
 export interface ChatToolCallApproveParams {
@@ -190,6 +211,8 @@ export interface ChatSummary {
     createdAt?: number;
     updatedAt?: number;
     model?: string;
+    /** 'inline' marks chats created via `chat/inlinePrompt`. */
+    kind?: string;
 }
 
 export interface ChatListResponse {
@@ -219,7 +242,36 @@ export interface ChatStatusChangedParams {
     status: string;
 }
 
-export interface ChatContentReceivedParams {}
+/**
+ * A single streamed chat content event. `content` carries many shapes
+ * (see protocol.md `ChatContent`); the extension only inspects the
+ * fields below and forwards the raw params to the webview untouched,
+ * so the shape is kept permissive on purpose.
+ */
+export interface ChatContent {
+    type: string;
+    /** toolCall and reason events carry an id. */
+    id?: string;
+    /** text/reasonText/progress extra text. */
+    text?: string;
+    /** progress state. */
+    state?: 'running' | 'finished';
+    /** toolCall* tool name. */
+    name?: string;
+    /** toolCall* human summary, e.g. 'Reading file "foo"...'. */
+    summary?: string;
+    /** toolCallRun: whether it awaits manual approval. */
+    manualApproval?: boolean;
+    [key: string]: unknown;
+}
+
+export interface ChatContentReceivedParams {
+    chatId: string;
+    /** Present when this content belongs to a subagent of `chatId`'s parent. */
+    parentChatId?: string;
+    role: ChatContentRole;
+    content: ChatContent;
+}
 
 export type ChatContentRole = 'user' | 'system' | 'assistant';
 
