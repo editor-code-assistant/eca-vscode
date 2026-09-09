@@ -1,7 +1,7 @@
 import * as cp from 'child_process';
 import { https } from 'follow-redirects';
 import * as fs from 'fs';
-import * as url from 'url';
+import { fileURLToPath } from 'url';
 import * as vscode from "vscode";
 
 export function randUuid(): string {
@@ -40,10 +40,9 @@ export async function getUserShellEnv(): Promise<{ [key: string]: string }> {
 }
 
 export async function fetchFromUrl(fullUrl: string): Promise<string> {
-    const q = url.parse(fullUrl);
     return new Promise((resolve, reject) => {
         if (fullUrl.startsWith('file:')) {
-            fs.readFile(url.fileURLToPath(fullUrl), 'utf8', (err, data) => {
+            fs.readFile(fileURLToPath(fullUrl), 'utf8', (err, data) => {
                 if (err) {
                     console.error(`Error reading file: ${err.message}`);
                     reject(err);
@@ -52,26 +51,21 @@ export async function fetchFromUrl(fullUrl: string): Promise<string> {
                 resolve(data);
             });
         } else {
+            // Pass the URL string through: follow-redirects parses it with the
+            // WHATWG URL API, avoiding the deprecated url.parse() (DEP0169)
+            // that newer Node versions warn about at runtime.
             https
-                .get(
-                    {
-                        host: q.hostname,
-                        path: q.pathname,
-                        port: q.port,
-                        headers: { 'user-agent': 'node.js' },
-                    },
-                    (res) => {
-                        let data = '';
-                        res.on('data', (chunk: any) => {
-                            data += chunk;
-                        });
-                        res.on('end', () => {
-                            resolve(data);
-                        });
-                    }
-                )
+                .get(fullUrl, { headers: { 'user-agent': 'node.js' } }, (res) => {
+                    let data = '';
+                    res.on('data', (chunk: any) => {
+                        data += chunk;
+                    });
+                    res.on('end', () => {
+                        resolve(data);
+                    });
+                })
                 .on('error', (err: any) => {
-                    console.error(`Error downloading file from ${url}: ${err.message}`);
+                    console.error(`Error downloading file from ${fullUrl}: ${err.message}`);
                     reject(err);
                 });
         }
