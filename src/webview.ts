@@ -10,6 +10,20 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 
+// Messages the extension answers on its own. Everything else is forwarded to
+// the server and only makes sense while it is running.
+function isEditorOnlyMessage(type: string): boolean {
+    return type === 'webview/ready'
+        || type === 'chat/answerQuestion'
+        || type.startsWith('editor/')
+        || type.startsWith('logs/');
+}
+
+// Request/response messages whose webview callers handle an `error` envelope
+// (see their try/catch blocks in resolveWebviewView). Other requests are just
+// dropped and left to the webview-side timeout, as their callers don't.
+const errorEnvelopeMessages = new Set(['chat/list', 'chat/open', 'mcp/addServer', 'mcp/removeServer']);
+
 export class EcaWebviewProvider implements vscode.WebviewViewProvider {
     public providerId = 'eca.webview';
     private _webview?: vscode.Webview;
@@ -49,6 +63,24 @@ export class EcaWebviewProvider implements vscode.WebviewViewProvider {
         this._webview.html = this.getWebviewContent(this._webview, extensionUri);
 
         this._webview.onDidReceiveMessage(async message => {
+            // The webview sends server-bound messages as soon as it mounts
+            // (e.g. chat/queryContext) and on user actions, regardless of the
+            // server state. While the server is starting, stopped or failed
+            // there is no usable connection and those used to blow up with
+            // "Cannot read properties of undefined (reading 'sendRequest')".
+            if (!isEditorOnlyMessage(message.type) && s.getSession()?.server.status !== EcaServerStatus.Running) {
+                this._channel.appendLine(`[VSCODE] ignoring webview message ${message.type}: server is not running`);
+                if (errorEnvelopeMessages.has(message.type)) {
+                    this._webview?.postMessage({
+                        type: message.type,
+                        data: {
+                            requestId: message.data?.requestId,
+                            error: { code: 'server_not_running', message: 'ECA server is not running' },
+                        },
+                    });
+                }
+                return;
+            }
             switch (message.type) {
                 case 'webview/ready': {
                     let session = s.getSession()!;
