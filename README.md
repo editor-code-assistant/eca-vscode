@@ -24,6 +24,20 @@ This extension will auto download `eca` and manage the process.
 
 - `eca.serverPath`: Custom server path, if not set it will download latest server from https://github.com/editor-code-assistant/eca
 - `eca.serverArgs`: Extra server args used when starting eca server.
+- `eca.sendProcessId`: Whether to send the VS Code process ID to the server so it exits when the editor does (default `true`). Disable it when sandboxing, see below.
+
+### Sandboxing
+
+You can run the eca server under any sandbox tool (docker, podman, bubblewrap, etc.) by pointing `eca.serverPath` to a wrapper script that starts the server inside the sandbox. The server is started with the first workspace folder as working directory, so the wrapper can rely on `$PWD` being the project (e.g. to mount it in a container). Check the [sandboxing docs](https://eca.dev/config/sandboxing/) for ready-to-use wrappers.
+
+When the sandbox hides or remaps the host PID (containers), also disable `eca.sendProcessId`, otherwise the server's parent-process watchdog can't see the PID and shuts down right after startup:
+
+```json
+{
+  "eca.serverPath": "/home/you/.local/bin/eca-sandboxed",
+  "eca.sendProcessId": false
+}
+```
 
 ## Troubleshooting
 

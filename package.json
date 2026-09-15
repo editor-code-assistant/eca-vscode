@@ -46,6 +46,11 @@
             "default": "",
             "markdownDescription": "Extra args for the eca start command, example: \"--log-level debug\"."
           },
+          "eca.sendProcessId": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "Whether to send the VS Code process ID to the eca server, which uses it to detect when the editor exits and shut down automatically. Disable when running the server inside a sandbox that hides or remaps the host PID (Docker, Podman, etc), otherwise the server exits right after starting because it can't see the PID. See [sandboxing](https://eca.dev/config/sandboxing/). Will take effect after a restart of eca."
+          },
           "eca.usageStringFormat": {
             "type": "string",
             "default": "{sessionTokens} / {contextLimit} ({sessionCost})",

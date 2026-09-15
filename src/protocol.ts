@@ -1,5 +1,5 @@
 export interface InitializeParams {
-    processId: number;
+    processId?: number;
     clientInfo: {
         name: string;
         version: string;

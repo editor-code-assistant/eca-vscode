@@ -100,6 +100,11 @@ class EcaServer {
         const customServerArgs = customServerArgsStr?.trim()
             ? customServerArgsStr.split(' ')
             : [];
+        // The server watches this PID and exits once it disappears. Inside a
+        // sandbox with its own PID namespace (docker, podman) the host PID is
+        // invisible, so the server would exit right after starting; users
+        // opt out via this setting, like `eca-send-process-id` in eca-emacs.
+        const sendProcessId = config.get<boolean>('sendProcessId', true);
 
         let args = ['server', ...customServerArgs];
 
@@ -116,13 +121,18 @@ class EcaServer {
 
             let proc: cp.ChildProcessWithoutNullStreams;
             if (process.platform === 'win32' && serverPath.endsWith('.bat')) {
+                // The debug-cli .bat only works when run from its own dir.
                 proc = cp.spawn('cmd.exe', ['/s', '/c', 'call', serverPath, ...args], {
                     cwd: path.dirname(serverPath),
                     env: envAll,
                 });
             } else {
+                // Start from the workspace, like other eca clients do, so a
+                // custom `serverPath` wrapper script sees the project in
+                // `$PWD` (e.g. the docker sandbox wrapper mounting `$PWD:$PWD`).
+                const workspaceUri = session.workspaceFolders[0]?.uri;
                 proc = cp.spawn(serverPath, args, {
-                    cwd: path.dirname(serverPath),
+                    cwd: workspaceUri ? vscode.Uri.parse(workspaceUri).fsPath : undefined,
                     env: envAll,
                 });
             }
@@ -184,7 +194,7 @@ class EcaServer {
 
             Promise.race([
                 this.connection.sendRequest(ecaApi.initialize, {
-                    processId: process.pid,
+                    ...(sendProcessId ? { processId: process.pid } : {}),
                     clientInfo: {
                         name: 'VsCode',
                         version: 'XXX'
