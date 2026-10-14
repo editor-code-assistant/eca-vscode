@@ -53,8 +53,8 @@
           },
           "eca.usageStringFormat": {
             "type": "string",
-            "default": "{sessionTokens} / {contextLimit} ({sessionCost})",
-            "markdownDescription": "Format string for the usage (tokens/cost) in chat window. variables available:\n\n - `sessionCost`\n- `lastMessageCost`\n- `sessionTokens`\n- `contextLimit`\n- `outputLimit`."
+            "default": "{sessionTokens} / {contextLimit} ({sessionCost}{quota})",
+            "markdownDescription": "Format string for the usage (tokens/cost/quota) in chat window. variables available:\n\n - `sessionCost`\n- `lastMessageCost`\n- `sessionTokens`\n- `contextLimit`\n- `outputLimit`\n- `quota`: subscription quota like `5h 42% · 7d 13%`, shown instead of costs when logged in with a subscription."
           },
           "eca.rewrite.promptPrefix": {
             "type": "string",
