@@ -262,7 +262,19 @@ export interface ChatContent {
     summary?: string;
     /** toolCallRun: whether it awaits manual approval. */
     manualApproval?: boolean;
+    /** toolCallRunning: latest progress the tool reported, re-sent while it runs. */
+    progress?: ToolCallProgress;
     [key: string]: unknown;
+}
+
+/** Progress of a running tool call, mirroring MCP's progress notification params. */
+export interface ToolCallProgress {
+    /** The progress so far; increases with each report, even if `total` is unknown. */
+    progress: number;
+    /** Total progress required, if known. */
+    total?: number;
+    /** Description of the current progress. */
+    message?: string;
 }
 
 export interface ChatContentReceivedParams {

@@ -13,6 +13,32 @@ import { EcaWebviewProvider } from './webview';
 
 type InlineState = 'sending' | 'running' | 'done';
 
+/** Progress number without float noise, e.g. 0.3333… as 0.33. */
+function progressNumber(n: number): string {
+    return String(Math.round(n * 100) / 100);
+}
+
+/**
+ * Progress a running tool reports, to append to its status as eca-emacs
+ * does: " (3/10 · Indexing files)", just the message when the total is
+ * unknown, or just the progress when there is no message either. Values
+ * come verbatim from MCP servers, so each field is checked before use.
+ */
+function progressInfo(progress?: protocol.ToolCallProgress): string {
+    if (!progress) { return ''; }
+    const value = Number.isFinite(progress.progress) ? progress.progress : undefined;
+    const total = Number.isFinite(progress.total) ? progress.total : undefined;
+    const message = (typeof progress.message === 'string' && progress.message.trim()) || undefined;
+    let count: string | undefined;
+    if (value !== undefined && total !== undefined) {
+        count = `${progressNumber(value)}/${progressNumber(total)}`;
+    } else if (value !== undefined && !message) {
+        count = progressNumber(value);
+    }
+    const text = [count, message].filter(Boolean).join(' · ');
+    return text ? ` (${text})` : '';
+}
+
 class EcaInlineComment implements vscode.Comment {
     body: vscode.MarkdownString = new vscode.MarkdownString();
     mode: vscode.CommentMode = vscode.CommentMode.Preview;
@@ -194,7 +220,9 @@ export class InlineChatFeature {
             case 'toolCallRunning': {
                 // Approved (possibly from another client): no longer pending.
                 if (content.id) { this.dropPendingTool(session, content.id); }
-                this.setStatus(session, content.summary ?? `Running tool ${content.name}...`, 'running');
+                // Re-sent while the tool runs with the progress it reports.
+                const label = content.summary ?? `Running tool ${content.name}...`;
+                this.setStatus(session, label + progressInfo(content.progress), 'running');
                 return;
             }
             case 'toolCalled': {
